@@ -1,0 +1,94 @@
+# Optional docker environment for nest with other tools
+
+version: '3.8'
+services:
+    
+    nest-container:
+        image: esteveslima/nest-container-image:latest           
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        volumes:
+            - ./:/nest-container                                    # Hosting the project folder as volume            
+            - /var/run/docker.sock:/var/run/docker.sock            # Bind host docker socket to the container(enable docker commands to host machine)
+        working_dir: /nest-container
+        restart: "no"
+        ports:
+            - 3000-3010:3000-3010
+
+    # postgres-container:                                              # Setting up local testing environment with postgres
+    #     image: postgres
+    #     volumes:
+    #        - ./.volumes/.postgres-storage:/var/lib/postgresql/data                 
+    #     environment:
+    #        - POSTGRES_USER=postgres
+    #        - POSTGRES_PASSWORD=password
+    #        - POSTGRES_DB=postgres-db
+    #     restart: always
+    #     expose:
+    #        - '5432'             
+    #     # ports:
+    #     #   - '5432:5432' 
+
+    # mysql-container:                                                  # Setting up local testing environment with mysql
+    #     image: mysql
+    #     volumes:
+    #        - ./.volumes/.mysql-storage:/var/lib/mysql                                 
+    #     environment:
+    #        - MYSQL_USER=root
+    #        - MYSQL_PASSWORD=password
+    #        - MYSQL_ROOT_PASSWORD=password
+    #        - MYSQL_DATABASE=mysql-db                            
+    #     restart: always
+    #     expose:
+    #        - '3306'             
+    #     # ports:
+    #     #   - '3306:3306'                 
+
+    # mongo-container:                                                  # Setting up MongoDB local testing environment with mongo
+    #    image: mongo
+    #    volumes:
+    #        - ./.volumes/.mongodb-storage:/data/db                                 
+    #    environment:
+    #        - MONGO_INITDB_DATABASE=mongo-db                      
+    #        #- MONGO_INITDB_ROOT_USERNAME=user                                 
+    #        #- MONGO_INITDB_ROOT_PASSWORD=password
+    #    restart: always
+    #    expose:
+    #        - '27017'                         
+    #     # ports:
+    #     #     - '27017:27017'
+
+    # dynamodb-container:                                               # Setting up DynamoDB local testing environment with dynamoDB local
+    #     image: amazon/dynamodb-local
+    #     restart: always        
+    #     command: "-jar DynamoDBLocal.jar -port 8000 -sharedDb -optimizeDbBeforeStartup -dbPath ./data"
+    #     working_dir: /home/dynamodblocal
+    #     user: root
+    #     volumes:
+    #         - "./.volumes/.dynamodb-storage:/home/dynamodblocal/data"
+    #     expose:
+    #         - '8000'
+    #     ports:
+    #         - '8000:8000'                                             # shell interface available at http://localhost:8000/shell/  
+            
+    # redis-container:                                                  # Setting up local testing environment with redis
+    #     image: redis
+    #     command: ["redis-server", "--appendonly", "yes"]
+    #     volumes:
+    #        - ./.volumes/.redis-storage:/data
+    #     #environment:
+    #     restart: always
+    #     expose:
+    #        - '6379'
+    #     # ports:
+    #     #    - '6379:6379'         
+
+    # queue-container:                                                   # Setting up local testing environment with elasticMQ
+    #     image: softwaremill/elasticmq-native
+    #     restart: always
+    #     expose:
+    #         - '9324-9325'
+    #     ports:
+    #         - '9324:9324'
+    #         - '9325:9325'                                              # interface available at http://localhost:9325

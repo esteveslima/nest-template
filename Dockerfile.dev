@@ -1,0 +1,33 @@
+# Setting up a nest container as development environment
+
+# Use the official node image (TODO: switch to nvm?)
+FROM node:lts-alpine as nodeBuilderStage
+
+# Install extra useful packages for alpine version
+RUN apk add --no-cache curl && \
+    apk add --no-cache bash && \
+    apk add --no-cache nano && \
+    apk add --no-cache sudo && \
+    apk add --no-cache git
+
+# Install docker CLI(daemon binded to the host machine using volumes in compose file)
+RUN apk add --update docker openrc && \
+    rc-update add docker boot    
+
+# Install development packages
+RUN npm i -g @nestjs/cli
+
+# Grant privileges to alpine native node user
+RUN echo "node ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/node && \
+    chmod 0440 /etc/sudoers.d/node && \
+    chmod 755 /root
+# Change and config node user
+USER node
+RUN echo "complete -d cd" >> ~/.bashrc
+RUN echo "PS1='\e[1;30m(\t)[\w]\$ \e[0m'" >> ~/.bashrc; source ~/.bashrc
+
+# Expose some usable ports
+EXPOSE 3000-3010
+
+# Keeps de container running
+CMD tail -f /dev/null

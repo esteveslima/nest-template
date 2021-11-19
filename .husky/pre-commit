@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# bash -c tsc --noEmit
+npx eslint --max-warnings 0 --fix
+npm run test #-- --findRelatedTests --bail

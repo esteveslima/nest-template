@@ -7,8 +7,8 @@ FROM node:lts-alpine as nodeBuilderStage
 RUN apk add --no-cache curl && \
     apk add --no-cache bash && \
     apk add --no-cache nano && \
-    apk add --no-cache sudo && \
-    apk add --no-cache git
+    apk add --no-cache sudo 
+    # apk add --no-cache git
 
 # Install docker CLI(daemon binded to the host machine using volumes in compose file)
 RUN apk add --update docker openrc && \

@@ -38,9 +38,8 @@ services:
            - '5432:5432'
     pgadmin-container:                                                 # Setting up postgres admin interface(remember to connect to container, which is in docker internal network)
         image: dpage/pgadmin4                                          # Take some time to boot up      
-      #   volumes:
-      #      - ./.volumes/.pgadmin-storage/var/lib/pgadmin:/var/lib/pgadmin               # Bind pgadmin configs to local folder(not working)
-      #      - ./.volumes/.pgadmin-storage/pgadmin4:/pgadmin4/servers.json
+        volumes:           
+           - ./.volumes/.pgadmin-storage/pgadmin4/servers.json:/pgadmin4/servers.json     # Bind pgadmin configs to local folder(not working)
         environment:
            - PGADMIN_DEFAULT_EMAIL=postgres@postgres.com
            - PGADMIN_DEFAULT_PASSWORD=password

@@ -1,7 +1,9 @@
 // Responsible for defining data format and relations in the database
+// Implementing validations with ORM(for database) and Pipes(for DTOs)
 
 import { Exclude, Transform, Type } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {
+  IsBoolean,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -15,7 +17,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
+} from 'typeorm'; // typeORM tools https://orkhan.gitbook.io/typeorm/docs/embedded-entities
 
 export enum enumMediaType {
   MUSIC = 'MUSIC',
@@ -32,17 +34,22 @@ export class Media {
   // Auto generated fields
 
   @PrimaryGeneratedColumn('uuid')
-  @Exclude() // remove property from serialization
   id: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
-  @Exclude()
+  @Exclude({ toPlainOnly: true }) // remove property from JSON serialization
   updatedAt: Date;
 
   // Editable fields
+
+  @Column({ type: 'varchar', length: 80 })
+  @IsNotEmpty()
+  @IsString()
+  @Length(5, 80)
+  title: string;
 
   @Column({ type: 'enum', enum: enumMediaType })
   @IsNotEmpty()
@@ -50,12 +57,6 @@ export class Media {
     message: `type must be a valid enum value: ${Object.values(enumMediaType)}`,
   })
   type: enumMediaType;
-
-  @Column({ type: 'varchar', length: 80 })
-  @IsNotEmpty()
-  @IsString()
-  @Length(5, 80)
-  title: string;
 
   @Column({ type: 'varchar', length: 260 })
   @IsString()
@@ -74,12 +75,16 @@ export class Media {
   @IsString()
   contentBase64: string;
 
-  // readonly fields(not directly editable)
-
-  @Column({ type: 'integer' })
+  @Column({ type: 'integer', default: 0 })
   @Transform(({ value }) => Number.parseInt(value))
   @IsNotEmpty()
   @IsInt()
   @Min(0)
   views: number;
+
+  @Column({ type: 'boolean', default: true })
+  @Type(() => Boolean)
+  @IsNotEmpty()
+  @IsBoolean()
+  available: boolean;
 }

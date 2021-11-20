@@ -13,8 +13,9 @@ Standard Nest project as template for future consultation.
   - **`nest generate service <SERVICE_NAME> --no-spec`**                     > Create new service in current module(without module tests)
 
 - ConfigModule
-- DTO
 - TypeORM
+- DTO
+- Pipes and validation
 - Entity
 - Repository
 - disabled module tests

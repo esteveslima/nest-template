@@ -8,7 +8,7 @@ import {} from 'class-validator'; // validation tools https://github.com/typesta
 import { Media } from '../media.entity';
 
 // Create DTO with Entity format(which contains all the typeORM validations and Pipe validations), except selected fields
-export class RegisterMediaDTO extends OmitType(Media, [
+export class UpdateMediaDTO extends OmitType(Media, [
   'id',
   'createdAt',
   'updatedAt',

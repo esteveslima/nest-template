@@ -12,9 +12,16 @@ import { Media } from '../media.entity';
 
 // DTO with some entity fields to serve as filter for the search operation, marking them as optional to allow partial inputs for certain filters
 export class SearchMediaDTO extends PartialType(
-  OmitType(Media, ['id', 'updatedAt', 'contentBase64'] as const),
+  OmitType(Media, ['id', 'updatedAt', 'createdAt', 'contentBase64'] as const),
 ) {
-  // extra fields for pagination, which doesnt belong to the entity
+  // Redefining entity property for this filter DTO
+  @Type(() => Number) // Input to accept timestamps
+  @IsOptional()
+  @IsNotEmpty()
+  @IsInt()
+  createdAt: number;
+
+  // extra properties for pagination, which doesnt belong to the entity
   @Type(() => Number)
   @IsOptional()
   @IsNotEmpty()

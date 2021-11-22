@@ -30,7 +30,7 @@ import { MediaService } from './media.service';
     whitelist: true,
   }),
 )
-@UseInterceptors(ClassSerializerInterceptor) // Interceptor for outputs serialization(applying decorators) // TODO: create "private" routes which ignores this config, or a new controller, to return full object
+@UseInterceptors(ClassSerializerInterceptor) // Interceptor for outputs serialization(applying decorators rules) // TODO: create "private" routes which ignores this config, or a new controller, to return full object
 export class MediaController {
   // Get services and modules from DI
   constructor(private mediaService: MediaService) {}
@@ -41,7 +41,6 @@ export class MediaController {
   async registerMedia(
     @Body() registerMediaDTO: RegisterMediaDTO,
   ): Promise<Media> {
-    console.log(registerMediaDTO);
     return this.mediaService.registerMedia(registerMediaDTO);
   }
 

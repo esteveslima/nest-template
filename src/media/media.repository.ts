@@ -72,7 +72,9 @@ export class MediaRespository extends Repository<Media> {
     }
     if (createdAt) {
       // add condition to filter for min creation date
-      query.andWhere('media.createdAt >= :createdAt', { createdAt });
+      query.andWhere('media.createdAt >= :createdAt', {
+        createdAt: new Date(createdAt),
+      });
     }
     if (description) {
       // add condition to filter descriptions containing string

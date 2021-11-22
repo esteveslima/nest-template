@@ -14,6 +14,8 @@ import {
   Put,
   Query,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { SearchMediaDTO } from './dto/search-media.dto';
 import { PatchMediaDTO } from './dto/patch-media.dto';
@@ -23,17 +25,23 @@ import { Media } from './media.entity';
 import { MediaService } from './media.service';
 
 @Controller('media')
-@UseInterceptors(ClassSerializerInterceptor) // Required for outputs serialization, applying some options like Exclude() // TODO: create "private" routes which ignores this config, or a new controller, to return full object
+@UsePipes(
+  new ValidationPipe({
+    whitelist: true,
+  }),
+)
+@UseInterceptors(ClassSerializerInterceptor) // Interceptor for outputs serialization(applying decorators) // TODO: create "private" routes which ignores this config, or a new controller, to return full object
 export class MediaController {
   // Get services and modules from DI
   constructor(private mediaService: MediaService) {}
 
-  // Define and map routes to services, which contains the business logic
+  // Define and map routes to services
 
   @Post()
   async registerMedia(
     @Body() registerMediaDTO: RegisterMediaDTO,
   ): Promise<Media> {
+    console.log(registerMediaDTO);
     return this.mediaService.registerMedia(registerMediaDTO);
   }
 

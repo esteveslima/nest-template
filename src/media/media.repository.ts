@@ -105,7 +105,7 @@ export class MediaRespository extends Repository<Media> {
 
     if (take) {
       // quantity to return for pagination
-      query.take(take);
+      query.take(take); // switch to limit?
     }
     if (skip) {
       // quantity to skip for pagination

@@ -2,6 +2,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SearchMediaDTO } from './dto/search-media.dto';
 import { PatchMediaDTO } from './dto/patch-media.dto';
 import { RegisterMediaDTO } from './dto/register-media.dto';
 import { UpdateMediaDTO } from './dto/update-media.dto';
@@ -45,5 +46,13 @@ export class MediaService {
     await this.mediaRepository.modifyMediaById(mediaUuid, modifyMediaDTO);
 
     return;
+  }
+
+  async searchMedia(searchMediaDTO: SearchMediaDTO): Promise<Media[]> {
+    const mediaSearchResult = await this.mediaRepository.searchMedia(
+      searchMediaDTO,
+    );
+
+    return mediaSearchResult;
   }
 }

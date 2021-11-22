@@ -7,7 +7,10 @@ import {} from 'class-validator'; // validation tools https://github.com/typesta
 
 import { Media } from '../media.entity';
 
-// Create DTO with Entity format(which contains all the typeORM validations and Pipe validations), marking them as optional and exclude selected fields
+// Create DTO with Entity format, which contains all the typeORM validations and Pipe validations
+// exclude selected fields to match the current operation
+
+// similar to UpdateMediaDTO, but marking them as optional to allow partial input with only specific fields
 export class PatchMediaDTO extends PartialType(
   OmitType(Media, ['id', 'createdAt', 'updatedAt', 'views'] as const),
 ) {}

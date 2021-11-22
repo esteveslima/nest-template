@@ -76,7 +76,7 @@ export class Media {
   contentBase64: string;
 
   @Column({ type: 'integer', default: 0 })
-  @Transform(({ value }) => Number.parseInt(value))
+  @Type(() => Number)
   @IsNotEmpty()
   @IsInt()
   @Min(0)

@@ -12,8 +12,10 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
+import { SearchMediaDTO } from './dto/search-media.dto';
 import { PatchMediaDTO } from './dto/patch-media.dto';
 import { RegisterMediaDTO } from './dto/register-media.dto';
 import { UpdateMediaDTO } from './dto/update-media.dto';
@@ -64,5 +66,10 @@ export class MediaController {
     @Body() patchMediaDTO: PatchMediaDTO,
   ): Promise<void> {
     return this.mediaService.modifyMediaById(mediaUuid, patchMediaDTO);
+  }
+
+  @Get()
+  async searchMedia(@Query() searchMediaDTO: SearchMediaDTO): Promise<Media[]> {
+    return this.mediaService.searchMedia(searchMediaDTO);
   }
 }

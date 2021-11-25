@@ -1,0 +1,48 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+  // Inside container(not working)
+  //   {
+  //     "name": "Attach Debug NestJs",
+  //     "type": "node",      
+  //     "request": "attach",            
+  //     "protocol": "inspector",
+  //     "processId": "${command:PickProcess}",
+  //     "restart": true,
+  //     "smartStep": true,
+  //     "sourceMaps": true,      
+  //     "outFiles": [
+  //       "${workspaceFolder}/dist/**/*.js"               // set distribution file path
+  //     ],
+  //     "skipFiles": [
+  //       "${workspaceFolder}/node_modules/**/*.js",
+  //       "<node_internals>/**/*.js"
+  //     ],
+  //     "localRoot": "${workspaceFolder}",
+  //     "cwd": "${workspaceFolder}",
+  //     "remoteRoot": "/nest-container",                 // set project remote root-path
+  //     // "address": "0.0.0.0",
+  //     // "port": 9229,                                   
+  // }
+
+  // // Outside container(works ok)
+  //   {
+  //     "type": "node",
+  //     "request": "launch",
+  //     "name": "Launch Program",
+  //     "program": "${workspaceFolder}/src/main.ts",
+  //     "preLaunchTask": "tsc: watch - tsconfig.build.json",
+  //     "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+  //     "skipFiles": [
+  //       "${workspaceFolder}/node_modules/**/*.js",
+  //       "<node_internals>/**/*.js"
+  //     ],
+  //     "remoteRoot": "/nest-container",                 // set project remote root-path
+  //     "localRoot": "${workspaceFolder}",
+  //     // "env": {}
+  //   }
+  ]
+}

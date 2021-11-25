@@ -4,10 +4,7 @@
 FROM node:lts-alpine as nodeBuilderStage
 
 # Install extra useful packages for alpine version
-RUN apk add --no-cache curl && \
-    apk add --no-cache bash && \
-    apk add --no-cache nano && \
-    apk add --no-cache sudo && \
+RUN apk add --no-cache bash nano less sudo curl && \
     apk add --no-cache git
 
 # Install docker CLI(daemon binded to the host machine using volumes in compose file)
@@ -23,6 +20,8 @@ RUN echo "node ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/node && \
     chmod 755 /root
 # Change and config node user
 USER node
+ENV EDITOR=nano
+ENV LESS=R
 RUN echo "complete -d cd" >> ~/.bashrc
 RUN echo "PS1='\e[1;30m(\t)[\w]\$ \e[0m'" >> ~/.bashrc; source ~/.bashrc
 

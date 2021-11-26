@@ -3,28 +3,27 @@
 
 import { NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
-import { SearchMediaDTO } from './dto/search-media.dto';
-import { PatchMediaDTO } from './dto/patch-media.dto';
-import { RegisterMediaDTO } from './dto/register-media.dto';
-import { UpdateMediaDTO } from './dto/update-media.dto';
-import { Media } from './media.entity';
+import { MediaEntity } from './media.entity';
+import {
+  IParamsRepositoryModifyMedia,
+  IParamsRepositoryRegisterMedia,
+  IParamsRepositorySearchMedia,
+} from './interfaces/media-repository-interfaces';
 
-@EntityRepository(Media)
-export class MediaRespository extends Repository<Media> {
-  // TODO: add field select, search filters and query builders to improve database operations
-
-  async registerMedia(registerMediaDTO: RegisterMediaDTO): Promise<Media> {
+@EntityRepository(MediaEntity)
+export class MediaRespository extends Repository<MediaEntity> {
+  async registerMedia(
+    registerMedia: IParamsRepositoryRegisterMedia,
+  ): Promise<MediaEntity> {
     const registerOperation = this.create({
-      ...registerMediaDTO,
-      // views: 0,          // disabled because now using entity default values
-      // available: true,   // disabled because now using entity default values
+      ...registerMedia,
     });
     const mediaRegistered = await this.save(registerOperation);
 
     return mediaRegistered;
   }
 
-  async getMediaById(uuid: string): Promise<Media> {
+  async getMediaById(uuid: string): Promise<MediaEntity> {
     const mediaFound = await this.findOne(uuid);
 
     if (!mediaFound) throw new NotFoundException();
@@ -42,16 +41,18 @@ export class MediaRespository extends Repository<Media> {
 
   async modifyMediaById(
     uuid: string,
-    modifyMediaDTO: UpdateMediaDTO | PatchMediaDTO,
+    modifyMedia: IParamsRepositoryModifyMedia,
   ): Promise<void> {
-    const mediaModified = await this.update(uuid, { ...modifyMediaDTO });
+    const mediaModified = await this.update(uuid, { ...modifyMedia });
 
     if (mediaModified.affected <= 0) throw new NotFoundException();
 
     return;
   }
 
-  async searchMedia(searchMediaDTO: SearchMediaDTO): Promise<Media[]> {
+  async searchMedia(
+    searchMedia: IParamsRepositorySearchMedia,
+  ): Promise<MediaEntity[]> {
     const {
       available,
       createdAt,
@@ -62,7 +63,7 @@ export class MediaRespository extends Repository<Media> {
       views,
       take,
       skip,
-    } = searchMediaDTO;
+    } = searchMedia;
 
     const query = this.createQueryBuilder('media');
 
@@ -73,7 +74,7 @@ export class MediaRespository extends Repository<Media> {
     if (createdAt) {
       // add condition to filter for min creation date
       query.andWhere('media.createdAt >= :createdAt', {
-        createdAt: new Date(createdAt),
+        createdAt: createdAt,
       });
     }
     if (description) {

@@ -30,7 +30,7 @@ export enum enumMediaType {
 }
 
 @Entity()
-export class Media {
+export class MediaEntity {
   // Auto generated fields
 
   @PrimaryGeneratedColumn('uuid')

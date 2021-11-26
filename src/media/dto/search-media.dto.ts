@@ -5,17 +5,22 @@ import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import { IsInt, IsNotEmpty, IsOptional, Max, Min } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
 
-import { Media } from '../media.entity';
+import { MediaEntity } from '../media.entity';
 
 // Create DTO with Entity format, which contains all the typeORM validations and Pipe validations
 // exclude selected fields to match the current operation
 
-// DTO with some entity fields to serve as filter for the search operation, marking them as optional to allow partial inputs for certain filters
+// DTO with some entity fields to serve as filter for the search operation, marking them as optional to allow partial inputs for only specified filters
 export class SearchMediaDTO extends PartialType(
-  OmitType(Media, ['id', 'updatedAt', 'createdAt', 'contentBase64'] as const),
+  OmitType(MediaEntity, [
+    'id',
+    'updatedAt',
+    'createdAt',
+    'contentBase64',
+  ] as const),
 ) {
   // Redefining entity property for this filter DTO
-  @Type(() => Number) // Input to accept timestamps
+  @Type(() => Number) // Input modified to accept timestamps
   @IsOptional()
   @IsNotEmpty()
   @IsInt()

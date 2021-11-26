@@ -21,8 +21,12 @@ import { SearchMediaDTO } from './dto/search-media.dto';
 import { PatchMediaDTO } from './dto/patch-media.dto';
 import { RegisterMediaDTO } from './dto/register-media.dto';
 import { UpdateMediaDTO } from './dto/update-media.dto';
-import { Media } from './media.entity';
 import { MediaService } from './media.service';
+import {
+  IResultServiceGetMedia,
+  IResultServiceRegisterMedia,
+  IResultServiceSearchMedia,
+} from './interfaces/media-service-interfaces';
 
 @Controller('media')
 @UsePipes(
@@ -40,12 +44,14 @@ export class MediaController {
   @Post()
   async registerMedia(
     @Body() registerMediaDTO: RegisterMediaDTO,
-  ): Promise<Media> {
+  ): Promise<IResultServiceRegisterMedia> {
     return this.mediaService.registerMedia(registerMediaDTO);
   }
 
   @Get('/:uuid')
-  async getMediaById(@Param('uuid', ParseUUIDPipe) mediaUuid): Promise<Media> {
+  async getMediaById(
+    @Param('uuid', ParseUUIDPipe) mediaUuid,
+  ): Promise<IResultServiceGetMedia> {
     return this.mediaService.getMediaById(mediaUuid);
   }
 
@@ -76,7 +82,9 @@ export class MediaController {
   }
 
   @Get()
-  async searchMedia(@Query() searchMediaDTO: SearchMediaDTO): Promise<Media[]> {
+  async searchMedia(
+    @Query() searchMediaDTO: SearchMediaDTO,
+  ): Promise<IResultServiceSearchMedia[]> {
     return this.mediaService.searchMedia(searchMediaDTO);
   }
 }

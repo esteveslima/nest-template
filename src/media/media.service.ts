@@ -2,12 +2,15 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SearchMediaDTO } from './dto/search-media.dto';
-import { PatchMediaDTO } from './dto/patch-media.dto';
-import { RegisterMediaDTO } from './dto/register-media.dto';
-import { UpdateMediaDTO } from './dto/update-media.dto';
-import { Media } from './media.entity';
 import { MediaRespository } from './media.repository';
+import {
+  IParamsServiceModifyMedia,
+  IParamsServiceRegisterMedia,
+  IParamsServiceSearchMedia,
+  IResultServiceGetMedia,
+  IResultServiceRegisterMedia,
+  IResultServiceSearchMedia,
+} from './interfaces/media-service-interfaces';
 
 @Injectable()
 export class MediaService {
@@ -19,15 +22,17 @@ export class MediaService {
 
   // Define methods containing business logic
 
-  async registerMedia(registerMediaDTO: RegisterMediaDTO): Promise<Media> {
+  async registerMedia(
+    registerMedia: IParamsServiceRegisterMedia,
+  ): Promise<IResultServiceRegisterMedia> {
     const mediaCreated = await this.mediaRepository.registerMedia(
-      registerMediaDTO,
+      registerMedia,
     );
 
     return mediaCreated;
   }
 
-  async getMediaById(mediaUuid: string): Promise<Media> {
+  async getMediaById(mediaUuid: string): Promise<IResultServiceGetMedia> {
     const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
 
     return mediaFound;
@@ -41,16 +46,22 @@ export class MediaService {
 
   async modifyMediaById(
     mediaUuid: string,
-    modifyMediaDTO: UpdateMediaDTO | PatchMediaDTO,
+    modifyMedia: IParamsServiceModifyMedia,
   ): Promise<void> {
-    await this.mediaRepository.modifyMediaById(mediaUuid, modifyMediaDTO);
+    await this.mediaRepository.modifyMediaById(mediaUuid, modifyMedia);
 
     return;
   }
 
-  async searchMedia(searchMediaDTO: SearchMediaDTO): Promise<Media[]> {
+  async searchMedia(
+    searchMedia: IParamsServiceSearchMedia,
+  ): Promise<IResultServiceSearchMedia[]> {
+    const searchFilters = {
+      ...searchMedia,
+      createdAt: searchMedia.createdAt && new Date(searchMedia.createdAt),
+    };
     const mediaSearchResult = await this.mediaRepository.searchMedia(
-      searchMediaDTO,
+      searchFilters,
     );
 
     return mediaSearchResult;

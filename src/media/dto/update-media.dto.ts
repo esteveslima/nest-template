@@ -5,13 +5,13 @@ import { OmitType } from '@nestjs/mapped-types';
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
 
-import { Media } from '../media.entity';
+import { MediaEntity } from '../media.entity';
 
 // Create DTO with Entity format, which contains all the typeORM validations and Pipe validations
 // exclude selected fields to match the current operation
 
 // DTO to modify the entire object, thus it may be very similar to to the RegisterMediaDTO
-export class UpdateMediaDTO extends OmitType(Media, [
+export class UpdateMediaDTO extends OmitType(MediaEntity, [
   'id',
   'createdAt',
   'updatedAt',

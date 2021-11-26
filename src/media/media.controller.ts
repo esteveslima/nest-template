@@ -29,12 +29,14 @@ import {
 } from './interfaces/media-service-interfaces';
 
 @Controller('media')
+// Pipes for DTO validations
 @UsePipes(
   new ValidationPipe({
     whitelist: true,
   }),
 )
-@UseInterceptors(ClassSerializerInterceptor) // Interceptor for outputs serialization(applying decorators rules) // TODO: create "private" routes which ignores this config, or a new controller, to return full object
+// Interceptor for outputs serialization(applying decorators rules)
+@UseInterceptors(ClassSerializerInterceptor)
 export class MediaController {
   // Get services and modules from DI
   constructor(private mediaService: MediaService) {}

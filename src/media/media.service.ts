@@ -29,13 +29,24 @@ export class MediaService {
       registerMedia,
     );
 
-    return mediaCreated;
+    const {
+      createdAt,
+      updatedAt,
+      contentBase64,
+      views,
+      available,
+      ...returnObject
+    } = mediaCreated;
+
+    return returnObject;
   }
 
   async getMediaById(mediaUuid: string): Promise<IResultServiceGetMedia> {
     const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
 
-    return mediaFound;
+    const { id, updatedAt, ...returnObject } = mediaFound;
+
+    return returnObject;
   }
 
   async deleteMediaById(mediaUuid: string): Promise<void> {
@@ -64,6 +75,11 @@ export class MediaService {
       searchFilters,
     );
 
-    return mediaSearchResult;
+    const returnObject = mediaSearchResult.map((media) => {
+      const { updatedAt, contentBase64, ...returnObject } = media;
+      return returnObject;
+    });
+
+    return returnObject;
   }
 }

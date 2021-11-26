@@ -1,5 +1,5 @@
 // Responsible for defining data format and relations in the database
-// Implementing validations with ORM(for database) and Pipes(for DTOs)
+// Implementing validations for ORM(for database) and Pipes(for DTOs), centralizing all definitions in a single entity class that can be extended
 
 import { Exclude, Transform, Type } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {

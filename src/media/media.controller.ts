@@ -62,7 +62,9 @@ export class MediaController {
   async deleteMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
   ): Promise<void> {
-    return this.mediaService.deleteMediaById(mediaUuid);
+    await this.mediaService.deleteMediaById(mediaUuid);
+
+    return;
   }
 
   @Put('/:uuid')
@@ -71,7 +73,9 @@ export class MediaController {
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @Body() updateMediaDTO: UpdateMediaDTO,
   ): Promise<void> {
-    return this.mediaService.modifyMediaById(mediaUuid, updateMediaDTO);
+    await this.mediaService.modifyMediaById(mediaUuid, updateMediaDTO);
+
+    return;
   }
 
   @Patch('/:uuid')
@@ -80,7 +84,9 @@ export class MediaController {
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @Body() patchMediaDTO: PatchMediaDTO,
   ): Promise<void> {
-    return this.mediaService.modifyMediaById(mediaUuid, patchMediaDTO);
+    await this.mediaService.modifyMediaById(mediaUuid, patchMediaDTO);
+
+    return;
   }
 
   @Get()

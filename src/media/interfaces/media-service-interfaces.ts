@@ -19,8 +19,8 @@ export interface IParamsServiceSearchMedia
     Omit<MediaEntity, 'id' | 'updatedAt' | 'createdAt' | 'contentBase64'>
   > {
   createdAt: number;
-  take: number;
-  skip: number;
+  take?: number;
+  skip?: number;
 }
 
 // Result

@@ -65,17 +65,17 @@ export class MediaService {
   }
 
   async searchMedia(
-    searchMedia: IParamsServiceSearchMedia,
+    searchMediaFilters: IParamsServiceSearchMedia,
   ): Promise<IResultServiceSearchMedia[]> {
     const searchFilters = {
-      ...searchMedia,
-      createdAt: searchMedia.createdAt && new Date(searchMedia.createdAt),
+      ...searchMediaFilters,
+      createdAt: searchMediaFilters.createdAt
+        ? new Date(searchMediaFilters.createdAt)
+        : undefined,
     };
-    const mediaSearchResult = await this.mediaRepository.searchMedia(
-      searchFilters,
-    );
+    const searchResult = await this.mediaRepository.searchMedia(searchFilters);
 
-    const returnObject = mediaSearchResult.map((media) => {
+    const returnObject = searchResult.map((media) => {
       const { updatedAt, contentBase64, ...returnObject } = media;
       return returnObject;
     });

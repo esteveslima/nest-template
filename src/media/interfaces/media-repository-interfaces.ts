@@ -16,8 +16,8 @@ export type IParamsRepositoryModifyMedia = Partial<
 
 export interface IParamsRepositorySearchMedia
   extends Partial<Omit<MediaEntity, 'id' | 'updatedAt' | 'contentBase64'>> {
-  take: number;
-  skip: number;
+  take?: number;
+  skip?: number;
 }
 
 // Result

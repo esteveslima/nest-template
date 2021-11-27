@@ -13,10 +13,10 @@ import {
 @EntityRepository(MediaEntity)
 export class MediaRespository extends Repository<MediaEntity> {
   async registerMedia(
-    registerMedia: IParamsRepositoryRegisterMedia,
+    media: IParamsRepositoryRegisterMedia,
   ): Promise<MediaEntity> {
     const registerOperation = this.create({
-      ...registerMedia,
+      ...media,
     });
     const mediaRegistered = await this.save(registerOperation);
 
@@ -41,9 +41,9 @@ export class MediaRespository extends Repository<MediaEntity> {
 
   async modifyMediaById(
     uuid: string,
-    modifyMedia: IParamsRepositoryModifyMedia,
+    media: IParamsRepositoryModifyMedia,
   ): Promise<void> {
-    const mediaModified = await this.update(uuid, { ...modifyMedia });
+    const mediaModified = await this.update(uuid, { ...media });
 
     if (mediaModified.affected <= 0) throw new NotFoundException();
 
@@ -51,7 +51,7 @@ export class MediaRespository extends Repository<MediaEntity> {
   }
 
   async searchMedia(
-    searchMedia: IParamsRepositorySearchMedia,
+    searchFilters: IParamsRepositorySearchMedia,
   ): Promise<MediaEntity[]> {
     const {
       available,
@@ -63,7 +63,7 @@ export class MediaRespository extends Repository<MediaEntity> {
       views,
       take,
       skip,
-    } = searchMedia;
+    } = searchFilters;
 
     const query = this.createQueryBuilder('media');
 

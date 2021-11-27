@@ -2,14 +2,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MediaModule } from './media/media.module';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
 
 const { STAGE, DB_TYPE, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } =
   process.env; // Environment variables received from the infrastructure and process
 
 @Module({
   imports: [
-    // Feature modules
-    MediaModule,
     // Custom config
     ConfigModule.forRoot({
       envFilePath: `.env.${STAGE}`, // load stage specific .env file
@@ -25,6 +24,9 @@ const { STAGE, DB_TYPE, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } =
       autoLoadEntities: true,
       synchronize: STAGE !== 'prod',
     }),
+    // Feature modules
+    MediaModule,
+    UserModule,
   ],
   controllers: [],
   providers: [],

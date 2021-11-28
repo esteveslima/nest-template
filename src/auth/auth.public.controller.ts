@@ -3,12 +3,14 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginAuthDTO } from './dto/login-auth.dto';
-import { IResultServiceLoginAuth } from './interfaces/login-auth.interface';
+import { IResultServiceLoginAuth } from './interfaces/services/auth/login-auth.interface';
 
-@Controller('auth')
-export class AuthController {
+@Controller('public/auth')
+export class AuthPublicController {
   // Get services and modules from DI
   constructor(private authService: AuthService) {}
+
+  // Define and map routes to services
 
   @Post('login')
   async loginAuth(

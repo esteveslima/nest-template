@@ -1,12 +1,13 @@
 // Responsible for containing business logic
 
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
+import { IJwtPayload } from './interfaces/jwt/jwt-payload.interface';
 import {
   IParamsServiceLoginAuth,
   IResultServiceLoginAuth,
-} from './interfaces/login-auth.interface';
+} from './interfaces/services/auth/login-auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -28,9 +29,10 @@ export class AuthService {
       password,
     );
 
-    if (!isAuthenticated) throw new HttpException('Unhauthorized', 401);
+    if (!isAuthenticated) throw new UnauthorizedException();
 
-    const token = this.jwtService.sign({ username });
+    const payload: IJwtPayload = { username };
+    const token = this.jwtService.sign(payload);
 
     return { token };
   }

@@ -1,4 +1,4 @@
-// Responsible for routing requests
+// Responsible for routing private requests
 
 import {
   Body,
@@ -10,25 +10,19 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
-  Post,
   Put,
-  Query,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { PatchUserDTO } from './dto/patch-user.dto';
-import { RegisterUserDTO } from './dto/register-user.dto';
-import { SearchUserDTO } from './dto/search-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-import {
-  IResultServiceGetUser,
-  IResultServiceRegisterUser,
-  IResultServiceSearchUser,
-} from './interfaces/user-service-interfaces';
+import { IResultServiceGetUser } from './interfaces/user-service-interfaces';
 import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('private/user')
 // Pipes for DTO validations
 @UsePipes(
   new ValidationPipe({
@@ -37,16 +31,13 @@ import { UserService } from './user.service';
 )
 // Interceptor for outputs serialization(applying decorators rules)
 @UseInterceptors(ClassSerializerInterceptor)
-export class UserController {
+// Guards with to protect routes from unhauthorized access
+@UseGuards(AuthGuard())
+export class UserPrivateController {
   // Get services and modules from DI
   constructor(private userService: UserService) {}
 
-  @Post()
-  async registerUser(
-    @Body() user: RegisterUserDTO,
-  ): Promise<IResultServiceRegisterUser> {
-    return this.userService.registerUser(user);
-  }
+  // Define and map routes to services
 
   @Get('/:uuid')
   async getUserById(
@@ -86,12 +77,5 @@ export class UserController {
     await this.userService.modifyUserById(uuid, user);
 
     return;
-  }
-
-  @Get()
-  async searchUser(
-    @Query() searchUserDTO: SearchUserDTO,
-  ): Promise<IResultServiceSearchUser> {
-    return this.userService.searchUser(searchUserDTO);
   }
 }

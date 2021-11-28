@@ -1,6 +1,8 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MediaController } from './media.controller';
+import { AuthModule } from '../auth/auth.module';
+import { MediaPrivateController } from './media.private.controller';
+import { MediaPublicController } from './media.public.controller';
 import { MediaRespository } from './media.repository';
 import { MediaService } from './media.service';
 
@@ -8,8 +10,10 @@ import { MediaService } from './media.service';
   imports: [
     // Import ORM Repositories for DI
     TypeOrmModule.forFeature([MediaRespository]),
+    // Auth module for protected routes
+    forwardRef(() => AuthModule), // resolving modules circular dependency(referencing the least deppendant modules)
   ],
-  controllers: [MediaController],
+  controllers: [MediaPublicController, MediaPrivateController],
   providers: [MediaService],
 })
 export class MediaModule {}

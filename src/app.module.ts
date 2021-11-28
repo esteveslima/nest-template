@@ -6,7 +6,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 
 const { NODE_ENV, DB_TYPE, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } =
-  process.env; // Environment variables expected from the infrastructure process
+  process.env; // Environment variables expected from the infrastructure or process(may be the only cases where these variables can be read outside classes)
 
 @Module({
   imports: [
@@ -29,7 +29,6 @@ const { NODE_ENV, DB_TYPE, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } =
     // Feature modules
     MediaModule,
     UserModule,
-    AuthModule,
   ],
   controllers: [],
   providers: [],

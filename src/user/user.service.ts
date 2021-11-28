@@ -73,20 +73,22 @@ export class UserService {
     return returnObject;
   }
 
-  async getUserHashPassword(uuid: string): Promise<string> {
-    const userFound = await this.userRepository.getUserById(uuid);
+  async verifyUserPassword(
+    username: string,
+    password: string,
+  ): Promise<boolean> {
+    if (!username || !password) return false;
 
-    const { password } = userFound;
+    const userFound = await this.userRepository.searchUser({ username });
+    if (!userFound) throw new NotFoundException();
 
-    return password;
+    const userHashPassword = userFound.password;
+
+    return bcrypt.compare(password, userHashPassword);
   }
 
-  async hashValue(value: string): Promise<string> {
+  private async hashValue(value: string): Promise<string> {
     if (!value) return undefined;
     return bcrypt.hash(value, 10);
-  }
-  async checkHash(value: string, hash: string): Promise<boolean> {
-    if (!value || !hash) return false;
-    return bcrypt.compare(value, hash);
   }
 }

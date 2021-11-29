@@ -1,6 +1,10 @@
 // Responsible for containing business logic
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
@@ -66,6 +70,9 @@ export class UserService {
   async searchUser(
     searchUserFilters: IParamsServiceSearchUser,
   ): Promise<IResultServiceSearchUser> {
+    if (Object.keys(searchUserFilters).length <= 0)
+      throw new BadRequestException('No filters were provided');
+
     const userFound = await this.userRepository.searchUser(searchUserFilters);
 
     if (!userFound) throw new NotFoundException();

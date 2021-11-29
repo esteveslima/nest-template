@@ -40,8 +40,8 @@ export class MediaPublicController {
 
   @Get()
   async searchMedia(
-    @Query() searchMediaDTO: SearchMediaDTO,
+    @Query() searchMediaFilters: SearchMediaDTO,
   ): Promise<IResultServiceSearchMedia[]> {
-    return this.mediaService.searchMedia(searchMediaDTO);
+    return this.mediaService.searchMedia(searchMediaFilters);
   }
 }

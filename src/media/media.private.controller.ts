@@ -45,11 +45,11 @@ export class MediaPrivateController {
 
   @Post()
   async registerMedia(
-    @Body() registerMediaDTO: RegisterMediaDTO,
+    @Body() mediaObject: RegisterMediaDTO,
     @GetAuthUser() authUser: UserEntity,
   ): Promise<IResultServiceRegisterMedia> {
     return this.mediaService.registerMedia({
-      ...registerMediaDTO,
+      ...mediaObject,
       user: authUser,
     });
   }
@@ -69,11 +69,11 @@ export class MediaPrivateController {
   @HttpCode(204)
   async updateMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
-    @Body() updateMediaDTO: UpdateMediaDTO,
+    @Body() mediaObject: UpdateMediaDTO,
     @GetAuthUser() authUser: UserEntity,
   ): Promise<void> {
     await this.mediaService.modifyMediaById(mediaUuid, {
-      ...updateMediaDTO,
+      ...mediaObject,
       user: authUser,
     });
 
@@ -84,11 +84,11 @@ export class MediaPrivateController {
   @HttpCode(204)
   async patchMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
-    @Body() patchMediaDTO: PatchMediaDTO,
+    @Body() mediaObject: PatchMediaDTO,
     @GetAuthUser() authUser: UserEntity,
   ): Promise<void> {
     await this.mediaService.modifyMediaById(mediaUuid, {
-      ...patchMediaDTO,
+      ...mediaObject,
       user: authUser,
     });
 

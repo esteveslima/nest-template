@@ -34,15 +34,15 @@ export class UserPublicController {
 
   @Post()
   async registerUser(
-    @Body() user: RegisterUserDTO,
+    @Body() userObject: RegisterUserDTO,
   ): Promise<IResultServiceRegisterUser> {
-    return this.userService.registerUser(user);
+    return this.userService.registerUser(userObject);
   }
 
   @Get()
   async searchUser(
-    @Query() searchUserDTO: SearchUserDTO,
+    @Query() searchUserFilters: SearchUserDTO,
   ): Promise<IResultServiceSearchUser> {
-    return this.userService.searchUser(searchUserDTO);
+    return this.userService.searchUser(searchUserFilters);
   }
 }

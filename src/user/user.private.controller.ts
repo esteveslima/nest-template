@@ -66,9 +66,9 @@ export class UserPrivateController {
   @HttpCode(204)
   async updateUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
-    @Body() user: UpdateUserDTO,
+    @Body() userObject: UpdateUserDTO,
   ): Promise<void> {
-    await this.userService.modifyUserById(uuid, user);
+    await this.userService.modifyUserById(uuid, userObject);
 
     return;
   }
@@ -77,9 +77,31 @@ export class UserPrivateController {
   @HttpCode(204)
   async patchUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
-    @Body() user: PatchUserDTO,
+    @Body() userObject: PatchUserDTO,
   ): Promise<void> {
-    await this.userService.modifyUserById(uuid, user);
+    await this.userService.modifyUserById(uuid, userObject);
+
+    return;
+  }
+
+  @Put('/current')
+  @HttpCode(204)
+  async updateCurrentUser(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Body() userObject: UpdateUserDTO,
+  ): Promise<void> {
+    await this.userService.modifyUserById(uuid, userObject);
+
+    return;
+  }
+
+  @Patch('/:uuid')
+  @HttpCode(204)
+  async patchCurrentUser(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Body() userObject: PatchUserDTO,
+  ): Promise<void> {
+    await this.userService.modifyUserById(uuid, userObject);
 
     return;
   }

@@ -7,7 +7,7 @@ import { IJwtPayload } from './interfaces/jwt/jwt-payload.interface';
 import {
   IParamsServiceLoginAuth,
   IResultServiceLoginAuth,
-} from './interfaces/services/auth/login-auth.interface';
+} from './interfaces/service/auth/login-auth.interface';
 
 @Injectable()
 export class AuthService {

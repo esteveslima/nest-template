@@ -2,16 +2,18 @@
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  IParamsServiceModifyUser,
-  IParamsServiceRegisterUser,
-  IParamsServiceSearchUser,
-  IResultServiceGetUser,
-  IResultServiceRegisterUser,
-  IResultServiceSearchUser,
-} from './interfaces/user-service-interfaces';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
+import {
+  IParamsServiceRegisterUser,
+  IResultServiceRegisterUser,
+} from './interfaces/service/register-user.interface';
+import { IResultServiceGetUser } from './interfaces/service/get-user.interface';
+import { IParamsServiceModifyUser } from './interfaces/service/modify-user.interface';
+import {
+  IParamsServiceSearchUser,
+  IResultServiceSearchUser,
+} from './interfaces/service/search-user.interface';
 
 @Injectable()
 export class UserService {
@@ -68,7 +70,8 @@ export class UserService {
 
     if (!userFound) throw new NotFoundException();
 
-    const { updatedAt, password, ...returnObject } = userFound;
+    const { createdAt, updatedAt, password, gender, age, ...returnObject } =
+      userFound;
 
     return returnObject;
   }

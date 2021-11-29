@@ -11,10 +11,12 @@ import {
   Length,
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
+import { MediaEntity } from 'src/media/media.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
@@ -40,6 +42,11 @@ export class UserEntity {
   @Exclude({ toPlainOnly: true }) // remove property from JSON serialization
   updatedAt: Date;
 
+  // Relational fields
+
+  @OneToMany(() => MediaEntity, (media) => media.user, { eager: false })
+  medias: MediaEntity[];
+
   // Editable fields
 
   @Column({ type: 'varchar', length: 80 })
@@ -48,6 +55,12 @@ export class UserEntity {
   @IsString()
   @Length(5, 80)
   username: string;
+
+  @Column({ type: 'varchar', length: 80 })
+  @IsNotEmpty()
+  @IsString()
+  @Length(5, 80)
+  password: string;
 
   @Column({ type: 'varchar', length: 180 })
   @Unique(['email'])
@@ -72,10 +85,4 @@ export class UserEntity {
   @IsInt()
   @Min(0)
   age: number;
-
-  @Column({ type: 'varchar', length: 80 })
-  @IsNotEmpty()
-  @IsString()
-  @Length(5, 80)
-  password: string;
 }

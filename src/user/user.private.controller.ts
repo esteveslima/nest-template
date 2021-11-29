@@ -19,7 +19,8 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-import { IResultServiceGetUser } from './interfaces/user-service-interfaces';
+import { IResultServiceGetUser } from './interfaces/service/get-user.interface';
+
 import { UserService } from './user.service';
 
 @Controller('private/user')
@@ -46,6 +47,11 @@ export class UserPrivateController {
     return this.userService.getUserById(uuid);
   }
 
+  //TODO: methods to operate current user
+
+  //TODO: allow an admin role full access to all routes
+
+  //TODO: allow basic crud operations only for an admin role
   @Delete('/:uuid')
   @HttpCode(204)
   async deleteUserById(
@@ -62,7 +68,6 @@ export class UserPrivateController {
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() user: UpdateUserDTO,
   ): Promise<void> {
-    console.log(user);
     await this.userService.modifyUserById(uuid, user);
 
     return;

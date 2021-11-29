@@ -2,22 +2,19 @@
 // TypeORM Repository API: https://typeorm.io/#/repository-api
 
 import { NotFoundException } from '@nestjs/common';
+import { UserEntity } from 'src/user/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
+import { IParamsRepositoryModifyMedia } from './interfaces/repository/media/modify-media.interface';
+import { IParamsRepositoryRegisterMedia } from './interfaces/repository/media/register-media.interface';
+import { IParamsRepositorySearchMedia } from './interfaces/repository/media/search-media.interface';
 import { MediaEntity } from './media.entity';
-import {
-  IParamsRepositoryModifyMedia,
-  IParamsRepositoryRegisterMedia,
-  IParamsRepositorySearchMedia,
-} from './interfaces/media-repository-interfaces';
 
 @EntityRepository(MediaEntity)
 export class MediaRespository extends Repository<MediaEntity> {
   async registerMedia(
     media: IParamsRepositoryRegisterMedia,
   ): Promise<MediaEntity> {
-    const registerOperation = this.create({
-      ...media,
-    });
+    const registerOperation = this.create(media);
     const mediaRegistered = await this.save(registerOperation);
 
     return mediaRegistered;
@@ -31,8 +28,8 @@ export class MediaRespository extends Repository<MediaEntity> {
     return mediaFound;
   }
 
-  async deleteMediaById(uuid: string): Promise<void> {
-    const deleteResult = await this.delete(uuid);
+  async deleteMediaById(uuid: string, user: UserEntity): Promise<void> {
+    const deleteResult = await this.delete({ id: uuid, user });
 
     if (deleteResult.affected <= 0) throw new NotFoundException();
 
@@ -43,7 +40,10 @@ export class MediaRespository extends Repository<MediaEntity> {
     uuid: string,
     media: IParamsRepositoryModifyMedia,
   ): Promise<void> {
-    const mediaModified = await this.update(uuid, { ...media });
+    const mediaModified = await this.update(
+      { id: uuid, user: media.user },
+      { ...media },
+    );
 
     if (mediaModified.affected <= 0) throw new NotFoundException();
 
@@ -61,11 +61,14 @@ export class MediaRespository extends Repository<MediaEntity> {
       title,
       type,
       views,
+      owner,
       take,
       skip,
     } = searchFilters;
 
     const query = this.createQueryBuilder('media');
+
+    query.leftJoinAndSelect('media.user', 'user'); // load the relation for the query builder
 
     if (available) {
       // add condition to filter for avilability status
@@ -103,6 +106,13 @@ export class MediaRespository extends Repository<MediaEntity> {
       // add condition to filter for min ammount of views
       query.andWhere('media.views >= :views', {
         views,
+      });
+    }
+
+    if (owner) {
+      // add condition to filter media owner username
+      query.andWhere('user.username LIKE :username', {
+        username: `%${owner}%`,
       });
     }
 

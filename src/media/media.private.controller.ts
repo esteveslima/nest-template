@@ -20,8 +20,11 @@ import { PatchMediaDTO } from './dto/patch-media.dto';
 import { RegisterMediaDTO } from './dto/register-media.dto';
 import { UpdateMediaDTO } from './dto/update-media.dto';
 import { MediaService } from './media.service';
-import { IResultServiceRegisterMedia } from './interfaces/media-service-interfaces';
+
 import { AuthGuard } from '@nestjs/passport';
+import { GetAuthUser } from 'src/auth/get-auth-user.decorator';
+import { UserEntity } from 'src/user/user.entity';
+import { IResultServiceRegisterMedia } from './interfaces/service/media/register-media.interface';
 
 @Controller('private/media')
 // Pipes for DTO validations
@@ -43,16 +46,21 @@ export class MediaPrivateController {
   @Post()
   async registerMedia(
     @Body() registerMediaDTO: RegisterMediaDTO,
+    @GetAuthUser() authUser: UserEntity,
   ): Promise<IResultServiceRegisterMedia> {
-    return this.mediaService.registerMedia(registerMediaDTO);
+    return this.mediaService.registerMedia({
+      ...registerMediaDTO,
+      user: authUser,
+    });
   }
 
   @Delete('/:uuid')
   @HttpCode(204)
   async deleteMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
+    @GetAuthUser() authUser: UserEntity,
   ): Promise<void> {
-    await this.mediaService.deleteMediaById(mediaUuid);
+    await this.mediaService.deleteMediaById(mediaUuid, authUser);
 
     return;
   }
@@ -62,8 +70,12 @@ export class MediaPrivateController {
   async updateMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @Body() updateMediaDTO: UpdateMediaDTO,
+    @GetAuthUser() authUser: UserEntity,
   ): Promise<void> {
-    await this.mediaService.modifyMediaById(mediaUuid, updateMediaDTO);
+    await this.mediaService.modifyMediaById(mediaUuid, {
+      ...updateMediaDTO,
+      user: authUser,
+    });
 
     return;
   }
@@ -73,8 +85,12 @@ export class MediaPrivateController {
   async patchMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @Body() patchMediaDTO: PatchMediaDTO,
+    @GetAuthUser() authUser: UserEntity,
   ): Promise<void> {
-    await this.mediaService.modifyMediaById(mediaUuid, patchMediaDTO);
+    await this.mediaService.modifyMediaById(mediaUuid, {
+      ...patchMediaDTO,
+      user: authUser,
+    });
 
     return;
   }

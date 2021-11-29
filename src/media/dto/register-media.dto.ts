@@ -15,6 +15,7 @@ export class RegisterMediaDTO extends OmitType(MediaEntity, [
   'id',
   'createdAt',
   'updatedAt',
+  'user',
   'views',
   'available',
 ] as const) {}

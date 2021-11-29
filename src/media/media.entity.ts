@@ -11,10 +11,12 @@ import {
   Length,
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
+import { UserEntity } from 'src/user/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'; // typeORM tools https://orkhan.gitbook.io/typeorm/docs/embedded-entities
@@ -42,6 +44,11 @@ export class MediaEntity {
   @UpdateDateColumn({ type: 'timestamp' })
   @Exclude({ toPlainOnly: true }) // remove property from JSON serialization
   updatedAt: Date;
+
+  // Relational fields
+
+  @ManyToOne(() => UserEntity, (user) => user.medias, { eager: true })
+  user: UserEntity;
 
   // Editable fields
 

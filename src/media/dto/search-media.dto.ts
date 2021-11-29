@@ -3,7 +3,14 @@
 
 import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
-import { IsInt, IsNotEmpty, IsOptional, Max, Min } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
 
 import { MediaEntity } from '../media.entity';
 
@@ -16,15 +23,21 @@ export class SearchMediaDTO extends PartialType(
     'id',
     'updatedAt',
     'createdAt',
+    'user',
     'contentBase64',
   ] as const),
 ) {
-  // Redefining entity property for this filter DTO
-  @Type(() => Number) // Input modified to accept timestamps
+  // Redefining entity properties for this filter DTO
+  @Type(() => Number)
   @IsOptional()
   @IsNotEmpty()
   @IsInt()
-  createdAt: number;
+  createdAt: number; // Input modified to accept timestamps
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  owner: string; // Input modified to accept owner username
 
   // extra properties for pagination, which doesnt belong to the entity
   @Type(() => Number)

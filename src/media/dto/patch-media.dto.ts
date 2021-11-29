@@ -12,5 +12,11 @@ import { MediaEntity } from '../media.entity';
 
 // similar to UpdateMediaDTO, but marking them as optional to allow partial input with only specific fields
 export class PatchMediaDTO extends PartialType(
-  OmitType(MediaEntity, ['id', 'createdAt', 'updatedAt', 'views'] as const),
+  OmitType(MediaEntity, [
+    'id',
+    'createdAt',
+    'updatedAt',
+    'user',
+    'views',
+  ] as const),
 ) {}

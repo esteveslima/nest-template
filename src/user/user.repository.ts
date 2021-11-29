@@ -3,11 +3,9 @@
 
 import { NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
-import {
-  IParamsRepositoryModifyUser,
-  IParamsRepositoryRegisterUser,
-  IParamsRepositorySearchUser,
-} from './interfaces/user-repository-interfaces';
+import { IParamsRepositoryModifyUser } from './interfaces/repository/modify-user.interface';
+import { IParamsRepositoryRegisterUser } from './interfaces/repository/register-user.interface';
+import { IParamsRepositorySearchUser } from './interfaces/repository/search-user.interface';
 import { UserEntity } from './user.entity';
 
 @EntityRepository(UserEntity)

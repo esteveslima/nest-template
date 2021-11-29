@@ -3,7 +3,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginAuthDTO } from './dto/login-auth.dto';
-import { IResultServiceLoginAuth } from './interfaces/services/auth/login-auth.interface';
+import { IResultServiceLoginAuth } from './interfaces/service/auth/login-auth.interface';
 
 @Controller('public/auth')
 export class AuthPublicController {

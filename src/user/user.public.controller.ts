@@ -13,10 +13,8 @@ import {
 } from '@nestjs/common';
 import { RegisterUserDTO } from './dto/register-user.dto';
 import { SearchUserDTO } from './dto/search-user.dto';
-import {
-  IResultServiceRegisterUser,
-  IResultServiceSearchUser,
-} from './interfaces/user-service-interfaces';
+import { IResultServiceRegisterUser } from './interfaces/service/register-user.interface';
+import { IResultServiceSearchUser } from './interfaces/service/search-user.interface';
 import { UserService } from './user.service';
 
 @Controller('public/user')

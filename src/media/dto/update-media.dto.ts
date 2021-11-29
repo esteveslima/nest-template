@@ -15,6 +15,7 @@ export class UpdateMediaDTO extends OmitType(MediaEntity, [
   'id',
   'createdAt',
   'updatedAt',
+  'user',
   'views',
   'available',
 ] as const) {}

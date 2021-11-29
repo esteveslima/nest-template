@@ -13,10 +13,8 @@ import {
 } from '@nestjs/common';
 import { SearchMediaDTO } from './dto/search-media.dto';
 import { MediaService } from './media.service';
-import {
-  IResultServiceGetMedia,
-  IResultServiceSearchMedia,
-} from './interfaces/media-service-interfaces';
+import { IResultServiceGetMedia } from './interfaces/service/media/get-media.interface';
+import { IResultServiceSearchMedia } from './interfaces/service/media/search-media.interface';
 
 @Controller('public/media')
 // Pipes for DTO validations

@@ -17,9 +17,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { GetAuthUser } from 'src/auth/get-auth-user.decorator';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { IResultServiceGetUser } from './interfaces/service/get-user.interface';
+import { UserEntity } from './user.entity';
 
 import { UserService } from './user.service';
 
@@ -40,14 +42,18 @@ export class UserPrivateController {
 
   // Define and map routes to services
 
+  @Get('/current')
+  async getCurrentUser(
+    @GetAuthUser() authUser: UserEntity,
+  ): Promise<IResultServiceGetUser> {
+    return this.userService.getUserById(authUser.id);
+  }
   @Get('/:uuid')
   async getUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
   ): Promise<IResultServiceGetUser> {
     return this.userService.getUserById(uuid);
   }
-
-  //TODO: methods to operate current user
 
   //TODO: allow an admin role full access to all routes
 
@@ -62,6 +68,16 @@ export class UserPrivateController {
     return;
   }
 
+  @Put('/current')
+  @HttpCode(204)
+  async updateCurrentUser(
+    @GetAuthUser() authUser: UserEntity,
+    @Body() userObject: UpdateUserDTO,
+  ): Promise<void> {
+    await this.userService.modifyUserById(authUser.id, userObject);
+
+    return;
+  }
   @Put('/:uuid')
   @HttpCode(204)
   async updateUserById(
@@ -73,31 +89,19 @@ export class UserPrivateController {
     return;
   }
 
+  @Patch('/current')
+  @HttpCode(204)
+  async patchCurrentUser(
+    @GetAuthUser() authUser: UserEntity,
+    @Body() userObject: PatchUserDTO,
+  ): Promise<void> {
+    await this.userService.modifyUserById(authUser.id, userObject);
+
+    return;
+  }
   @Patch('/:uuid')
   @HttpCode(204)
   async patchUserById(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
-    @Body() userObject: PatchUserDTO,
-  ): Promise<void> {
-    await this.userService.modifyUserById(uuid, userObject);
-
-    return;
-  }
-
-  @Put('/current')
-  @HttpCode(204)
-  async updateCurrentUser(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
-    @Body() userObject: UpdateUserDTO,
-  ): Promise<void> {
-    await this.userService.modifyUserById(uuid, userObject);
-
-    return;
-  }
-
-  @Patch('/:uuid')
-  @HttpCode(204)
-  async patchCurrentUser(
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() userObject: PatchUserDTO,
   ): Promise<void> {

@@ -28,6 +28,14 @@ export class MediaRespository extends Repository<MediaEntity> {
     return mediaFound;
   }
 
+  async incrementMediaViewsById(uuid: string): Promise<void> {
+    const incrementResult = await this.increment({ id: uuid }, 'views', 1);
+
+    if (incrementResult.affected <= 0) throw new NotFoundException();
+
+    return;
+  }
+
   async deleteMediaById(uuid: string, user: UserEntity): Promise<void> {
     const deleteResult = await this.delete({ id: uuid, user });
 

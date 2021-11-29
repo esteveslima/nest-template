@@ -51,7 +51,9 @@ export class MediaService {
     const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
 
     const { id, updatedAt, user, ...entityReturnObject } = mediaFound;
-    //TODO: increment views for every get
+
+    await this.mediaRepository.incrementMediaViewsById(mediaUuid);
+
     return {
       ...entityReturnObject,
       owner: user.username,

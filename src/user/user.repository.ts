@@ -19,8 +19,8 @@ export class UserRepository extends Repository<UserEntity> {
   }
 
   async getUserById(uuid: string): Promise<UserEntity> {
-    const userFound = await this.findOne(uuid);
-    //TODO: return media list
+    const userFound = await this.findOne(uuid, { loadRelationIds: true });
+
     if (!userFound) throw new NotFoundException();
 
     return userFound;

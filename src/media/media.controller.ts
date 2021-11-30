@@ -5,13 +5,14 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
+  Get,
   HttpCode,
   Param,
   ParseUUIDPipe,
   Patch,
   Post,
   Put,
-  UseGuards,
+  Query,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -21,12 +22,15 @@ import { RegisterMediaDTO } from './dto/register-media.dto';
 import { UpdateMediaDTO } from './dto/update-media.dto';
 import { MediaService } from './media.service';
 
-import { AuthGuard } from '@nestjs/passport';
-import { GetAuthUser } from 'src/auth/get-auth-user.decorator';
 import { UserEntity } from 'src/user/user.entity';
 import { IResultServiceRegisterMedia } from './interfaces/service/media/register-media.interface';
+import { GetAuthUser } from 'src/auth/decorators/get-auth-user.decorator';
+import { SearchMediaDTO } from './dto/search-media.dto';
+import { IResultServiceGetMedia } from './interfaces/service/media/get-media.interface';
+import { IResultServiceSearchMedia } from './interfaces/service/media/search-media.interface';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
-@Controller('private/media')
+@Controller('/media')
 // Pipes for DTO validations
 @UsePipes(
   new ValidationPipe({
@@ -35,15 +39,28 @@ import { IResultServiceRegisterMedia } from './interfaces/service/media/register
 )
 // Interceptor for outputs serialization(applying decorators rules)
 @UseInterceptors(ClassSerializerInterceptor)
-// Guards with to protect routes from unhauthorized access
-@UseGuards(AuthGuard())
-export class MediaPrivateController {
+export class MediaController {
   // Get services and modules from DI
   constructor(private mediaService: MediaService) {}
 
   // Define and map routes to services
 
+  @Get('/:uuid')
+  async getMediaById(
+    @Param('uuid', ParseUUIDPipe) mediaUuid,
+  ): Promise<IResultServiceGetMedia> {
+    return this.mediaService.getMediaById(mediaUuid);
+  }
+
+  @Get()
+  async searchMedia(
+    @Query() searchMediaFilters: SearchMediaDTO,
+  ): Promise<IResultServiceSearchMedia[]> {
+    return this.mediaService.searchMedia(searchMediaFilters);
+  }
+
   @Post()
+  @Auth('USER', 'ADMIN')
   async registerMedia(
     @Body() mediaObject: RegisterMediaDTO,
     @GetAuthUser() authUser: UserEntity,
@@ -56,6 +73,7 @@ export class MediaPrivateController {
 
   @Delete('/:uuid')
   @HttpCode(204)
+  @Auth('USER', 'ADMIN')
   async deleteMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @GetAuthUser() authUser: UserEntity,
@@ -67,6 +85,7 @@ export class MediaPrivateController {
 
   @Put('/:uuid')
   @HttpCode(204)
+  @Auth('USER', 'ADMIN')
   async updateMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @Body() mediaObject: UpdateMediaDTO,
@@ -82,6 +101,7 @@ export class MediaPrivateController {
 
   @Patch('/:uuid')
   @HttpCode(204)
+  @Auth('USER', 'ADMIN')
   async patchMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @Body() mediaObject: PatchMediaDTO,

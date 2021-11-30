@@ -4,5 +4,5 @@
 import { UserEntity } from 'src/user/user.entity';
 
 export type IParamsRepositoryModifyUser = Partial<
-  Omit<UserEntity, 'id' | 'createdAt' | 'updatedAt'>
+  Omit<UserEntity, 'id' | 'createdAt' | 'updatedAt' | 'role'>
 >;

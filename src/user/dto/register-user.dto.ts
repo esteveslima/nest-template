@@ -8,6 +8,7 @@ import { UserEntity } from '../user.entity';
 // May modify or omit certain properties to match the operation
 
 export class RegisterUserDTO extends OmitType(UserEntity, [
+  //TODO: switch all Omit to Pick to more intuitive code?
   'id',
   'createdAt',
   'updatedAt',

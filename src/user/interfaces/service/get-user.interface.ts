@@ -4,3 +4,5 @@
 import { UserEntity } from 'src/user/user.entity';
 
 export type IResultServiceGetUser = Omit<UserEntity, 'updatedAt' | 'password'>;
+
+//TODO: change to DTO and create an interceptor+decorator to serialize

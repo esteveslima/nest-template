@@ -8,5 +8,5 @@ import { UserEntity } from '../user.entity';
 // May modify or omit certain properties to match the operation
 
 export class PatchUserDTO extends PartialType(
-  OmitType(UserEntity, ['id', 'createdAt', 'updatedAt']),
+  OmitType(UserEntity, ['id', 'createdAt', 'updatedAt', 'role']),
 ) {}

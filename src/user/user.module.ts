@@ -1,8 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
-import { UserPrivateController } from './user.private.controller';
-import { UserPublicController } from './user.public.controller';
+import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
 
@@ -13,7 +12,7 @@ import { UserService } from './user.service';
     // Auth module for protected routes
     forwardRef(() => AuthModule), // resolving modules circular dependency(referencing the least deppendant modules)
   ],
-  controllers: [UserPublicController, UserPrivateController],
+  controllers: [UserController],
   providers: [UserService],
   exports: [UserService],
 })

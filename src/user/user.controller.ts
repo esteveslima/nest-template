@@ -10,22 +10,27 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  Post,
   Put,
-  UseGuards,
+  Query,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { GetAuthUser } from 'src/auth/get-auth-user.decorator';
+import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { IResultServiceGetUser } from './interfaces/service/get-user.interface';
 import { UserEntity } from './user.entity';
 
 import { UserService } from './user.service';
+import { RegisterUserDTO } from './dto/register-user.dto';
+import { IResultServiceRegisterUser } from './interfaces/service/register-user.interface';
+import { SearchUserDTO } from './dto/search-user.dto';
+import { IResultServiceSearchUser } from './interfaces/service/search-user.interface';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
-@Controller('private/user')
+@Controller('/user')
 // Pipes for DTO validations
 @UsePipes(
   new ValidationPipe({
@@ -34,42 +39,37 @@ import { UserService } from './user.service';
 )
 // Interceptor for outputs serialization(applying decorators rules)
 @UseInterceptors(ClassSerializerInterceptor)
-// Guards with to protect routes from unhauthorized access
-@UseGuards(AuthGuard())
-export class UserPrivateController {
+export class UserController {
   // Get services and modules from DI
   constructor(private userService: UserService) {}
-
+  //TODO: create logger interceptor(global?) with timestamps diff for services and repository
   // Define and map routes to services
 
+  @Post()
+  async registerUser(
+    @Body() userObject: RegisterUserDTO,
+  ): Promise<IResultServiceRegisterUser> {
+    return this.userService.registerUser(userObject);
+  }
+
+  @Get()
+  async searchUser(
+    @Query() searchUserFilters: SearchUserDTO,
+  ): Promise<IResultServiceSearchUser> {
+    return this.userService.searchUser(searchUserFilters);
+  }
+
   @Get('/current')
+  @Auth('USER', 'ADMIN')
   async getCurrentUser(
     @GetAuthUser() authUser: UserEntity,
   ): Promise<IResultServiceGetUser> {
     return this.userService.getUserById(authUser.id);
   }
-  @Get('/:uuid')
-  async getUserById(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
-  ): Promise<IResultServiceGetUser> {
-    return this.userService.getUserById(uuid);
-  }
-
-  //TODO: allow an admin role full access to all routes
-
-  //TODO: allow basic crud operations only for an admin role
-  @Delete('/:uuid')
-  @HttpCode(204)
-  async deleteUserById(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
-  ): Promise<void> {
-    await this.userService.deleteUserById(uuid);
-
-    return;
-  }
 
   @Put('/current')
   @HttpCode(204)
+  @Auth('USER', 'ADMIN')
   async updateCurrentUser(
     @GetAuthUser() authUser: UserEntity,
     @Body() userObject: UpdateUserDTO,
@@ -78,8 +78,44 @@ export class UserPrivateController {
 
     return;
   }
+
+  @Patch('/current')
+  @HttpCode(204)
+  @Auth('USER', 'ADMIN')
+  async patchCurrentUser(
+    @GetAuthUser() authUser: UserEntity,
+    @Body() userObject: PatchUserDTO,
+  ): Promise<void> {
+    await this.userService.modifyUserById(authUser.id, userObject);
+
+    return;
+  }
+
+  @Get('/:uuid')
+  @Auth('ADMIN')
+  async getUserById(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+  ): Promise<IResultServiceGetUser> {
+    return this.userService.getUserById(uuid);
+  }
+
+  //TODO: allow an admin role full access to all routes
+  //TODO: create interceptor+decorator to verify user with admin role
+  //TODO: allow basic crud operations only for an admin role
+  @Delete('/:uuid')
+  @HttpCode(204)
+  @Auth('ADMIN')
+  async deleteUserById(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+  ): Promise<void> {
+    await this.userService.deleteUserById(uuid);
+
+    return;
+  }
+
   @Put('/:uuid')
   @HttpCode(204)
+  @Auth('ADMIN')
   async updateUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() userObject: UpdateUserDTO,
@@ -89,18 +125,9 @@ export class UserPrivateController {
     return;
   }
 
-  @Patch('/current')
-  @HttpCode(204)
-  async patchCurrentUser(
-    @GetAuthUser() authUser: UserEntity,
-    @Body() userObject: PatchUserDTO,
-  ): Promise<void> {
-    await this.userService.modifyUserById(authUser.id, userObject);
-
-    return;
-  }
   @Patch('/:uuid')
   @HttpCode(204)
+  @Auth('ADMIN')
   async patchUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() userObject: PatchUserDTO,

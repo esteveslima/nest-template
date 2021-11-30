@@ -84,6 +84,7 @@ export class UserService {
   }
 
   async verifyUserPassword(
+    //TODO: move to auth?
     username: string,
     password: string,
   ): Promise<boolean> {

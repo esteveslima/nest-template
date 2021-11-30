@@ -11,5 +11,6 @@ export class UpdateUserDTO extends OmitType(UserEntity, [
   'id',
   'createdAt',
   'updatedAt',
+  'role',
   'password',
 ]) {}

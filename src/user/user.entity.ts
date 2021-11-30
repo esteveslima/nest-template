@@ -28,6 +28,11 @@ export enum enumGenderType {
   OTHER = 'OTHER',
 }
 
+export enum enumRole {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+}
+
 @Entity()
 export class UserEntity {
   // Auto generated fields
@@ -69,6 +74,13 @@ export class UserEntity {
   @IsEmail()
   @Length(5, 180)
   email: string;
+
+  @Column({ type: 'enum', enum: enumRole, default: 'USER' })
+  @IsNotEmpty()
+  @IsEnum(enumRole, {
+    message: `role must be a valid enum value: ${Object.values(enumRole)}`,
+  })
+  role: enumRole;
 
   @Column({ type: 'enum', enum: enumGenderType })
   @IsNotEmpty()

@@ -4,30 +4,28 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { UserModule } from '../user/user.module';
 
-import { AuthPublicController } from './auth.public.controller';
+import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './jwt-strategy';
+import { PassportJwtStrategy } from './passport/passport-jwt-strategy';
 
 @Module({
   imports: [
     // External modules for auth
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    PassportModule,
     JwtModule.registerAsync({
-      // Importing JWT Module asyncronously with factory, allowing to read the jwt secret env variable from ConfigModule
+      // Importing JWT Module asyncronously with factory, allowing to access ConfigModule
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+        secret: configService.get<string>('JWT_SECRET'), // jwt secret env variable
         signOptions: {
           expiresIn: 600,
         },
       }),
     }),
-    // Module with user data
-    UserModule,
+    UserModule, // Module with user data
   ],
-  controllers: [AuthPublicController],
-  providers: [AuthService, JwtStrategy],
-  exports: [JwtStrategy, PassportModule],
+  controllers: [AuthController],
+  providers: [AuthService, PassportJwtStrategy],
 })
 export class AuthModule {}

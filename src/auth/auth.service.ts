@@ -2,7 +2,7 @@
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/user.service'; //TODO: create interfaces for these classes to avoid importing code just to have the definition
 import { IJwtPayload } from './interfaces/jwt/jwt-payload.interface';
 import {
   IParamsServiceLoginAuth,

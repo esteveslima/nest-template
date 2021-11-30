@@ -29,6 +29,7 @@ import { SearchMediaDTO } from './dto/search-media.dto';
 import { IResultServiceGetMedia } from './interfaces/service/media/get-media.interface';
 import { IResultServiceSearchMedia } from './interfaces/service/media/search-media.interface';
 import { Auth } from '../auth/decorators/auth.decorator';
+import { Log } from 'src/decorators/log.decorator';
 
 @Controller('/media')
 // Pipes for DTO validations
@@ -39,6 +40,7 @@ import { Auth } from '../auth/decorators/auth.decorator';
 )
 // Interceptor for outputs serialization(applying decorators rules)
 @UseInterceptors(ClassSerializerInterceptor)
+@Log('MediaController')
 export class MediaController {
   // Get services and modules from DI
   constructor(private mediaService: MediaService) {}

@@ -29,6 +29,7 @@ import { IResultServiceRegisterUser } from './interfaces/service/register-user.i
 import { SearchUserDTO } from './dto/search-user.dto';
 import { IResultServiceSearchUser } from './interfaces/service/search-user.interface';
 import { Auth } from '../auth/decorators/auth.decorator';
+import { Log } from 'src/decorators/log.decorator';
 
 @Controller('/user')
 // Pipes for DTO validations
@@ -39,10 +40,11 @@ import { Auth } from '../auth/decorators/auth.decorator';
 )
 // Interceptor for outputs serialization(applying decorators rules)
 @UseInterceptors(ClassSerializerInterceptor)
+@Log('UserController')
 export class UserController {
   // Get services and modules from DI
   constructor(private userService: UserService) {}
-  //TODO: create logger interceptor(global?) with timestamps diff for services and repository
+
   // Define and map routes to services
 
   @Post()
@@ -99,9 +101,6 @@ export class UserController {
     return this.userService.getUserById(uuid);
   }
 
-  //TODO: allow an admin role full access to all routes
-  //TODO: create interceptor+decorator to verify user with admin role
-  //TODO: allow basic crud operations only for an admin role
   @Delete('/:uuid')
   @HttpCode(204)
   @Auth('ADMIN')

@@ -17,30 +17,26 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { PatchMediaDTO } from './dto/patch-media.dto';
-import { RegisterMediaDTO } from './dto/register-media.dto';
-import { UpdateMediaDTO } from './dto/update-media.dto';
 import { MediaService } from './media.service';
-
 import { UserEntity } from '../user/user.entity';
-import { IResultServiceRegisterMedia } from './interfaces/service/media/register-media.interface';
-import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
-import { SearchMediaDTO } from './dto/search-media.dto';
-import { IResultServiceGetMedia } from './interfaces/service/media/get-media.interface';
-import { IResultServiceSearchMedia } from './interfaces/service/media/search-media.interface';
-import { Auth } from '../auth/decorators/auth.decorator';
+
+import { PatchMediaReqDTO } from './dto/req/patch-media-req.dto';
+import { RegisterMediaReqDTO } from './dto/req/register-media-req.dto';
+import { RegisterMediaResDTO } from './dto/res/register-media-res.dto';
+import { UpdateMediaReqDTO } from './dto/req/update-media-req.dto';
+import { SearchMediaReqDTO } from './dto/req/search-media-req.dto';
+import { SearchMediaResDTO } from './dto/res/search-media-res.dto';
+import { GetMediaResDTO } from './dto/res/get-media-res.dto';
+
 import { Log } from 'src/decorators/log.decorator';
+import { SerializeOutput } from 'src/decorators/serialize-output.decorator';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
 
 @Controller('/media')
-// Pipes for DTO validations
-@UsePipes(
-  new ValidationPipe({
-    whitelist: true,
-  }),
-)
-// Interceptor for outputs serialization(applying decorators rules)
-@UseInterceptors(ClassSerializerInterceptor)
-@Log('MediaController')
+@UsePipes(new ValidationPipe({ whitelist: true })) // Pipes for validating request DTO, removing undeclared properties
+@UseInterceptors(ClassSerializerInterceptor) // Interceptor for input serialization, applying decorators transformation rules
+@Log('MediaController') // Custom log interceptor
 export class MediaController {
   // Get services and modules from DI
   constructor(private mediaService: MediaService) {}
@@ -48,29 +44,29 @@ export class MediaController {
   // Define and map routes to services
 
   @Get('/:uuid')
+  @SerializeOutput(GetMediaResDTO)
   async getMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
-  ): Promise<IResultServiceGetMedia> {
+  ): Promise<GetMediaResDTO> {
     return this.mediaService.getMediaById(mediaUuid);
   }
 
   @Get()
+  @SerializeOutput(SearchMediaResDTO)
   async searchMedia(
-    @Query() searchMediaFilters: SearchMediaDTO,
-  ): Promise<IResultServiceSearchMedia[]> {
+    @Query() searchMediaFilters: SearchMediaReqDTO,
+  ): Promise<SearchMediaResDTO[]> {
     return this.mediaService.searchMedia(searchMediaFilters);
   }
 
   @Post()
   @Auth('USER', 'ADMIN')
+  @SerializeOutput(RegisterMediaResDTO)
   async registerMedia(
-    @Body() mediaObject: RegisterMediaDTO,
+    @Body() mediaObject: RegisterMediaReqDTO,
     @GetAuthUser() authUser: UserEntity,
-  ): Promise<IResultServiceRegisterMedia> {
-    return this.mediaService.registerMedia({
-      ...mediaObject,
-      user: authUser,
-    });
+  ): Promise<RegisterMediaResDTO> {
+    return this.mediaService.registerMedia(mediaObject, authUser);
   }
 
   @Delete('/:uuid')
@@ -90,13 +86,10 @@ export class MediaController {
   @Auth('USER', 'ADMIN')
   async updateMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
-    @Body() mediaObject: UpdateMediaDTO,
+    @Body() mediaObject: UpdateMediaReqDTO,
     @GetAuthUser() authUser: UserEntity,
   ): Promise<void> {
-    await this.mediaService.modifyMediaById(mediaUuid, {
-      ...mediaObject,
-      user: authUser,
-    });
+    await this.mediaService.modifyMediaById(mediaUuid, mediaObject, authUser);
 
     return;
   }
@@ -106,13 +99,10 @@ export class MediaController {
   @Auth('USER', 'ADMIN')
   async patchMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
-    @Body() mediaObject: PatchMediaDTO,
+    @Body() mediaObject: PatchMediaReqDTO,
     @GetAuthUser() authUser: UserEntity,
   ): Promise<void> {
-    await this.mediaService.modifyMediaById(mediaUuid, {
-      ...mediaObject,
-      user: authUser,
-    });
+    await this.mediaService.modifyMediaById(mediaUuid, mediaObject, authUser);
 
     return;
   }

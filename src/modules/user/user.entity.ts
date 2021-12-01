@@ -1,7 +1,7 @@
 // Responsible for defining data format and relations in the database
 // Implementing validations for ORM(for database) and Pipes(for DTOs), centralizing all definitions in a single entity class that can be extended
 
-import { Exclude, Transform, Type } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
+import { Exclude, Expose, Transform, Type } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {
   IsEmail,
   IsEnum,
@@ -38,30 +38,35 @@ export class UserEntity {
   // Auto generated fields
 
   @PrimaryGeneratedColumn('uuid')
+  @Expose()
   id: string;
 
   @CreateDateColumn({ type: 'timestamp' })
+  @Expose()
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
-  @Exclude({ toPlainOnly: true }) // remove property from JSON serialization
+  @Expose()
   updatedAt: Date;
 
   // Relational fields
 
   @OneToMany(() => MediaEntity, (media) => media.user, { eager: false })
+  @Expose()
   medias: MediaEntity[];
 
   // Editable fields
 
   @Column({ type: 'varchar', length: 80 })
   @Unique(['username'])
+  @Expose()
   @IsNotEmpty()
   @IsString()
   @Length(5, 80)
   username: string;
 
   @Column({ type: 'varchar', length: 80 })
+  @Expose()
   @IsNotEmpty()
   @IsString()
   @Length(5, 80)
@@ -69,6 +74,7 @@ export class UserEntity {
 
   @Column({ type: 'varchar', length: 180 })
   @Unique(['email'])
+  @Expose()
   @IsNotEmpty()
   @IsString()
   @IsEmail()
@@ -76,6 +82,7 @@ export class UserEntity {
   email: string;
 
   @Column({ type: 'enum', enum: enumRole, default: 'USER' })
+  @Expose()
   @IsNotEmpty()
   @IsEnum(enumRole, {
     message: `role must be a valid enum value: ${Object.values(enumRole)}`,
@@ -83,6 +90,7 @@ export class UserEntity {
   role: enumRole;
 
   @Column({ type: 'enum', enum: enumGenderType })
+  @Expose()
   @IsNotEmpty()
   @IsEnum(enumGenderType, {
     message: `gender must be a valid enum value: ${Object.values(
@@ -92,9 +100,16 @@ export class UserEntity {
   gender: enumGenderType;
 
   @Column({ type: 'integer' })
+  @Expose()
   @Type(() => Number)
   @IsNotEmpty()
   @IsInt()
   @Min(0)
   age: number;
 }
+
+// PS.: Setting all decorators in a single file so that they can be extended and reused
+//      From top to bottom:
+//      First group of decorators are for ORM definitions
+//      Second group of decorators are for class transformations
+//      Last group of decorators are for pipe validations

@@ -2,12 +2,10 @@
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service'; //TODO: create interfaces for these classes to avoid importing code just to have the definition
+import { UserService } from '../user/user.service';
+import { LoginAuthReqDTO } from './dto/req/login-auth-req.dto';
+import { LoginAuthResDTO } from './dto/res/login-auth-res.dto';
 import { IJwtPayload } from './interfaces/jwt/jwt-payload.interface';
-import {
-  IParamsServiceLoginAuth,
-  IResultServiceLoginAuth,
-} from './interfaces/service/auth/login-auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -20,8 +18,8 @@ export class AuthService {
   // Define methods containing business logic
 
   async loginAuth(
-    loginAuthCredentials: IParamsServiceLoginAuth,
-  ): Promise<IResultServiceLoginAuth> {
+    loginAuthCredentials: LoginAuthReqDTO,
+  ): Promise<LoginAuthResDTO> {
     const { password, username } = loginAuthCredentials;
 
     const isAuthenticated = await this.userService.verifyUserPassword(

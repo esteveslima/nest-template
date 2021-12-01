@@ -12,13 +12,13 @@ import {
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
 
-import { MediaEntity } from '../media.entity';
+import { MediaEntity } from '../../media.entity';
 
 // Create DTO with Entity format, which contains all the typeORM validations and Pipe validations
 // exclude selected fields to match the current operation
 
 // DTO with some entity fields to serve as filter for the search operation, marking them as optional to allow partial inputs for only specified filters
-export class SearchMediaDTO extends PartialType(
+export class SearchMediaReqDTO extends PartialType(
   OmitType(MediaEntity, [
     'id',
     'updatedAt',

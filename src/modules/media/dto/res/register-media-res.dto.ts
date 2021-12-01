@@ -1,21 +1,19 @@
-// Object encapsulating data required for a single operation
-// Also possible to make data transform and validation
+// Object encapsulating data required for a operation response
 
 import { OmitType } from '@nestjs/mapped-types';
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
 
-import { MediaEntity } from '../media.entity';
+import { MediaEntity } from '../../media.entity';
 
-// Create DTO extending Entity, which contains all the typeORM validations and Pipe validations
+// Create DTO with Entity format, requires the Expose decorator to keep the property across the serialization
 // May modify or omit certain properties to match the operation
 
-// DTO to insert new objects
-export class RegisterMediaDTO extends OmitType(MediaEntity, [
-  'id',
+export class RegisterMediaResDTO extends OmitType(MediaEntity, [
   'createdAt',
   'updatedAt',
-  'user',
+  'contentBase64',
   'views',
   'available',
+  'user',
 ] as const) {}

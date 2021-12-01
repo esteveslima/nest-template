@@ -1,13 +1,21 @@
 // Responsible for routing requests
 
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { Log } from 'src/decorators/log.decorator';
+import { SerializeOutput } from 'src/decorators/serialize-output.decorator';
 import { AuthService } from './auth.service';
-import { LoginAuthDTO } from './dto/login-auth.dto';
-import { IResultServiceLoginAuth } from './interfaces/service/auth/login-auth.interface';
+import { LoginAuthReqDTO } from './dto/req/login-auth-req.dto';
+import { LoginAuthResDTO } from './dto/res/login-auth-res.dto';
 
 @Controller('/auth')
-@Log('AuthController')
+@UsePipes(new ValidationPipe({ whitelist: true })) // Pipes for validating request DTO, removing undeclared properties
+@Log('AuthController') // Custom log interceptor
 export class AuthController {
   // Get services and modules from DI
   constructor(private authService: AuthService) {}
@@ -15,9 +23,10 @@ export class AuthController {
   // Define and map routes to services
 
   @Post('/login')
+  @SerializeOutput(LoginAuthResDTO)
   async loginAuth(
-    @Body() loginAuthCredentials: LoginAuthDTO,
-  ): Promise<IResultServiceLoginAuth> {
+    @Body() loginAuthCredentials: LoginAuthReqDTO,
+  ): Promise<LoginAuthResDTO> {
     return this.authService.loginAuth(loginAuthCredentials);
   }
 }

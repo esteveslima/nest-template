@@ -4,17 +4,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MediaRespository } from './media.repository';
 
-import {
-  IParamsServiceRegisterMedia,
-  IResultServiceRegisterMedia,
-} from './interfaces/service/media/register-media.interface';
-import { IParamsServiceModifyMedia } from './interfaces/service/media/modify-media.interface';
-import { IResultServiceGetMedia } from './interfaces/service/media/get-media.interface';
-import {
-  IParamsServiceSearchMedia,
-  IResultServiceSearchMedia,
-} from './interfaces/service/media/search-media.interface';
 import { UserEntity } from '../user/user.entity';
+import { SearchMediaResDTO } from './dto/res/search-media-res.dto';
+import { RegisterMediaResDTO } from './dto/res/register-media-res.dto';
+import { GetMediaResDTO } from './dto/res/get-media-res.dto';
+import { RegisterMediaReqDTO } from './dto/req/register-media-req.dto';
+import { UpdateMediaReqDTO } from './dto/req/update-media-req.dto';
+import { PatchMediaReqDTO } from './dto/req/patch-media-req.dto';
+import { SearchMediaReqDTO } from './dto/req/search-media-req.dto';
 
 @Injectable()
 export class MediaService {
@@ -27,37 +24,23 @@ export class MediaService {
   // Define methods containing business logic
 
   async registerMedia(
-    media: IParamsServiceRegisterMedia,
-  ): Promise<IResultServiceRegisterMedia> {
-    const mediaCreated = await this.mediaRepository.registerMedia(media);
-
-    const {
-      createdAt,
-      updatedAt,
-      contentBase64,
-      views,
-      available,
+    media: RegisterMediaReqDTO,
+    user: UserEntity,
+  ): Promise<RegisterMediaResDTO> {
+    const mediaCreated = await this.mediaRepository.registerMedia({
+      ...media,
       user,
-      ...entityReturnObject
-    } = mediaCreated;
+    });
 
-    return {
-      ...entityReturnObject,
-      owner: user.username,
-    };
+    return mediaCreated;
   }
 
-  async getMediaById(mediaUuid: string): Promise<IResultServiceGetMedia> {
+  async getMediaById(mediaUuid: string): Promise<GetMediaResDTO> {
     const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
-
-    const { id, updatedAt, user, ...entityReturnObject } = mediaFound;
 
     await this.mediaRepository.incrementMediaViewsById(mediaUuid);
 
-    return {
-      ...entityReturnObject,
-      owner: user.username,
-    };
+    return { ...mediaFound, owner: mediaFound.user.username };
   }
 
   async deleteMediaById(mediaUuid: string, user: UserEntity): Promise<void> {
@@ -68,16 +51,20 @@ export class MediaService {
 
   async modifyMediaById(
     mediaUuid: string,
-    modifyMedia: IParamsServiceModifyMedia,
+    modifyMedia: UpdateMediaReqDTO | PatchMediaReqDTO,
+    user: UserEntity,
   ): Promise<void> {
-    await this.mediaRepository.modifyMediaById(mediaUuid, modifyMedia);
+    await this.mediaRepository.modifyMediaById(mediaUuid, {
+      ...modifyMedia,
+      user,
+    });
 
     return;
   }
 
   async searchMedia(
-    searchMediaFilters: IParamsServiceSearchMedia,
-  ): Promise<IResultServiceSearchMedia[]> {
+    searchMediaFilters: SearchMediaReqDTO,
+  ): Promise<SearchMediaResDTO[]> {
     const searchFilters = {
       ...searchMediaFilters,
       createdAt: searchMediaFilters.createdAt
@@ -86,14 +73,11 @@ export class MediaService {
     };
     const searchResult = await this.mediaRepository.searchMedia(searchFilters);
 
-    const returnObject = searchResult.map((media) => {
-      const { updatedAt, contentBase64, user, ...entityReturnObject } = media;
-      return {
-        ...entityReturnObject,
-        owner: user.username,
-      };
-    });
+    const result = searchResult.map((media) => ({
+      ...media,
+      owner: media.user.username,
+    }));
 
-    return returnObject;
+    return result;
   }
 }

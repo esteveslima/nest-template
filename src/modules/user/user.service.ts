@@ -7,45 +7,41 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
+
+import { RegisterUserReqDTO } from './dto/req/register-user-req.dto';
+import { RegisterUserResDTO } from './dto/res/register-user-res.dto';
+import { GetUserResDTO } from './dto/res/get-user-res.dto';
+import { SearchUserResDTO } from './dto/res/search-user-res.dto';
+import { UpdateUserReqDTO } from './dto/req/update-user-req.dto';
+import { PatchUserReqDTO } from './dto/req/patch-user-req.dto';
+
 import * as bcrypt from 'bcrypt';
-import {
-  IParamsServiceRegisterUser,
-  IResultServiceRegisterUser,
-} from './interfaces/service/register-user.interface';
-import { IResultServiceGetUser } from './interfaces/service/get-user.interface';
-import { IParamsServiceModifyUser } from './interfaces/service/modify-user.interface';
-import {
-  IParamsServiceSearchUser,
-  IResultServiceSearchUser,
-} from './interfaces/service/search-user.interface';
+import { SearchUserReqDTO } from './dto/req/search-user-req.dto';
 
 @Injectable()
 export class UserService {
   // Get services and repositories from DI
   constructor(
-    @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
+    @InjectRepository(UserRepository) private userRepository: UserRepository,
   ) {}
 
   // Define methods containing business logic
 
-  async registerUser(
-    user: IParamsServiceRegisterUser,
-  ): Promise<IResultServiceRegisterUser> {
+  async registerUser(user: RegisterUserReqDTO): Promise<RegisterUserResDTO> {
     const userCreated = await this.userRepository.registerUser({
       ...user,
       password: await this.hashValue(user.password),
     });
 
-    const { updatedAt, password, ...returnObject } = userCreated;
+    const { password, ...returnObject } = userCreated;
 
     return returnObject;
   }
 
-  async getUserById(uuid: string): Promise<IResultServiceGetUser> {
+  async getUserById(uuid: string): Promise<GetUserResDTO> {
     const userFound = await this.userRepository.getUserById(uuid);
 
-    const { updatedAt, password, ...returnObject } = userFound;
+    const { password, ...returnObject } = userFound;
 
     return returnObject;
   }
@@ -58,7 +54,7 @@ export class UserService {
 
   async modifyUserById(
     uuid: string,
-    user: IParamsServiceModifyUser,
+    user: UpdateUserReqDTO | PatchUserReqDTO,
   ): Promise<void> {
     if (user.password) user.password = await this.hashValue(user.password);
 
@@ -68,8 +64,8 @@ export class UserService {
   }
 
   async searchUser(
-    searchUserFilters: IParamsServiceSearchUser,
-  ): Promise<IResultServiceSearchUser> {
+    searchUserFilters: SearchUserReqDTO,
+  ): Promise<SearchUserResDTO> {
     if (Object.keys(searchUserFilters).length <= 0)
       throw new BadRequestException('No filters were provided');
 
@@ -77,14 +73,12 @@ export class UserService {
 
     if (!userFound) throw new NotFoundException();
 
-    const { createdAt, updatedAt, password, gender, age, ...returnObject } =
-      userFound;
+    const { password, ...returnObject } = userFound;
 
     return returnObject;
   }
 
   async verifyUserPassword(
-    //TODO: move to auth?
     username: string,
     password: string,
   ): Promise<boolean> {

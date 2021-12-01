@@ -17,30 +17,26 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
-import { PatchUserDTO } from './dto/patch-user.dto';
-import { UpdateUserDTO } from './dto/update-user.dto';
-import { IResultServiceGetUser } from './interfaces/service/get-user.interface';
+import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
 
-import { UserService } from './user.service';
-import { RegisterUserDTO } from './dto/register-user.dto';
-import { IResultServiceRegisterUser } from './interfaces/service/register-user.interface';
-import { SearchUserDTO } from './dto/search-user.dto';
-import { IResultServiceSearchUser } from './interfaces/service/search-user.interface';
-import { Auth } from '../auth/decorators/auth.decorator';
+import { RegisterUserReqDTO } from './dto/req/register-user-req.dto';
+import { RegisterUserResDTO } from './dto/res/register-user-res.dto';
+import { GetUserResDTO } from './dto/res/get-user-res.dto';
+import { SearchUserReqDTO } from './dto/req/search-user-req.dto';
+import { SearchUserResDTO } from './dto/res/search-user-res.dto';
+import { UpdateUserReqDTO } from './dto/req/update-user-req.dto';
+import { PatchUserReqDTO } from './dto/req/patch-user-req.dto';
+
 import { Log } from 'src/decorators/log.decorator';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
+import { SerializeOutput } from 'src/decorators/serialize-output.decorator';
 
 @Controller('/user')
-// Pipes for DTO validations
-@UsePipes(
-  new ValidationPipe({
-    whitelist: true,
-  }),
-)
-// Interceptor for outputs serialization(applying decorators rules)
-@UseInterceptors(ClassSerializerInterceptor)
-@Log('UserController')
+@UsePipes(new ValidationPipe({ whitelist: true })) // Pipes for validating request DTO, removing undeclared properties
+@UseInterceptors(ClassSerializerInterceptor) // Interceptor for input serialization, applying decorators transformation rules
+@Log('UserController') // Custom log interceptor
 export class UserController {
   // Get services and modules from DI
   constructor(private userService: UserService) {}
@@ -48,24 +44,27 @@ export class UserController {
   // Define and map routes to services
 
   @Post()
+  @SerializeOutput(RegisterUserResDTO)
   async registerUser(
-    @Body() userObject: RegisterUserDTO,
-  ): Promise<IResultServiceRegisterUser> {
+    @Body() userObject: RegisterUserReqDTO,
+  ): Promise<RegisterUserResDTO> {
     return this.userService.registerUser(userObject);
   }
 
   @Get()
+  @SerializeOutput(RegisterUserResDTO)
   async searchUser(
-    @Query() searchUserFilters: SearchUserDTO,
-  ): Promise<IResultServiceSearchUser> {
+    @Query() searchUserFilters: SearchUserReqDTO,
+  ): Promise<SearchUserResDTO> {
     return this.userService.searchUser(searchUserFilters);
   }
 
   @Get('/current')
   @Auth('USER', 'ADMIN')
+  @SerializeOutput(GetUserResDTO)
   async getCurrentUser(
     @GetAuthUser() authUser: UserEntity,
-  ): Promise<IResultServiceGetUser> {
+  ): Promise<GetUserResDTO> {
     return this.userService.getUserById(authUser.id);
   }
 
@@ -74,7 +73,7 @@ export class UserController {
   @Auth('USER', 'ADMIN')
   async updateCurrentUser(
     @GetAuthUser() authUser: UserEntity,
-    @Body() userObject: UpdateUserDTO,
+    @Body() userObject: UpdateUserReqDTO,
   ): Promise<void> {
     await this.userService.modifyUserById(authUser.id, userObject);
 
@@ -86,7 +85,7 @@ export class UserController {
   @Auth('USER', 'ADMIN')
   async patchCurrentUser(
     @GetAuthUser() authUser: UserEntity,
-    @Body() userObject: PatchUserDTO,
+    @Body() userObject: PatchUserReqDTO,
   ): Promise<void> {
     await this.userService.modifyUserById(authUser.id, userObject);
 
@@ -95,9 +94,10 @@ export class UserController {
 
   @Get('/:uuid')
   @Auth('ADMIN')
+  @SerializeOutput(GetUserResDTO)
   async getUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
-  ): Promise<IResultServiceGetUser> {
+  ): Promise<GetUserResDTO> {
     return this.userService.getUserById(uuid);
   }
 
@@ -117,7 +117,7 @@ export class UserController {
   @Auth('ADMIN')
   async updateUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
-    @Body() userObject: UpdateUserDTO,
+    @Body() userObject: UpdateUserReqDTO,
   ): Promise<void> {
     await this.userService.modifyUserById(uuid, userObject);
 
@@ -129,7 +129,7 @@ export class UserController {
   @Auth('ADMIN')
   async patchUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
-    @Body() userObject: PatchUserDTO,
+    @Body() userObject: PatchUserReqDTO,
   ): Promise<void> {
     await this.userService.modifyUserById(uuid, userObject);
 

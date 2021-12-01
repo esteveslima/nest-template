@@ -9,12 +9,13 @@ import { IsNotEmpty, IsString, Length } from 'class-validator'; // validation to
 // May modify or omit certain properties to match the operation
 
 // DTO for login fields
-export class LoginAuthDTO {
+export class LoginAuthReqDTO {
   @IsNotEmpty()
   @IsString()
   @Length(5, 80)
   username: string;
 
+  @IsNotEmpty()
   @IsString()
   @Length(5, 80)
   password: string;

@@ -11,11 +11,13 @@ const { NODE_ENV, DB_TYPE, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } =
   imports: [
     // Custom config
     ConfigModule.forRoot({
+      //TODO: create configmodule
       isGlobal: true, // make the config module available for all modules, dismissing imports/exports
       envFilePath: `.env.${NODE_ENV}`, // load stage specific .env file
     }),
     // ORM with config provided from the infrastructure via env variables
     TypeOrmModule.forRoot({
+      //TODO: create db/services connection/config module
       type: 'postgres', //DB_TYPE,
       host: DB_HOST,
       port: Number.parseInt(DB_PORT),

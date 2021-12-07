@@ -1,7 +1,7 @@
 // Object encapsulating data required for a single operation
-// Also possible to make data transform and validation
+// Extends base DTO, which already contains pipe validations and transformation decorators
 
-import { OmitType, PartialType } from '@nestjs/mapped-types';
+import { PartialType, PickType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {
   IsInt,
@@ -11,23 +11,20 @@ import {
   Max,
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
+import { MediaDTO } from '../base/media.dto';
 
-import { MediaEntity } from '../../media.entity';
-
-// Create DTO with Entity format, which contains all the typeORM validations and Pipe validations
-// exclude selected fields to match the current operation
-
-// DTO with some entity fields to serve as filter for the search operation, marking them as optional to allow partial inputs for only specified filters
+// search filters
 export class SearchMediaReqDTO extends PartialType(
-  OmitType(MediaEntity, [
-    'id',
-    'updatedAt',
-    'createdAt',
-    'user',
-    'contentBase64',
+  PickType(MediaDTO, [
+    'title',
+    'type',
+    'description',
+    'durationSeconds',
+    'views',
+    'available',
   ] as const),
 ) {
-  // Redefining entity properties for this filter DTO
+  // Redefining base dto properties for this filter DTO
   @Type(() => Number)
   @IsOptional()
   @IsNotEmpty()
@@ -39,7 +36,7 @@ export class SearchMediaReqDTO extends PartialType(
   @IsString()
   owner: string; // Input modified to accept owner username
 
-  // extra properties for pagination, which doesnt belong to the entity
+  // extra properties for pagination, which doesnt belong to the base dto
   @Type(() => Number)
   @IsOptional()
   @IsNotEmpty()

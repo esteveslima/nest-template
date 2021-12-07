@@ -1,15 +1,17 @@
 // Object encapsulating data required for a single operation
-// Also possible to make data transform and validation
+// Extends base DTO, which already contains pipe validations and transformation decorators
 
-import { OmitType } from '@nestjs/mapped-types';
-import { UserEntity } from '../../user.entity';
+import { PickType } from '@nestjs/mapped-types';
+import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
+import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
+import { UserDTO } from '../base/user.dto';
 
-// Create DTO extending Entity, which contains all the typeORM validations and Pipe validations
-// May modify or omit certain properties to match the operation
-
-export class RegisterUserReqDTO extends OmitType(UserEntity, [
-  //TODO: switch all Omit to Pick to more intuitive code?
-  'id',
-  'createdAt',
-  'updatedAt',
-]) {}
+export class RegisterUserReqDTO extends PickType(UserDTO, [
+  'medias',
+  'username',
+  'password',
+  'email',
+  'role',
+  'gender',
+  'age',
+] as const) {}

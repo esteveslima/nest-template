@@ -1,22 +1,18 @@
 // Object encapsulating data required for a single operation
-// Also possible to make data transform and validation
+// Extends base DTO, which already contains pipe validations and transformation decorators
 
-import { OmitType, PartialType } from '@nestjs/mapped-types';
+import { PartialType, PickType } from '@nestjs/mapped-types';
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
+import { MediaDTO } from '../base/media.dto';
 
-import { MediaEntity } from '../../media.entity';
-
-// Create DTO extending Entity, which contains all the typeORM validations and Pipe validations
-// May modify or omit certain properties to match the operation
-
-// similar to UpdateMediaDTO, but marking them as optional to allow partial input with only specific fields
 export class PatchMediaReqDTO extends PartialType(
-  OmitType(MediaEntity, [
-    'id',
-    'createdAt',
-    'updatedAt',
-    'user',
-    'views',
+  PickType(MediaDTO, [
+    'title',
+    'type',
+    'description',
+    'durationSeconds',
+    'contentBase64',
+    'available',
   ] as const),
 ) {}

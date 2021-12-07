@@ -1,13 +1,12 @@
 // Object encapsulating data required for a single operation
-// Also possible to make data transform and validation
+// Extends base DTO, which already contains pipe validations and transformation decorators
 
 import { PartialType, PickType } from '@nestjs/mapped-types';
-import { UserEntity } from '../../user.entity';
+import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
+import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
+import { UserDTO } from '../base/user.dto';
 
-// Create DTO extending Entity, which contains all the typeORM validations and Pipe validations
-// May modify or omit certain properties to match the operation
-
-// DTO for search filters
+// search filters
 export class SearchUserReqDTO extends PartialType(
-  PickType(UserEntity, ['username', 'email']),
+  PickType(UserDTO, ['username', 'email'] as const),
 ) {}

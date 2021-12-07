@@ -29,7 +29,9 @@ export class AuthService {
 
     if (!isAuthenticated) throw new UnauthorizedException();
 
-    const payload: IJwtPayload = { username };
+    const user = await this.userService.searchUser({ username });
+
+    const payload: IJwtPayload = { id: user.id };
     const token = this.jwtService.sign(payload);
 
     return { token };

@@ -1,8 +1,16 @@
 // Interface for service methods
 // May extend Entity and modify or omit certain properties to match the operation
 
-import { MediaEntity } from '../../../media.entity';
+import { IMedia } from '../../entity/media.interface';
 
 export type IParamsRepositoryModifyMedia = Partial<
-  Omit<MediaEntity, 'id' | 'createdAt' | 'updatedAt' | 'views'>
+  Pick<
+    IMedia,
+    | 'title'
+    | 'type'
+    | 'description'
+    | 'durationSeconds'
+    | 'contentBase64'
+    | 'available'
+  >
 >;

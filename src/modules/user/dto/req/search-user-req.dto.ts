@@ -4,9 +4,9 @@
 import { PartialType, PickType } from '@nestjs/mapped-types';
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { UserDTO } from '../base/user.dto';
+import { UserReqDTO } from '../base/user-req.dto';
 
 // search filters
 export class SearchUserReqDTO extends PartialType(
-  PickType(UserDTO, ['username', 'email'] as const),
+  PickType(UserReqDTO, ['username', 'email'] as const),
 ) {}

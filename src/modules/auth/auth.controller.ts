@@ -14,7 +14,7 @@ import { LoginAuthReqDTO } from './dto/req/login-auth-req.dto';
 import { LoginAuthResDTO } from './dto/res/login-auth-res.dto';
 
 @Controller('/auth')
-@UsePipes(new ValidationPipe({ whitelist: true })) // Pipes for validating request DTO, removing undeclared properties
+@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) // Pipes for validating request DTO, removing undeclared properties
 @Log('AuthController') // Custom log interceptor
 export class AuthController {
   // Get services and modules from DI

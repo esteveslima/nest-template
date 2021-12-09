@@ -34,7 +34,7 @@ import { Auth } from '../auth/decorators/auth.decorator';
 import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
 
 @Controller('/media')
-@UsePipes(new ValidationPipe({ whitelist: true })) // Pipes for validating request DTO, removing undeclared properties
+@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) // Pipes for validating request DTO, removing undeclared properties
 @UseInterceptors(ClassSerializerInterceptor) // Interceptor for input serialization, applying decorators transformation rules
 @Log('MediaController') // Custom log interceptor
 export class MediaController {
@@ -89,7 +89,7 @@ export class MediaController {
     @Body() mediaObject: UpdateMediaReqDTO,
     @GetAuthUser() authUser: UserEntity,
   ): Promise<void> {
-    await this.mediaService.modifyMediaById(mediaUuid, mediaObject, authUser);
+    await this.mediaService.modifyMediaById(mediaUuid, authUser, mediaObject);
 
     return;
   }
@@ -102,7 +102,7 @@ export class MediaController {
     @Body() mediaObject: PatchMediaReqDTO,
     @GetAuthUser() authUser: UserEntity,
   ): Promise<void> {
-    await this.mediaService.modifyMediaById(mediaUuid, mediaObject, authUser);
+    await this.mediaService.modifyMediaById(mediaUuid, authUser, mediaObject);
 
     return;
   }

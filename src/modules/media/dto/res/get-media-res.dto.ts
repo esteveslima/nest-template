@@ -3,9 +3,9 @@
 
 import { PickType } from '@nestjs/mapped-types';
 import { Expose } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
-import { MediaDTO } from '../base/media.dto';
+import { MediaResDTO } from '../base/media-res.dto';
 
-export class GetMediaResDTO extends PickType(MediaDTO, [
+export class GetMediaResDTO extends PickType(MediaResDTO, [
   'createdAt',
   'title',
   'type',

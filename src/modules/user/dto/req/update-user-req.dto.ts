@@ -4,10 +4,9 @@
 import { PickType } from '@nestjs/mapped-types';
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { UserDTO } from '../base/user.dto';
+import { UserReqDTO } from '../base/user-req.dto';
 
-export class UpdateUserReqDTO extends PickType(UserDTO, [
-  'medias',
+export class UpdateUserReqDTO extends PickType(UserReqDTO, [
   'username',
   'password',
   'email',

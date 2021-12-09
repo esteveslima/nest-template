@@ -3,9 +3,9 @@
 
 import { PickType } from '@nestjs/mapped-types';
 import { Expose } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
-import { UserDTO } from '../base/user.dto';
+import { UserResDTO } from '../base/user-res.dto';
 
-export class SearchUserResDTO extends PickType(UserDTO, [
+export class SearchUserResDTO extends PickType(UserResDTO, [
   'id',
   'medias',
   'username',

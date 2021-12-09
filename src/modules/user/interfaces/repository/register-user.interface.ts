@@ -1,9 +1,9 @@
 // Interface for repository methods
 // May extend Entity and modify or omit certain properties to match the operation
 
-import { UserEntity } from '../../user.entity';
+import { IUser } from '../entity/user.interface';
 
-export type IParamsRepositoryRegisterUser = Omit<
-  UserEntity,
-  'id' | 'createdAt' | 'updatedAt'
+export type IParamsRepositoryRegisterUser = Pick<
+  IUser,
+  'username' | 'password' | 'email' | 'role' | 'gender' | 'age'
 >;

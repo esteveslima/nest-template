@@ -4,10 +4,10 @@
 import { PartialType, PickType } from '@nestjs/mapped-types';
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { MediaDTO } from '../base/media.dto';
+import { MediaReqDTO } from '../base/media-req.dto';
 
 export class PatchMediaReqDTO extends PartialType(
-  PickType(MediaDTO, [
+  PickType(MediaReqDTO, [
     'title',
     'type',
     'description',

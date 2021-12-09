@@ -11,11 +11,11 @@ import {
   Max,
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { MediaDTO } from '../base/media.dto';
+import { MediaReqDTO } from '../base/media-req.dto';
 
 // search filters
 export class SearchMediaReqDTO extends PartialType(
-  PickType(MediaDTO, [
+  PickType(MediaReqDTO, [
     'title',
     'type',
     'description',

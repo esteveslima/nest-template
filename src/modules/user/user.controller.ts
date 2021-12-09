@@ -34,7 +34,7 @@ import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
 import { SerializeOutput } from '../../decorators/serialize-output.decorator';
 
 @Controller('/user')
-@UsePipes(new ValidationPipe({ whitelist: true })) // Pipes for validating request DTO, removing undeclared properties
+@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) // Pipes for validating request DTO, removing undeclared properties
 @UseInterceptors(ClassSerializerInterceptor) // Interceptor for input serialization, applying decorators transformation rules
 @Log('UserController') // Custom log interceptor
 export class UserController {

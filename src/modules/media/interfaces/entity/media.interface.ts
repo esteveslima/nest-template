@@ -1,6 +1,6 @@
 // Interface describing entity properties
 
-import { IUser } from 'src/modules/user/interfaces/entity/user.interface';
+import { IUser } from '../../../user/interfaces/entity/user.interface';
 
 export enum enumMediaType {
   MUSIC = 'MUSIC',

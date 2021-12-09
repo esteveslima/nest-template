@@ -31,7 +31,7 @@ export class MediaRespository extends Repository<MediaEntity> {
   async incrementMediaViewsById(uuid: string): Promise<void> {
     const incrementResult = await this.increment({ id: uuid }, 'views', 1);
 
-    if (incrementResult.affected <= 0) throw new NotFoundException();
+    if (incrementResult.affected <= 0) throw new NotFoundException(); //TODO: transfer error handling responsability to service
 
     return;
   }

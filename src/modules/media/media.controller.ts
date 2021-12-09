@@ -28,8 +28,8 @@ import { SearchMediaReqDTO } from './dto/req/search-media-req.dto';
 import { SearchMediaResDTO } from './dto/res/search-media-res.dto';
 import { GetMediaResDTO } from './dto/res/get-media-res.dto';
 
-import { Log } from 'src/decorators/log.decorator';
-import { SerializeOutput } from 'src/decorators/serialize-output.decorator';
+import { Log } from '../../decorators/log.decorator';
+import { SerializeOutput } from '../../decorators/serialize-output.decorator';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
 

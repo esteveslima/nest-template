@@ -28,10 +28,10 @@ import { SearchUserResDTO } from './dto/res/search-user-res.dto';
 import { UpdateUserReqDTO } from './dto/req/update-user-req.dto';
 import { PatchUserReqDTO } from './dto/req/patch-user-req.dto';
 
-import { Log } from 'src/decorators/log.decorator';
+import { Log } from '../../decorators/log.decorator';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
-import { SerializeOutput } from 'src/decorators/serialize-output.decorator';
+import { SerializeOutput } from '../../decorators/serialize-output.decorator';
 
 @Controller('/user')
 @UsePipes(new ValidationPipe({ whitelist: true })) // Pipes for validating request DTO, removing undeclared properties

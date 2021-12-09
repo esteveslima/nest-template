@@ -11,7 +11,7 @@ import {
   Length,
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { IMedia } from 'src/modules/media/interfaces/entity/media.interface';
+import { IMedia } from '../../../media/interfaces/entity/media.interface';
 import {
   enumGenderType,
   enumRole,

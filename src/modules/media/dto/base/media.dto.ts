@@ -11,7 +11,7 @@ import {
   Length,
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { IUser } from 'src/modules/user/interfaces/entity/user.interface';
+import { IUser } from '../../../user/interfaces/entity/user.interface';
 import { enumMediaType, IMedia } from '../../interfaces/entity/media.interface';
 
 @Exclude()

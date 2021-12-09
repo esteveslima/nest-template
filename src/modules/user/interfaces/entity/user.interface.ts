@@ -1,6 +1,6 @@
 // Interface describing entity properties
 
-import { IMedia } from 'src/modules/media/interfaces/entity/media.interface';
+import { IMedia } from '../../../media/interfaces/entity/media.interface';
 
 export enum enumGenderType {
   MALE = 'MALE',

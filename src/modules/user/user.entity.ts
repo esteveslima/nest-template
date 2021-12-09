@@ -53,9 +53,3 @@ export class UserEntity {
   @Column({ type: 'integer' })
   age: number;
 }
-
-// PS.: Setting all decorators in a single file so that they can be extended and reused
-//      From top to bottom:
-//      First group of decorators are for ORM definitions
-//      Second group of decorators are for class transformations
-//      Last group of decorators are for pipe validations

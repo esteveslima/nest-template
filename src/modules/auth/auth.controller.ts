@@ -7,8 +7,8 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { Log } from 'src/decorators/log.decorator';
-import { SerializeOutput } from 'src/decorators/serialize-output.decorator';
+import { Log } from '../../decorators/log.decorator';
+import { SerializeOutput } from '../../decorators/serialize-output.decorator';
 import { AuthService } from './auth.service';
 import { LoginAuthReqDTO } from './dto/req/login-auth-req.dto';
 import { LoginAuthResDTO } from './dto/res/login-auth-res.dto';

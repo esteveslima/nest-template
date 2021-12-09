@@ -40,6 +40,7 @@ export class UserService {
 
   async getUserById(uuid: string): Promise<GetUserResDTO> {
     const userFound = await this.userRepository.getUserById(uuid);
+    if (!userFound) throw new NotFoundException();
 
     const { password, ...returnObject } = userFound;
 
@@ -47,7 +48,8 @@ export class UserService {
   }
 
   async deleteUserById(uuid: string): Promise<void> {
-    await this.userRepository.deleteUserById(uuid);
+    const isDeleted = await this.userRepository.deleteUserById(uuid);
+    if (!isDeleted) throw new NotFoundException();
 
     return;
   }
@@ -58,7 +60,8 @@ export class UserService {
   ): Promise<void> {
     if (user.password) user.password = await this.hashValue(user.password);
 
-    await this.userRepository.modifyUserById(uuid, user);
+    const isModified = await this.userRepository.modifyUserById(uuid, user);
+    if (!isModified) throw new NotFoundException();
 
     return;
   }
@@ -70,7 +73,6 @@ export class UserService {
       throw new BadRequestException('No filters were provided');
 
     const userFound = await this.userRepository.searchUser(searchUserFilters);
-
     if (!userFound) throw new NotFoundException();
 
     const { password, ...returnObject } = userFound;
@@ -85,7 +87,7 @@ export class UserService {
     if (!username || !password) return false;
 
     const userFound = await this.userRepository.searchUser({ username });
-    if (!userFound) throw new NotFoundException();
+    if (!userFound) return false;
 
     const userHashPassword = userFound.password;
 

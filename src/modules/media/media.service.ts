@@ -1,6 +1,6 @@
 // Responsible for containing business logic
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MediaRespository } from './media.repository';
 
@@ -23,6 +23,7 @@ export class MediaService {
 
   // Define methods containing business logic
 
+  //TODO: plaintoclass/classtoplain to prune all parameters and results from all methods(?)
   async registerMedia(
     media: RegisterMediaReqDTO,
     user: UserEntity,
@@ -37,27 +38,38 @@ export class MediaService {
 
   async getMediaById(mediaUuid: string): Promise<GetMediaResDTO> {
     const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
+    if (!mediaFound) throw new NotFoundException();
 
-    await this.mediaRepository.incrementMediaViewsById(mediaUuid);
+    //TODO: use "pubsub decorator" to increment
+    const isIncremented = await this.mediaRepository.incrementMediaViewsById(
+      mediaUuid,
+    );
+    if (!isIncremented) throw new NotFoundException();
 
     return { ...mediaFound, owner: mediaFound.user.username };
   }
 
   async deleteMediaById(mediaUuid: string, user: UserEntity): Promise<void> {
-    await this.mediaRepository.deleteMediaById(mediaUuid, user);
+    const isDeleted = await this.mediaRepository.deleteMediaById(
+      mediaUuid,
+      user,
+    );
+    if (!isDeleted) throw new NotFoundException();
 
     return;
   }
 
   async modifyMediaById(
     mediaUuid: string,
-    modifyMedia: UpdateMediaReqDTO | PatchMediaReqDTO,
     user: UserEntity,
+    modifyMedia: UpdateMediaReqDTO | PatchMediaReqDTO,
   ): Promise<void> {
-    await this.mediaRepository.modifyMediaById(mediaUuid, {
-      ...modifyMedia,
+    const isModified = await this.mediaRepository.modifyMediaById(
+      mediaUuid,
       user,
-    });
+      modifyMedia,
+    );
+    if (!isModified) throw new NotFoundException();
 
     return;
   }
@@ -72,6 +84,7 @@ export class MediaService {
         : undefined,
     };
     const searchResult = await this.mediaRepository.searchMedia(searchFilters);
+    if (searchResult.length <= 0) throw new NotFoundException();
 
     const result = searchResult.map((media) => ({
       ...media,

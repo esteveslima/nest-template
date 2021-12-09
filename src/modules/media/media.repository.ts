@@ -1,13 +1,12 @@
 // Responsible for data access logic in the database
 // TypeORM Repository API: https://typeorm.io/#/repository-api
 
-import { NotFoundException } from '@nestjs/common';
-import { UserEntity } from '../user/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
+import { MediaEntity } from './media.entity';
 import { IParamsRepositoryModifyMedia } from './interfaces/repository/media/modify-media.interface';
 import { IParamsRepositoryRegisterMedia } from './interfaces/repository/media/register-media.interface';
 import { IParamsRepositorySearchMedia } from './interfaces/repository/media/search-media.interface';
-import { MediaEntity } from './media.entity';
+import { IUser } from '../user/interfaces/entity/user.interface';
 
 @EntityRepository(MediaEntity)
 export class MediaRespository extends Repository<MediaEntity> {
@@ -20,42 +19,39 @@ export class MediaRespository extends Repository<MediaEntity> {
     return mediaRegistered;
   }
 
-  async getMediaById(uuid: string): Promise<MediaEntity> {
+  async getMediaById(uuid: string): Promise<MediaEntity | undefined> {
     const mediaFound = await this.findOne(uuid);
-
-    if (!mediaFound) throw new NotFoundException();
 
     return mediaFound;
   }
 
-  async incrementMediaViewsById(uuid: string): Promise<void> {
+  async incrementMediaViewsById(uuid: string): Promise<boolean> {
     const incrementResult = await this.increment({ id: uuid }, 'views', 1);
 
-    if (incrementResult.affected <= 0) throw new NotFoundException(); //TODO: transfer error handling responsability to service
+    const isOperationSuccessful = incrementResult.affected > 0;
 
-    return;
+    return isOperationSuccessful;
   }
 
-  async deleteMediaById(uuid: string, user: UserEntity): Promise<void> {
+  async deleteMediaById(uuid: string, user: IUser): Promise<boolean> {
     const deleteResult = await this.delete({ id: uuid, user });
 
-    if (deleteResult.affected <= 0) throw new NotFoundException();
+    const isOperationSuccessful = deleteResult.affected > 0;
 
-    return;
+    return isOperationSuccessful;
   }
 
   async modifyMediaById(
-    uuid: string,
+    id: string,
+    user: IUser,
     media: IParamsRepositoryModifyMedia,
-  ): Promise<void> {
-    const mediaModified = await this.update(
-      { id: uuid, user: media.user },
-      { ...media },
-    );
+  ): Promise<boolean> {
+    const criteria = { id, user };
+    const mediaModified = await this.update(criteria, media);
 
-    if (mediaModified.affected <= 0) throw new NotFoundException();
+    const isOperationSuccessful = mediaModified.affected > 0;
 
-    return;
+    return isOperationSuccessful;
   }
 
   async searchMedia(

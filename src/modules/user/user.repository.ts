@@ -1,7 +1,6 @@
 // Responsible for data access logic in the database
 // TypeORM Repository API: https://typeorm.io/#/repository-api
 
-import { NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { IParamsRepositoryModifyUser } from './interfaces/repository/modify-user.interface';
 import { IParamsRepositoryRegisterUser } from './interfaces/repository/register-user.interface';
@@ -18,31 +17,29 @@ export class UserRepository extends Repository<UserEntity> {
     return userRegistered;
   }
 
-  async getUserById(uuid: string): Promise<UserEntity> {
+  async getUserById(uuid: string): Promise<UserEntity | undefined> {
     const userFound = await this.findOne(uuid, { loadRelationIds: true });
-
-    if (!userFound) throw new NotFoundException();
 
     return userFound;
   }
 
-  async deleteUserById(uuid: string): Promise<void> {
+  async deleteUserById(uuid: string): Promise<boolean> {
     const deleteResult = await this.delete(uuid);
 
-    if (deleteResult.affected <= 0) throw new NotFoundException();
+    const isOperationSuccessful = deleteResult.affected > 0;
 
-    return;
+    return isOperationSuccessful;
   }
 
   async modifyUserById(
     uuid: string,
     user: IParamsRepositoryModifyUser,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const userModified = await this.update(uuid, user);
 
-    if (userModified.affected <= 0) throw new NotFoundException();
+    const isOperationSuccessful = userModified.affected > 0;
 
-    return;
+    return isOperationSuccessful;
   }
 
   async searchUser(

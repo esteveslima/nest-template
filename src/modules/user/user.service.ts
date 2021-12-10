@@ -5,18 +5,17 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 
 import { RegisterUserReqDTO } from './dto/req/register-user-req.dto';
 import { RegisterUserResDTO } from './dto/res/register-user-res.dto';
 import { GetUserResDTO } from './dto/res/get-user-res.dto';
-import { SearchUserResDTO } from './dto/res/search-user-res.dto';
 import { UpdateUserReqDTO } from './dto/req/update-user-req.dto';
 import { PatchUserReqDTO } from './dto/req/patch-user-req.dto';
-
-import * as bcrypt from 'bcrypt';
 import { SearchUserReqDTO } from './dto/req/search-user-req.dto';
+import { SearchUserResDTO } from './dto/res/search-user-res.dto';
 
 @Injectable()
 export class UserService {
@@ -90,12 +89,17 @@ export class UserService {
     if (!userFound) return false;
 
     const userHashPassword = userFound.password;
+    const isValidPassword = await this.compareHash(password, userHashPassword);
 
-    return bcrypt.compare(password, userHashPassword);
+    return isValidPassword;
   }
 
   private async hashValue(value: string): Promise<string> {
     if (!value) return undefined;
     return bcrypt.hash(value, 10);
+  }
+  private async compareHash(value: string, hash: string): Promise<boolean> {
+    if (!value || !hash) return false;
+    return bcrypt.compare(value, hash);
   }
 }

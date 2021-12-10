@@ -4,7 +4,7 @@ import { AuthModule } from '../auth/auth.module';
 import { ConfigurationModule } from '../configuration/configuration.module';
 import { DatabaseModule } from '../database/database.module';
 import { MediaController } from './media.controller';
-import { MediaRespository } from './media.repository';
+import { MediaRepository } from './media.repository';
 import { MediaService } from './media.service';
 
 @Module({
@@ -17,7 +17,7 @@ import { MediaService } from './media.service';
     DatabaseModule,
 
     // Import ORM Repositories for DI
-    TypeOrmModule.forFeature([MediaRespository]),
+    TypeOrmModule.forFeature([MediaRepository]),
   ],
   controllers: [MediaController],
   providers: [MediaService],

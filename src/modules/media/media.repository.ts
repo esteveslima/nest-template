@@ -9,7 +9,7 @@ import { IParamsRepositorySearchMedia } from './interfaces/repository/media/sear
 import { IUser } from '../user/interfaces/entity/user.interface';
 
 @EntityRepository(MediaEntity)
-export class MediaRespository extends Repository<MediaEntity> {
+export class MediaRepository extends Repository<MediaEntity> {
   async registerMedia(
     media: IParamsRepositoryRegisterMedia,
   ): Promise<MediaEntity> {

@@ -2,7 +2,7 @@
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MediaRespository } from './media.repository';
+import { MediaRepository } from './media.repository';
 
 import { UserEntity } from '../user/user.entity';
 import { SearchMediaResDTO } from './dto/res/search-media-res.dto';
@@ -17,8 +17,8 @@ import { SearchMediaReqDTO } from './dto/req/search-media-req.dto';
 export class MediaService {
   // Get services and repositories from DI
   constructor(
-    @InjectRepository(MediaRespository)
-    private mediaRepository: MediaRespository,
+    @InjectRepository(MediaRepository)
+    private mediaRepository: MediaRepository,
   ) {}
 
   // Define methods containing business logic

@@ -1,8 +1,9 @@
 // Base module, which instantiates other modules
 
 import { Module } from '@nestjs/common';
-import { MediaModule } from './modules/media/media.module';
-import { UserModule } from './modules/user/user.module';
+import { AppController } from './app.controller';
+import { MediaModule } from './media/media.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -10,7 +11,7 @@ import { UserModule } from './modules/user/user.module';
     MediaModule,
     UserModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

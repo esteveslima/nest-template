@@ -1,4 +1,13 @@
-{
+{  
+  "include": ["src"],
+  "watchOptions": {
+    "excludeDirectories": [
+      "**/node_modules", 
+      "**/assets", 
+      "**/dist",
+      "**/.*"
+    ]
+  },
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
@@ -16,6 +25,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "strict": true
   }
 }

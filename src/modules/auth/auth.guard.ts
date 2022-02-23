@@ -1,27 +1,75 @@
 // Guard that can be used to apply the created authentication
 
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
-import { UserEntity } from '../user/user.entity';
+import { AuthService } from './auth.service';
+import { IJwtPayload } from './interfaces/jwt/jwt-payload.interface';
+import { IAuthUser, roleType } from './interfaces/user/user.interface';
 
 // Extend the guard configured with and provided by passport
 @Injectable()
-export class AuthGuardPassportJwt extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
-    super();
-  }
-  //TODO: remove passport?(which has a lot of implementation on the backgound) and create own guard valdiation
+export class AuthGuardJwt implements CanActivate {
+  constructor(
+    private reflector: Reflector,
+    @Inject(AuthService) private authService: AuthService,
+  ) {}
 
   async canActivate(context: ExecutionContext) {
-    await super.canActivate(context); // super executes authentication configured with passport strategy
-
-    const roles = this.reflector.get<string[]>('roles', context.getHandler()); // get the allowed roles(configured with decorator)
-    if (!roles) return true;
-
     const req = context.switchToHttp().getRequest(); // get request context(with possible modified values)
-    const user: UserEntity = req.user;
-    return roles.includes(user.role); // Falsy returns results in ForbiddenException
+
+    // Authentication
+
+    const authPayload = await this.authenticateRequest(req);
+
+    const user: IAuthUser = { ...authPayload };
+    req.user = user; // Insert user to request object, allowing to recover it on controllers
+
+    // Authorization
+
+    const rolesMetadataKey = 'roles';
+    const roles = this.reflector.get<roleType[]>(
+      rolesMetadataKey,
+      context.getHandler(),
+    ); // get the allowed roles(configured with decorator)
+
+    if (!roles) return true; // Authorize if it doesnt require any role
+
+    const isAuthorized = this.authorizeUser(user, roles);
+
+    return isAuthorized; // False results in ForbiddenException
+  }
+
+  private async authenticateRequest(
+    req: Request,
+  ): Promise<IJwtPayload | never> {
+    // Must throw UnauthorizedException on error
+
+    if (!req.headers.authorization)
+      throw new UnauthorizedException('Token de autenticacao nao encontrado');
+    const [, jwtToken] = req.headers.authorization.split(' ');
+    if (!jwtToken)
+      throw new UnauthorizedException('Token de autenticacao nao encontrado');
+
+    try {
+      const payload = await this.authService.verifyToken(jwtToken);
+      return payload as IJwtPayload;
+    } catch (err) {
+      throw new UnauthorizedException(
+        'Token de autenticacao invalido',
+        `${err}`,
+      );
+    }
+  }
+
+  private authorizeUser(user: IAuthUser, roles: roleType[]): boolean {
+    return roles.includes(user.role);
   }
 }

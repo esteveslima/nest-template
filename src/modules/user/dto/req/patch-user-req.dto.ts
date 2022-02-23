@@ -1,13 +1,13 @@
 // Object encapsulating data required for a single operation
 // Extends base DTO, which already contains pipe validations and transformation decorators
 
-import { PartialType, PickType } from '@nestjs/mapped-types';
+import { PartialType, PickType } from '@nestjs/swagger';
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { UserReqDTO } from '../base/user-req.dto';
+import { UserEntityValidateDTO } from '../base/user-entity-validate.dto';
 
 export class PatchUserReqDTO extends PartialType(
-  PickType(UserReqDTO, [
+  PickType(UserEntityValidateDTO, [
     'username',
     'password',
     'email',

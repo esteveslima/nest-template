@@ -2,7 +2,6 @@
 
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -13,25 +12,18 @@ import {
   Post,
   Put,
   Query,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { UserEntity } from '../user/user.entity';
 
 import { PatchMediaReqDTO } from './dto/req/patch-media-req.dto';
 import { RegisterMediaReqDTO } from './dto/req/register-media-req.dto';
-import { RegisterMediaResDTO } from './dto/res/register-media-res.dto';
 import { UpdateMediaReqDTO } from './dto/req/update-media-req.dto';
 import { SearchMediaReqDTO } from './dto/req/search-media-req.dto';
-import { SearchMediaResDTO } from './dto/res/search-media-res.dto';
-import { GetMediaResDTO } from './dto/res/get-media-res.dto';
 
-import { Log } from '../../decorators/log.decorator';
-import { SerializeOutput } from '../../decorators/serialize-output.decorator';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
+import { SwaggerDoc } from 'src/common/decorators/swagger-doc.decorator';
 
 @Controller('/media')
 export class MediaController {
@@ -41,38 +33,39 @@ export class MediaController {
   // Define and map routes to services
 
   @Get('/:uuid')
-  @SerializeOutput(GetMediaResDTO)
+  @SwaggerDoc({ tag: '/media', description: '' })
   async getMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
-  ): Promise<GetMediaResDTO> {
+  ): ReturnType<typeof MediaService.prototype.getMediaById> {
     return this.mediaService.getMediaById(mediaUuid);
   }
 
   @Get()
-  @SerializeOutput(SearchMediaResDTO)
+  @SwaggerDoc({ tag: '/media', description: '' })
   async searchMedia(
     @Query() searchMediaFilters: SearchMediaReqDTO,
-  ): Promise<SearchMediaResDTO[]> {
+  ): ReturnType<typeof MediaService.prototype.searchMedia> {
     return this.mediaService.searchMedia(searchMediaFilters);
   }
 
   @Post()
   @Auth('USER', 'ADMIN')
-  @SerializeOutput(RegisterMediaResDTO)
+  @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async registerMedia(
     @Body() mediaObject: RegisterMediaReqDTO,
     @GetAuthUser() authUser: UserEntity,
-  ): Promise<RegisterMediaResDTO> {
+  ): ReturnType<typeof MediaService.prototype.registerMedia> {
     return this.mediaService.registerMedia(mediaObject, authUser);
   }
 
   @Delete('/:uuid')
   @HttpCode(204)
   @Auth('USER', 'ADMIN')
+  @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async deleteMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @GetAuthUser() authUser: UserEntity,
-  ): Promise<void> {
+  ): ReturnType<typeof MediaService.prototype.deleteMediaById> {
     await this.mediaService.deleteMediaById(mediaUuid, authUser);
 
     return;
@@ -81,11 +74,12 @@ export class MediaController {
   @Put('/:uuid')
   @HttpCode(204)
   @Auth('USER', 'ADMIN')
+  @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async updateMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @Body() mediaObject: UpdateMediaReqDTO,
     @GetAuthUser() authUser: UserEntity,
-  ): Promise<void> {
+  ): ReturnType<typeof MediaService.prototype.modifyMediaById> {
     await this.mediaService.modifyMediaById(mediaUuid, authUser, mediaObject);
 
     return;
@@ -94,11 +88,12 @@ export class MediaController {
   @Patch('/:uuid')
   @HttpCode(204)
   @Auth('USER', 'ADMIN')
+  @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async patchMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @Body() mediaObject: PatchMediaReqDTO,
     @GetAuthUser() authUser: UserEntity,
-  ): Promise<void> {
+  ): ReturnType<typeof MediaService.prototype.modifyMediaById> {
     await this.mediaService.modifyMediaById(mediaUuid, authUser, mediaObject);
 
     return;

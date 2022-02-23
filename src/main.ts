@@ -1,7 +1,7 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as basicAuth from 'express-basic-auth';
 import { GeneralExceptionFilter } from './common/filters/general-exception.filter';
 import { LogInterceptor } from './common/interceptors/log.interceptor';
 import { CustomLogger } from './common/utils/custom-logger';
@@ -48,6 +48,37 @@ async function bootstrap() {
   // Add base prefix for controllers
   app.setGlobalPrefix('/api/rest', { exclude: ['/'] });
 
+  // Setup swagger for non production environments
+  const isDevelopmentEnvironment =
+    process.env.NODE_ENV && !process.env.NODE_ENV.includes('prod');
+  if (isDevelopmentEnvironment) {
+    const swaggerConfig = {
+      path: '/swagger',
+      title: 'media-collection',
+      version: '1.0',
+      description: 'Practice template project on Nest.js',
+    };
+    // Setup auth for swagger
+    app.use(
+      swaggerConfig.path,
+      basicAuth({
+        challenge: true,
+        users: { [process.env.SWAGGER_USER]: process.env.SWAGGER_PASS },
+      }),
+    );
+    // Build swagger
+    const swaggerDocumentConfig = new DocumentBuilder()
+      .setTitle(swaggerConfig.title)
+      .setVersion(swaggerConfig.version)
+      .setDescription(swaggerConfig.description)
+      .addBearerAuth({ type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' })
+      .build();
+    const swaggerDocument = SwaggerModule.createDocument(
+      app,
+      swaggerDocumentConfig,
+    );
+    SwaggerModule.setup(swaggerConfig.path, app, swaggerDocument);
+  }
 
   await app.listen(process.env.PORT);
 }

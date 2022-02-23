@@ -1,11 +1,11 @@
 // Object encapsulating data required for an operation response
-// Extends base DTO, which already contains pipe validations and transformation decorators(requires the Expose decorator to keep the property across the response serialization)
+// May be often used as a simple interface to allow swagger build documentation
 
-import { PickType } from '@nestjs/mapped-types';
-import { Expose } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
-import { MediaResDTO } from '../base/media-res.dto';
+import { PickType } from '@nestjs/swagger';
+import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
+import { MediaEntityBaseDTO } from '../base/media-entity-base.dto';
 
-export class SearchMediaResDTO extends PickType(MediaResDTO, [
+export class SearchMediaResDTO extends PickType(MediaEntityBaseDTO, [
   'id',
   'createdAt',
   'title',
@@ -15,6 +15,5 @@ export class SearchMediaResDTO extends PickType(MediaResDTO, [
   'views',
   'available',
 ] as const) {
-  @Expose()
   owner: string;
 }

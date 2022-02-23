@@ -18,7 +18,7 @@ import {
   IUser,
 } from '../../interfaces/entity/user.interface';
 
-export class UserReqDTO implements IUser {
+export class UserEntityValidateDTO implements IUser {
   // Auto generated fields
 
   id: string;

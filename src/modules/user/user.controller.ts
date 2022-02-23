@@ -2,7 +2,6 @@
 
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -13,25 +12,18 @@ import {
   Post,
   Put,
   Query,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
 
 import { RegisterUserReqDTO } from './dto/req/register-user-req.dto';
-import { RegisterUserResDTO } from './dto/res/register-user-res.dto';
-import { GetUserResDTO } from './dto/res/get-user-res.dto';
 import { SearchUserReqDTO } from './dto/req/search-user-req.dto';
-import { SearchUserResDTO } from './dto/res/search-user-res.dto';
 import { UpdateUserReqDTO } from './dto/req/update-user-req.dto';
 import { PatchUserReqDTO } from './dto/req/patch-user-req.dto';
 
-import { Log } from '../../decorators/log.decorator';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
-import { SerializeOutput } from '../../decorators/serialize-output.decorator';
+import { SwaggerDoc } from 'src/common/decorators/swagger-doc.decorator';
 
 @Controller('/user')
 export class UserController {
@@ -41,37 +33,38 @@ export class UserController {
   // Define and map routes to services
 
   @Post()
-  @SerializeOutput(RegisterUserResDTO)
+  @SwaggerDoc({ tag: '/user', description: '' })
   async registerUser(
     @Body() userObject: RegisterUserReqDTO,
-  ): Promise<RegisterUserResDTO> {
+  ): ReturnType<typeof UserService.prototype.registerUser> {
     return this.userService.registerUser(userObject);
   }
 
   @Get()
-  @SerializeOutput(RegisterUserResDTO)
+  @SwaggerDoc({ tag: '/user', description: '' })
   async searchUser(
     @Query() searchUserFilters: SearchUserReqDTO,
-  ): Promise<SearchUserResDTO> {
+  ): ReturnType<typeof UserService.prototype.searchUser> {
     return this.userService.searchUser(searchUserFilters);
   }
 
   @Get('/current')
   @Auth('USER', 'ADMIN')
-  @SerializeOutput(GetUserResDTO)
+  @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async getCurrentUser(
     @GetAuthUser() authUser: UserEntity,
-  ): Promise<GetUserResDTO> {
+  ): ReturnType<typeof UserService.prototype.getUserById> {
     return this.userService.getUserById(authUser.id);
   }
 
   @Put('/current')
   @HttpCode(204)
   @Auth('USER', 'ADMIN')
+  @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async updateCurrentUser(
     @GetAuthUser() authUser: UserEntity,
     @Body() userObject: UpdateUserReqDTO,
-  ): Promise<void> {
+  ): ReturnType<typeof UserService.prototype.modifyUserById> {
     await this.userService.modifyUserById(authUser.id, userObject);
 
     return;
@@ -80,10 +73,11 @@ export class UserController {
   @Patch('/current')
   @HttpCode(204)
   @Auth('USER', 'ADMIN')
+  @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async patchCurrentUser(
     @GetAuthUser() authUser: UserEntity,
     @Body() userObject: PatchUserReqDTO,
-  ): Promise<void> {
+  ): ReturnType<typeof UserService.prototype.modifyUserById> {
     await this.userService.modifyUserById(authUser.id, userObject);
 
     return;
@@ -91,19 +85,20 @@ export class UserController {
 
   @Get('/:uuid')
   @Auth('ADMIN')
-  @SerializeOutput(GetUserResDTO)
+  @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async getUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
-  ): Promise<GetUserResDTO> {
+  ): ReturnType<typeof UserService.prototype.getUserById> {
     return this.userService.getUserById(uuid);
   }
 
   @Delete('/:uuid')
   @HttpCode(204)
   @Auth('ADMIN')
+  @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async deleteUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
-  ): Promise<void> {
+  ): ReturnType<typeof UserService.prototype.deleteUserById> {
     await this.userService.deleteUserById(uuid);
 
     return;
@@ -112,10 +107,11 @@ export class UserController {
   @Put('/:uuid')
   @HttpCode(204)
   @Auth('ADMIN')
+  @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async updateUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() userObject: UpdateUserReqDTO,
-  ): Promise<void> {
+  ): ReturnType<typeof UserService.prototype.modifyUserById> {
     await this.userService.modifyUserById(uuid, userObject);
 
     return;
@@ -124,10 +120,11 @@ export class UserController {
   @Patch('/:uuid')
   @HttpCode(204)
   @Auth('ADMIN')
+  @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async patchUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() userObject: PatchUserReqDTO,
-  ): Promise<void> {
+  ): ReturnType<typeof UserService.prototype.modifyUserById> {
     await this.userService.modifyUserById(uuid, userObject);
 
     return;

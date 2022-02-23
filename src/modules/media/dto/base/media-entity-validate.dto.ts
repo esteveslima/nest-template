@@ -14,7 +14,7 @@ import {
 import { IUser } from '../../../user/interfaces/entity/user.interface';
 import { enumMediaType, IMedia } from '../../interfaces/entity/media.interface';
 
-export class MediaReqDTO implements IMedia {
+export class MediaEntityValidateDTO implements IMedia {
   // Auto generated fields
 
   id: string;

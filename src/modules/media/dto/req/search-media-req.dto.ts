@@ -1,7 +1,7 @@
 // Object encapsulating data required for a single operation
 // Extends base DTO, which already contains pipe validations and transformation decorators
 
-import { PartialType, PickType } from '@nestjs/mapped-types';
+import { PartialType, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {
   IsInt,
@@ -11,11 +11,11 @@ import {
   Max,
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { MediaReqDTO } from '../base/media-req.dto';
+import { MediaEntityValidateDTO } from '../base/media-entity-validate.dto';
 
 // search filters
 export class SearchMediaReqDTO extends PartialType(
-  PickType(MediaReqDTO, [
+  PickType(MediaEntityValidateDTO, [
     'title',
     'type',
     'description',

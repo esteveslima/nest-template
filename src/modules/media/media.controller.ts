@@ -34,9 +34,6 @@ import { Auth } from '../auth/decorators/auth.decorator';
 import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
 
 @Controller('/media')
-@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) // Pipes for validating request DTO, removing undeclared properties
-@UseInterceptors(ClassSerializerInterceptor) // Interceptor for input serialization, applying decorators transformation rules
-@Log('MediaController') // Custom log interceptor
 export class MediaController {
   // Get services and modules from DI
   constructor(private mediaService: MediaService) {}

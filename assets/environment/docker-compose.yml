@@ -10,15 +10,10 @@ services:
             dockerfile: Dockerfile.dev
         working_dir: /nest-container
         volumes:
-            - ./:/nest-container                                    # Hosting the project folder as volume            
+            - ../../:/nest-container                                # Hosting the project folder as volume            
             - /var/run/docker.sock:/var/run/docker.sock             # Bind host docker socket to the container(enable docker commands to host machine)
-        environment:
-            - DB_TYPE=postgres
-            - DB_HOST=postgres-container
-            - DB_PORT=5432
-            - DB_USER=postgres
-            - DB_PASS=password
-            - DB_NAME=postgres-db
+        env_file:
+            - .env
         restart: "no"
         ports:
             - 3000-3010:3000-3010

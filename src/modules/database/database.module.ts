@@ -15,7 +15,7 @@ const { NODE_ENV, DB_TYPE, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } =
       password: DB_PASS,
       database: DB_NAME,
       autoLoadEntities: true,
-      synchronize: NODE_ENV !== 'prod',
+      synchronize: NODE_ENV !== 'prod', //danger in prod(remove and standardize migrations)
     }),
   ],
   exports: [TypeOrmModule],

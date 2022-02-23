@@ -32,18 +32,31 @@ export class UserService {
       password: await this.hashValue(user.password),
     });
 
-    const { password, ...returnObject } = userCreated;
-
-    return returnObject;
+    return {
+      age: userCreated.age,
+      email: userCreated.email,
+      gender: userCreated.gender,
+      id: userCreated.id,
+      medias: userCreated.medias,
+      role: userCreated.role,
+      username: userCreated.username,
+    };
   }
 
   async getUserById(uuid: string): Promise<GetUserResDTO> {
     const userFound = await this.userRepository.getUserById(uuid);
     if (!userFound) throw new NotFoundException();
 
-    const { password, ...returnObject } = userFound;
-
-    return returnObject;
+    return {
+      age: userFound.age,
+      createdAt: userFound.createdAt,
+      email: userFound.email,
+      gender: userFound.gender,
+      id: userFound.id,
+      medias: userFound.medias,
+      role: userFound.role,
+      username: userFound.username,
+    };
   }
 
   async deleteUserById(uuid: string): Promise<void> {
@@ -74,9 +87,13 @@ export class UserService {
     const userFound = await this.userRepository.searchUser(searchUserFilters);
     if (!userFound) throw new NotFoundException();
 
-    const { password, ...returnObject } = userFound;
-
-    return returnObject;
+    return {
+      email: userFound.email,
+      id: userFound.id,
+      medias: userFound.medias,
+      role: userFound.role,
+      username: userFound.username,
+    };
   }
 
   async verifyUserPassword(

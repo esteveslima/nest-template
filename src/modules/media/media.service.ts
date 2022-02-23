@@ -33,7 +33,13 @@ export class MediaService {
       user,
     });
 
-    return mediaCreated;
+    return {
+      description: mediaCreated.description,
+      durationSeconds: mediaCreated.durationSeconds,
+      id: mediaCreated.id,
+      title: mediaCreated.title,
+      type: mediaCreated.type,
+    };
   }
 
   async getMediaById(mediaUuid: string): Promise<GetMediaResDTO> {
@@ -46,7 +52,17 @@ export class MediaService {
     );
     if (!isIncremented) throw new NotFoundException();
 
-    return { ...mediaFound, owner: mediaFound.user.username };
+    return {
+      available: mediaFound.available,
+      contentBase64: mediaFound.contentBase64,
+      createdAt: mediaFound.createdAt,
+      description: mediaFound.description,
+      durationSeconds: mediaFound.durationSeconds,
+      title: mediaFound.title,
+      type: mediaFound.type,
+      views: mediaFound.views,
+      owner: mediaFound.user.username,
+    };
   }
 
   async deleteMediaById(mediaUuid: string, user: UserEntity): Promise<void> {
@@ -86,10 +102,20 @@ export class MediaService {
     const searchResult = await this.mediaRepository.searchMedia(searchFilters);
     if (searchResult.length <= 0) throw new NotFoundException();
 
-    const result = searchResult.map((media) => ({
-      ...media,
-      owner: media.user.username,
-    }));
+    const result = searchResult.map(
+      (media): SearchMediaResDTO => ({
+        available: media.available,
+        createdAt: media.createdAt,
+        description: media.description,
+        durationSeconds: media.durationSeconds,
+        id: media.id,
+        title: media.title,
+        type: media.type,
+        views: media.views,
+
+        owner: media.user.username,
+      }),
+    );
 
     return result;
   }

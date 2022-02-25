@@ -46,7 +46,7 @@ async function bootstrap() {
   });
 
   // Add base prefix for controllers
-  app.setGlobalPrefix('/api/rest', { exclude: ['/'] });
+  app.setGlobalPrefix('/api', { exclude: ['/'] });
 
   // Setup swagger for non production environments
   const isDevelopmentEnvironment =

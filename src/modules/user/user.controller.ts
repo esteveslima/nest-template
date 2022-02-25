@@ -25,7 +25,7 @@ import { Auth } from '../auth/decorators/auth.decorator';
 import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
 import { SwaggerDoc } from 'src/common/decorators/swagger-doc.decorator';
 
-@Controller('/user')
+@Controller('/rest/user')
 export class UserController {
   // Get services and modules from DI
   constructor(private userService: UserService) {}

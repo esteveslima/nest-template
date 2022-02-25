@@ -5,7 +5,7 @@ import { SwaggerDoc } from 'src/common/decorators/swagger-doc.decorator';
 import { AuthService } from './auth.service';
 import { LoginAuthReqDTO } from './dto/req/login-auth-req.dto';
 
-@Controller('/auth')
+@Controller('/rest/auth')
 export class AuthController {
   // Get services and modules from DI
   constructor(private authService: AuthService) {}

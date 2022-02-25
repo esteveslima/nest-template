@@ -25,7 +25,7 @@ import { Auth } from '../auth/decorators/auth.decorator';
 import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
 import { SwaggerDoc } from 'src/common/decorators/swagger-doc.decorator';
 
-@Controller('/media')
+@Controller('/rest/media')
 export class MediaController {
   // Get services and modules from DI
   constructor(private mediaService: MediaService) {}

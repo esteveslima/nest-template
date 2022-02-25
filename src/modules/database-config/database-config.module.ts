@@ -7,6 +7,7 @@ const { NODE_ENV, DB_TYPE, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } =
 @Module({
   imports: [
     // ORM with config provided from the infrastructure via env variables
+    //TODO: refactor to .forFeature(?)
     TypeOrmModule.forRoot({
       type: 'postgres', //DB_TYPE,
       host: DB_HOST,
@@ -20,4 +21,4 @@ const { NODE_ENV, DB_TYPE, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } =
   ],
   exports: [TypeOrmModule],
 })
-export class DatabaseModule {}
+export class DatabaseConfigModule {}

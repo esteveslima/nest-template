@@ -23,7 +23,6 @@ export class MediaService {
 
   // Define methods containing business logic
 
-  //TODO: plaintoclass/classtoplain to prune all parameters and results from all methods(?)
   async registerMedia(
     media: RegisterMediaReqDTO,
     user: UserEntity,

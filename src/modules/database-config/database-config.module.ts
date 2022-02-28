@@ -1,22 +1,19 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-const { NODE_ENV, DB_TYPE, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } =
-  process.env; // Environment variables expected from the infrastructure or process(may be the only cases where these variables can be read outside classes)
-
 @Module({
   imports: [
     // ORM with config provided from the infrastructure via env variables
-    //TODO: refactor to .forFeature(?)
+    //TODO: refactor to .forFeature(?), maybe splitting in different databases(?)
     TypeOrmModule.forRoot({
       type: 'postgres', //DB_TYPE,
-      host: DB_HOST,
-      port: Number.parseInt(DB_PORT),
-      username: DB_USER,
-      password: DB_PASS,
-      database: DB_NAME,
+      host: process.env.DB_HOST,
+      port: Number.parseInt(process.env.DB_PORT),
+      username: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: NODE_ENV !== 'prod', //danger in prod(remove and standardize migrations)
+      synchronize: process.env.NODE_ENV !== 'prod', //danger in prod(remove and standardize migrations)
     }),
   ],
   exports: [TypeOrmModule],

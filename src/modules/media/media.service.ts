@@ -12,6 +12,8 @@ import { RegisterMediaReqDTO } from './dto/req/register-media-req.dto';
 import { UpdateMediaReqDTO } from './dto/req/update-media-req.dto';
 import { PatchMediaReqDTO } from './dto/req/patch-media-req.dto';
 import { SearchMediaReqDTO } from './dto/req/search-media-req.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { IEventMediaViewed } from './interfaces/events/media-viewed.interface';
 
 @Injectable()
 export class MediaService {
@@ -19,6 +21,8 @@ export class MediaService {
   constructor(
     @InjectRepository(MediaRepository)
     private mediaRepository: MediaRepository,
+
+    private eventEmitter: EventEmitter2,
   ) {}
 
   // Define methods containing business logic
@@ -45,11 +49,9 @@ export class MediaService {
     const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
     if (!mediaFound) throw new NotFoundException();
 
-    //TODO: use "pubsub decorator" to increment
-    const isIncremented = await this.mediaRepository.incrementMediaViewsById(
-      mediaUuid,
-    );
-    if (!isIncremented) throw new NotFoundException();
+    await this.eventEmitter.emitAsync('media.viewed', {
+      uuid: mediaUuid,
+    } as IEventMediaViewed);
 
     return {
       available: mediaFound.available,

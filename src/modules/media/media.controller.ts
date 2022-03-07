@@ -1,4 +1,4 @@
-// Responsible for routing private requests
+// Responsible for routing rest api requests
 
 import {
   Body,
@@ -22,8 +22,8 @@ import { UpdateMediaReqDTO } from './dto/req/update-media-req.dto';
 import { SearchMediaReqDTO } from './dto/req/search-media-req.dto';
 
 import { Auth } from '../auth/decorators/auth.decorator';
-import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
 import { SwaggerDoc } from 'src/common/decorators/swagger-doc.decorator';
+import { GetAuthUserEntity } from '../auth/decorators/get-auth-user-entity.decorator';
 
 @Controller('/rest/media')
 export class MediaController {
@@ -53,7 +53,7 @@ export class MediaController {
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async registerMedia(
     @Body() mediaObject: RegisterMediaReqDTO,
-    @GetAuthUser() authUser: UserEntity,
+    @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaService.prototype.registerMedia> {
     return this.mediaService.registerMedia(mediaObject, authUser);
   }
@@ -64,7 +64,7 @@ export class MediaController {
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async deleteMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
-    @GetAuthUser() authUser: UserEntity,
+    @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaService.prototype.deleteMediaById> {
     await this.mediaService.deleteMediaById(mediaUuid, authUser);
 
@@ -78,7 +78,7 @@ export class MediaController {
   async updateMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @Body() mediaObject: UpdateMediaReqDTO,
-    @GetAuthUser() authUser: UserEntity,
+    @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaService.prototype.modifyMediaById> {
     await this.mediaService.modifyMediaById(mediaUuid, authUser, mediaObject);
 
@@ -92,7 +92,7 @@ export class MediaController {
   async patchMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid,
     @Body() mediaObject: PatchMediaReqDTO,
-    @GetAuthUser() authUser: UserEntity,
+    @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaService.prototype.modifyMediaById> {
     await this.mediaService.modifyMediaById(mediaUuid, authUser, mediaObject);
 

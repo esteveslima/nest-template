@@ -1,4 +1,4 @@
-// Responsible for routing private requests
+// Responsible for routing rest api requests
 
 import {
   Body,
@@ -22,8 +22,8 @@ import { UpdateUserReqDTO } from './dto/req/update-user-req.dto';
 import { PatchUserReqDTO } from './dto/req/patch-user-req.dto';
 
 import { Auth } from '../auth/decorators/auth.decorator';
-import { GetAuthUser } from '../auth/decorators/get-auth-user.decorator';
 import { SwaggerDoc } from 'src/common/decorators/swagger-doc.decorator';
+import { GetAuthUserEntity } from '../auth/decorators/get-auth-user-entity.decorator';
 
 @Controller('/rest/user')
 export class UserController {
@@ -52,7 +52,7 @@ export class UserController {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async getCurrentUser(
-    @GetAuthUser() authUser: UserEntity,
+    @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof UserService.prototype.getUserById> {
     return this.userService.getUserById(authUser.id);
   }
@@ -62,7 +62,7 @@ export class UserController {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async updateCurrentUser(
-    @GetAuthUser() authUser: UserEntity,
+    @GetAuthUserEntity() authUser: UserEntity,
     @Body() userObject: UpdateUserReqDTO,
   ): ReturnType<typeof UserService.prototype.modifyUserById> {
     await this.userService.modifyUserById(authUser.id, userObject);
@@ -75,7 +75,7 @@ export class UserController {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async patchCurrentUser(
-    @GetAuthUser() authUser: UserEntity,
+    @GetAuthUserEntity() authUser: UserEntity,
     @Body() userObject: PatchUserReqDTO,
   ): ReturnType<typeof UserService.prototype.modifyUserById> {
     await this.userService.modifyUserById(authUser.id, userObject);

@@ -3,11 +3,12 @@
 import {
   BadRequestException,
   Injectable,
+  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
+import { HashService } from './hash.service';
 
 import { RegisterUserReqDTO } from './dto/req/register-user-req.dto';
 import { RegisterUserResDTO } from './dto/res/register-user-res.dto';
@@ -22,6 +23,7 @@ export class UserService {
   // Get services and repositories from DI
   constructor(
     @InjectRepository(UserRepository) private userRepository: UserRepository,
+    private hashService: HashService,
   ) {}
 
   // Define methods containing business logic
@@ -29,8 +31,12 @@ export class UserService {
   async registerUser(user: RegisterUserReqDTO): Promise<RegisterUserResDTO> {
     const userCreated = await this.userRepository.registerUser({
       ...user,
-      password: await this.hashValue(user.password),
+      password: await this.hashService.hashValue(user.password),
     });
+
+    if (!userCreated) {
+      throw new NotAcceptableException('Registration data not accepted');
+    }
 
     return {
       age: userCreated.age,
@@ -70,10 +76,16 @@ export class UserService {
     uuid: string,
     user: UpdateUserReqDTO | PatchUserReqDTO,
   ): Promise<void> {
-    if (user.password) user.password = await this.hashValue(user.password);
+    if (user.password)
+      user.password = await this.hashService.hashValue(user.password);
 
-    const isModified = await this.userRepository.modifyUserById(uuid, user);
-    if (!isModified) throw new NotFoundException();
+    const modifyResult = await this.userRepository.modifyUserById(uuid, user);
+    if (modifyResult === undefined) {
+      throw new NotAcceptableException('Update data not accepted');
+    }
+    if (modifyResult === false) {
+      throw new NotFoundException();
+    }
 
     return;
   }
@@ -84,7 +96,8 @@ export class UserService {
     if (Object.keys(searchUserFilters).length <= 0)
       throw new BadRequestException('No filters were provided');
 
-    const userFound = await this.userRepository.searchUser(searchUserFilters);
+    const usersFound = await this.userRepository.searchUser(searchUserFilters);
+    const userFound = usersFound[0];
     if (!userFound) throw new NotFoundException();
 
     return {
@@ -94,29 +107,5 @@ export class UserService {
       role: userFound.role,
       username: userFound.username,
     };
-  }
-
-  async verifyUserPassword(
-    username: string,
-    password: string,
-  ): Promise<boolean> {
-    if (!username || !password) return false;
-
-    const userFound = await this.userRepository.searchUser({ username });
-    if (!userFound) return false;
-
-    const userHashPassword = userFound.password;
-    const isValidPassword = await this.compareHash(password, userHashPassword);
-
-    return isValidPassword;
-  }
-
-  private async hashValue(value: string): Promise<string> {
-    if (!value) return undefined;
-    return bcrypt.hash(value, 10);
-  }
-  private async compareHash(value: string, hash: string): Promise<boolean> {
-    if (!value || !hash) return false;
-    return bcrypt.compare(value, hash);
   }
 }

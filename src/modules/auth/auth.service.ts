@@ -1,12 +1,8 @@
 // Responsible for containing business logic
 
-import {
-  Injectable,
-  UnauthorizedException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UserInternalService } from '../user/user-internal.service';
+import { AuthTokenService } from './auth-token.service';
 import { LoginAuthReqDTO } from './dto/req/login-auth-req.dto';
 import { LoginAuthResDTO } from './dto/res/login-auth-res.dto';
 import { IJwtPayload } from './interfaces/jwt/jwt-payload.interface';
@@ -15,8 +11,8 @@ import { IJwtPayload } from './interfaces/jwt/jwt-payload.interface';
 export class AuthService {
   // Get services and repositories from DI
   constructor(
-    private jwtService: JwtService,
-    private userService: UserService,
+    private authTokenService: AuthTokenService,
+    private userInternalService: UserInternalService,
   ) {}
 
   // Define methods containing business logic
@@ -26,14 +22,14 @@ export class AuthService {
   ): Promise<LoginAuthResDTO> {
     const { password, username } = loginAuthCredentials;
 
-    const isAuthenticated = await this.userService.verifyUserPassword(
+    const isAuthenticated = await this.userInternalService.verifyUserPassword(
       username,
       password,
     );
 
     if (!isAuthenticated) throw new UnauthorizedException();
 
-    const user = await this.userService.searchUser({ username });
+    const user = await this.userInternalService.searchUserEntity({ username });
 
     const payload: IJwtPayload = {
       id: user.id,
@@ -41,24 +37,8 @@ export class AuthService {
       name: user.username,
       role: user.role,
     };
-    const token = this.jwtService.sign(payload);
+    const token = await this.authTokenService.generateToken(payload);
 
     return { token };
-  }
-
-  async verifyToken(token: string): Promise<Record<string, any>> {
-    const result: Record<string, any> = this.jwtService.verify(token);
-    const tokenPayload = result;
-
-    if (typeof tokenPayload !== 'object')
-      throw new UnprocessableEntityException('Token invalido');
-
-    return tokenPayload;
-  }
-
-  async generateToken(tokenPayload: Record<string, any>): Promise<string> {
-    const token = this.jwtService.sign(tokenPayload);
-
-    return token;
   }
 }

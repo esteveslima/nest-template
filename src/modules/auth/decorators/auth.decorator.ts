@@ -2,7 +2,8 @@
 
 import { applyDecorators, UseGuards } from '@nestjs/common';
 import { AuthGuardJwt } from '../auth.guard';
-import { AllowRoles, roleType } from './allow-roles.decorator';
+import { roleType } from '../interfaces/user/user.interface';
+import { AllowRoles } from './allow-roles.decorator';
 
 export function Auth(...roles: roleType[]) {
   return applyDecorators(

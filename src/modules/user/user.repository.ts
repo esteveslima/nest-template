@@ -1,6 +1,7 @@
 // Responsible for data access logic in the database
 // TypeORM Repository API: https://typeorm.io/#/repository-api
 
+import { Logger } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { IParamsRepositoryModifyUser } from './interfaces/repository/modify-user.interface';
 import { IParamsRepositoryRegisterUser } from './interfaces/repository/register-user.interface';
@@ -12,12 +13,17 @@ export class UserRepository extends Repository<UserEntity> {
   async registerUser(user: IParamsRepositoryRegisterUser): Promise<UserEntity> {
     const registerOperation = this.create(user);
 
-    const userRegistered = await this.save(registerOperation);
-
-    return userRegistered;
+    try {
+      const userRegistered = await this.save(registerOperation);
+      return userRegistered;
+    } catch (e) {
+      Logger.log(JSON.stringify(e)); // TODO: create response interface that includes an error object, to avoid throwing Errors from this project's layer
+      return undefined;
+    }
   }
 
   async getUserById(uuid: string): Promise<UserEntity | undefined> {
+    if (!uuid) return undefined;
     const userFound = await this.findOne(uuid, { loadRelationIds: true });
 
     return userFound;
@@ -35,16 +41,19 @@ export class UserRepository extends Repository<UserEntity> {
     uuid: string,
     user: IParamsRepositoryModifyUser,
   ): Promise<boolean> {
-    const userModified = await this.update(uuid, user);
-
-    const isOperationSuccessful = userModified.affected > 0;
-
-    return isOperationSuccessful;
+    try {
+      const userModified = await this.update(uuid, user); // using user as criteria to allow only the owner
+      const isOperationSuccessful = userModified.affected > 0;
+      return isOperationSuccessful;
+    } catch (e) {
+      Logger.log(JSON.stringify(e)); // TODO: create response interface that includes an error object, to avoid throwing Errors from this project's layer
+      return undefined;
+    }
   }
 
   async searchUser(
     searchFilters: IParamsRepositorySearchUser,
-  ): Promise<UserEntity> {
+  ): Promise<UserEntity[]> {
     const { email, username } = searchFilters;
 
     const query = this.createQueryBuilder('user');
@@ -59,6 +68,6 @@ export class UserRepository extends Repository<UserEntity> {
 
     const searchResult = await query.getMany();
 
-    return searchResult[0];
+    return searchResult;
   }
 }

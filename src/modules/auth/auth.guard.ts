@@ -5,12 +5,15 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
+import { IResolvedRequest } from 'src/common/interceptors/interfaces/resolved-request.interface';
+import { AuthTokenService } from './auth-token.service';
 
-import { AuthService } from './auth.service';
 import { IJwtPayload } from './interfaces/jwt/jwt-payload.interface';
 import { IAuthUser, roleType } from './interfaces/user/user.interface';
 
@@ -19,11 +22,12 @@ import { IAuthUser, roleType } from './interfaces/user/user.interface';
 export class AuthGuardJwt implements CanActivate {
   constructor(
     private reflector: Reflector,
-    @Inject(AuthService) private authService: AuthService,
+    @Inject(AuthTokenService)
+    private authTokenService: AuthTokenService,
   ) {}
 
   async canActivate(context: ExecutionContext) {
-    const req = context.switchToHttp().getRequest(); // get request context(with possible modified values)
+    const req = this.getReq(context); // get request context(with possible modified values)
 
     // Authentication
 
@@ -40,11 +44,28 @@ export class AuthGuardJwt implements CanActivate {
       context.getHandler(),
     ); // get the allowed roles(configured with decorator)
 
-    if (!roles) return true; // Authorize if it doesnt require any role
-
     const isAuthorized = this.authorizeUser(user, roles);
 
     return isAuthorized; // False results in ForbiddenException
+  }
+
+  //TODO: create separated files for graphql context? For now, it's just replicating code
+  private getReq(context: ExecutionContext): IResolvedRequest {
+    const contextType = context.getType() as string;
+    switch (contextType) {
+      case 'http': {
+        const req = context.switchToHttp().getRequest<IResolvedRequest>();
+        return req;
+      }
+      case 'graphql': {
+        const gqlContext = GqlExecutionContext.create(context);
+        const { req } = gqlContext.getContext<{ req: IResolvedRequest }>();
+        return req;
+      }
+      default: {
+        throw new InternalServerErrorException('Invalid log request context');
+      }
+    }
   }
 
   private async authenticateRequest(
@@ -59,7 +80,7 @@ export class AuthGuardJwt implements CanActivate {
       throw new UnauthorizedException('Token de autenticacao nao encontrado');
 
     try {
-      const payload = await this.authService.verifyToken(jwtToken);
+      const payload = await this.authTokenService.verifyToken(jwtToken);
       return payload as IJwtPayload;
     } catch (err) {
       throw new UnauthorizedException(
@@ -70,6 +91,7 @@ export class AuthGuardJwt implements CanActivate {
   }
 
   private authorizeUser(user: IAuthUser, roles: roleType[]): boolean {
+    if (!roles) return true; // Authorize if it doesnt require any role
     return roles.includes(user.role);
   }
 }

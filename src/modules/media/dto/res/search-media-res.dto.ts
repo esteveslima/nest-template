@@ -15,5 +15,5 @@ export class SearchMediaResDTO extends PickType(MediaEntityBaseDTO, [
   'views',
   'available',
 ] as const) {
-  owner: string;
+  username: string;
 }

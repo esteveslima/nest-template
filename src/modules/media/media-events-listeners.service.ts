@@ -5,7 +5,7 @@ import { IEventMediaViewed } from './interfaces/events/media-viewed.interface';
 import { MediaRepository } from './media.repository';
 
 @Injectable()
-export class MediaEventsListeners {
+export class MediaEventsListenersService {
   // Get services and repositories from DI
   constructor(
     @InjectRepository(MediaRepository)

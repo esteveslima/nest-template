@@ -20,7 +20,7 @@ export class MediaRepository extends Repository<MediaEntity> {
   }
 
   async getMediaById(uuid: string): Promise<MediaEntity | undefined> {
-    const mediaFound = await this.findOne(uuid);
+    const mediaFound = await this.findOne(uuid, { relations: ['user'] });
 
     return mediaFound;
   }
@@ -34,7 +34,7 @@ export class MediaRepository extends Repository<MediaEntity> {
   }
 
   async deleteMediaById(uuid: string, user: IUser): Promise<boolean> {
-    const deleteResult = await this.delete({ id: uuid, user });
+    const deleteResult = await this.delete({ id: uuid, user }); // using user as criteria to allow only the owner
 
     const isOperationSuccessful = deleteResult.affected > 0;
 
@@ -65,7 +65,7 @@ export class MediaRepository extends Repository<MediaEntity> {
       title,
       type,
       views,
-      owner,
+      username,
       take,
       skip,
     } = searchFilters;
@@ -113,10 +113,10 @@ export class MediaRepository extends Repository<MediaEntity> {
       });
     }
 
-    if (owner) {
-      // add condition to filter media owner username
+    if (username) {
+      // add condition to filter media username
       query.andWhere('user.username LIKE :username', {
-        username: `%${owner}%`,
+        username: `%${username}%`,
       });
     }
 

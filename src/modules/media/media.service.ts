@@ -114,7 +114,7 @@ export class MediaService {
         type: media.type,
         views: media.views,
 
-        owner: media.user.username,
+        username: media.user.username,
       }),
     );
 

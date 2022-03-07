@@ -29,12 +29,12 @@ export class SearchMediaReqDTO extends PartialType(
   @IsOptional()
   @IsNotEmpty()
   @IsInt()
-  createdAt: number; // Input modified to accept timestamps
+  createdAt?: number; // Input modified to accept timestamps
 
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  owner: string; // Input modified to accept owner username
+  username?: string; // Input modified to accept user username
 
   // extra properties for pagination, which doesnt belong to the base dto
   @Type(() => Number)
@@ -42,7 +42,7 @@ export class SearchMediaReqDTO extends PartialType(
   @IsNotEmpty()
   @IsInt()
   @Min(1)
-  @Max(100)
+  @Max(5)
   take: number;
 
   @Type(() => Number)
@@ -50,5 +50,6 @@ export class SearchMediaReqDTO extends PartialType(
   @IsNotEmpty()
   @IsInt()
   @Min(0)
+  @Max(5)
   skip: number;
 }

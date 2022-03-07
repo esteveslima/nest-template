@@ -27,8 +27,11 @@ export class MediaEntity implements IMedia {
 
   // Relational fields
 
-  @ManyToOne(() => UserEntity, (user) => user.medias, { eager: true })
-  user: IUser;
+  @ManyToOne(() => UserEntity, (user) => user.medias, {
+    eager: false,
+    onDelete: 'SET NULL',
+  })
+  user: UserEntity;
 
   // Editable fields
 

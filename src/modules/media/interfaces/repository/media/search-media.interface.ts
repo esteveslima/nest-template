@@ -16,7 +16,7 @@ export interface IParamsRepositorySearchMedia
       | 'available'
     >
   > {
-  owner?: string;
+  username?: string;
   take?: number;
   skip?: number;
 }

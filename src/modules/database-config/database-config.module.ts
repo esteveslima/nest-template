@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     // ORM with config provided from the infrastructure via env variables
-    //TODO: refactor to .forFeature(?), maybe splitting in different databases(?)
+    //TODO: refactor to .forFeature(?), maybe splitting in different databases(?) -> requires changing the project to microservices structure(?)
     TypeOrmModule.forRoot({
       type: 'postgres', //DB_TYPE,
       host: process.env.DB_HOST,
@@ -13,7 +13,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: process.env.NODE_ENV !== 'prod', //danger in prod(remove and standardize migrations)
+      // logging: true,
+      synchronize: process.env.NODE_ENV !== 'prod', //TODO: danger in prod(remove and standardize migrations)
     }),
   ],
   exports: [TypeOrmModule],

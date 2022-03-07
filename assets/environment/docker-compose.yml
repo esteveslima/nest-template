@@ -12,8 +12,8 @@ services:
         volumes:
             - ../../:/nest-container                                # Hosting the project folder as volume            
             - /var/run/docker.sock:/var/run/docker.sock             # Bind host docker socket to the container(enable docker commands to host machine)
-        env_file:
-            - .env
+      #   env_file:                                                 # Disabled due to it's priority, leaving to the application to load the env vars on the server
+      #       - .env
         restart: "no"
         ports:
             - 3000-3010:3000-3010

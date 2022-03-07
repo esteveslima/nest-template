@@ -29,7 +29,7 @@ export class UserEntity {
   // Relational fields
 
   @OneToMany(() => MediaEntity, (media) => media.user, { eager: false })
-  medias: IMedia[];
+  medias: MediaEntity[];
 
   // Editable fields
 

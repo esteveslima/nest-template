@@ -6,24 +6,99 @@
 	},
 	"item": [
 		{
-			"name": "media",
+			"name": "GraphQL API",
 			"item": [
 				{
-					"name": "private",
+					"name": "Playgound",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HOST}}/api/graphql",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"api",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Templates",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "# query login {\n#   login(username: \"teste001\", password: \"12345\")\n# }\n\n\n\n#\n#\n#\n#\n#\n\n\n\n# query getMedia {\n#   media(id: \"675c04b9-38d1-4a4b-8c70-86ab418f6122\") {\n#     available\n#     contentBase64\n#     createdAt\n#     description\n#     durationSeconds\n#     id\n#     title\n#     type\n#     updatedAt\n#     views\n#     user {\n#       username\n#       medias(take: 3, skip: 0, durationSeconds: 60) {\n#         # Possible to make a new search by any parameters like a new query(under the context of the parent object)\n#         title\n#         user {\n#           # should be null to avoid circular query\n#           username\n#         }\n#       }\n#     }\n#   }\n# }\n\n# query searchMedias {\n#   medias(\n#     # available: true,\n#     # createdAt: 123,\n#     # description: \"abc\",\n#     # durationSeconds: 123,\n#     # skip: 123,\n#     # take: 123,\n#     # title: \"abc\",\n#     # username: \"abc\",\n#     # views: 123\n#     type: DOCUMENTARY\n#   ) {\n#     available\n#     contentBase64\n#     createdAt\n#     description\n#     durationSeconds\n#     id\n#     title\n#     type\n#     updatedAt\n#     views\n#     user {\n#       username\n#       medias(take: 3, skip: 0, durationSeconds: 60) {\n#         # Possible to make a new search by any parameters like a new query(under the context of the parent object)\n#         title\n#         user {\n#           # should be null to avoid circular query\n#           username\n#         }\n#       }\n#     }\n#   }\n# }\n\n# query getUser {\n#   user(id: \"61decc88-0d18-4683-9161-55d186eb83d8\") {\n#     age\n#     createdAt\n#     email\n#     gender\n#     id\n#     role\n#     updatedAt\n#     username\n#     medias(take: 3, skip: 0, durationSeconds: 60) {\n#       # Possible to make a new search by any parameters like a new query(under the context of the parent object)\n#       title\n#       user {\n#         # should be null to avoid circular query\n#         username\n#       }\n#     }\n#   }\n# }\n\n# query searchUsers {\n#   users(\n#     # email: \"abc\",\n#     username: \"someUser\"\n#   ) {\n#     age\n#     createdAt\n#     email\n#     gender\n#     id\n#     role\n#     updatedAt\n#     username\n#     medias(take: 3, skip: 0, durationSeconds: 600) {\n#       # Possible to make a new search by any parameters like a new query(under the context of the parent object)\n#       title\n#       user {\n#         # should be null object\n#         username\n#       }\n#     }\n#   }\n# }\n\n\n\n#\n#\n#\n#\n#\n\n\n\n# mutation registerMedia {\n#   registerMedia(\n#     contentBase64: \"abc\"\n#     description: \"abcde\"\n#     durationSeconds: 123\n#     title: \"sometitle\"\n#     type: DOCUMENTARY\n#   ) {\n#     available\n#     contentBase64\n#     createdAt\n#     description\n#     durationSeconds\n#     id\n#     title\n#     type\n#     updatedAt\n#     views\n#     user {\n#       username\n#       medias(take: 3, skip: 0, durationSeconds: 60) {\n#         # Possible to make a new search by any parameters like a new query(under the context of the parent object)\n#         title\n#         user {\n#           # should be null to avoid circular query\n#           username\n#         }\n#       }\n#     }\n#   }\n# }\n\n# mutation updateMedia {\n#   updateMedia(id: \"216ac15e-5ee3-49cc-84eb-aef72fc7841e\", type: DOCUMENTARY)\n# }\n\n# mutation deleteMedia {\n#   deleteMedia(id: \"216ac15e-5ee3-49cc-84eb-aef72fc7841e\")\n# }\n\n# mutation registerUser {\n#   registerUser(\n#     age: 123\n#     email: \"email444@email.com\"\n#     gender: OTHER\n#     role: ADMIN\n#     username: \"someUser444\"\n#     password: \"12345\"\n#   ) {\n#     age\n#     createdAt\n#     email\n#     gender\n#     id\n#     role\n#     updatedAt\n#     username\n#     medias(take: 3, skip: 0, durationSeconds: 60) {\n#       # Possible to make a new search by any parameters like a new query(under the context of the parent object)\n#       title\n#       user {\n#         # should be null to avoid circular query\n#         username\n#       }\n#     }\n#   }\n# }\n\n# mutation updateUser {\n#   updateUser(\n#     id: \"eefaee64-6f9e-457a-8762-e79bca330d45\"\n\n#     # age: 999,\n#     # email: \"abc\",\n#     # gender: OTHER,\n#     # password: \"abc\",\n#     username: \"teste00\"\n#   )\n# }\n\n# mutation updateCurrentUser {\n#   updateCurrentUser(\n#     age: 123,\n#     # email: \"abc\",\n#     # gender: OTHER,\n#     # password: \"abc\",\n#     # username: \"abc\"  \n#   )\n# }\n\n# mutation deleteUser {\n#   deleteUser(id: \"eefaee64-6f9e-457a-8762-e79bca330d45\")\n# }\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{HOST}}/api/graphql",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"api",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{AUTH_TOKEN}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Rest API",
+			"item": [
+				{
+					"name": "auth",
 					"item": [
 						{
-							"name": "Register Media",
+							"name": "Login",
 							"event": [
 								{
-									"listen": "prerequest",
+									"listen": "test",
 									"script": {
 										"exec": [
-											"//generate random base64",
-											"pm.environment.set(\"randomBase64\", CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(Math.random().toString(36).slice(2).repeat(50))));",
-											"",
-											"// select a random media type",
-											"const mediaTypes = [\"MUSIC\", \"VIDEO\", \"MOVIE\", \"DOCUMENTARY\", \"SHOW\", \"PODCAST\", \"AUDIOBOOK\"]",
-											"pm.environment.set(\"randomMediaType\", mediaTypes[Math.floor(Math.random() * mediaTypes.length)]);"
+											"// Automatically saves access token to variable after login response",
+											"// pm.environment.set('AUTH_TOKEN', pm.response.json().token);",
+											"pm.collectionVariables.set('AUTH_TOKEN', pm.response.json().token)"
 										],
 										"type": "text/javascript"
 									}
@@ -36,34 +111,363 @@
 									"mode": "urlencoded",
 									"urlencoded": [
 										{
-											"key": "title",
-											"value": "{{$randomWord}} {{$randomAdjective}} {{$randomNoun}}",
+											"key": "username",
+											"value": "{{$randomUserName}}",
 											"type": "text"
 										},
 										{
-											"key": "description",
-											"value": "{{$randomLoremSentence}}",
-											"type": "text"
-										},
-										{
-											"key": "durationSeconds",
-											"value": "{{$randomInt}}",
-											"type": "text"
-										},
-										{
-											"key": "type",
-											"value": "{{randomMediaType}}",
-											"type": "text"
-										},
-										{
-											"key": "contentBase64",
-											"value": "{{randomBase64}}",
+											"key": "password",
+											"value": "{{$randomPassword}}",
 											"type": "text"
 										}
 									]
 								},
 								"url": {
-									"raw": "{{HOST}}/api/rest/media",
+									"raw": "{{HOST}}/api/rest/auth/login",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"api",
+										"rest",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "media",
+					"item": [
+						{
+							"name": "private",
+							"item": [
+								{
+									"name": "Register Media",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"//generate random base64",
+													"pm.environment.set(\"randomBase64\", CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(Math.random().toString(36).slice(2).repeat(50))));",
+													"",
+													"// select a random media type",
+													"const mediaTypes = [\"MUSIC\", \"VIDEO\", \"MOVIE\", \"DOCUMENTARY\", \"SHOW\", \"PODCAST\", \"AUDIOBOOK\"]",
+													"pm.environment.set(\"randomMediaType\", mediaTypes[Math.floor(Math.random() * mediaTypes.length)]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "title",
+													"value": "{{$randomWord}} {{$randomAdjective}} {{$randomNoun}}",
+													"type": "text"
+												},
+												{
+													"key": "description",
+													"value": "{{$randomLoremSentence}}",
+													"type": "text"
+												},
+												{
+													"key": "durationSeconds",
+													"value": "{{$randomInt}}",
+													"type": "text"
+												},
+												{
+													"key": "type",
+													"value": "{{randomMediaType}}",
+													"type": "text"
+												},
+												{
+													"key": "contentBase64",
+													"value": "{{randomBase64}}",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{HOST}}/api/rest/media",
+											"host": [
+												"{{HOST}}"
+											],
+											"path": [
+												"api",
+												"rest",
+												"media"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Media",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{HOST}}/api/rest/media/:uuid",
+											"host": [
+												"{{HOST}}"
+											],
+											"path": [
+												"api",
+												"rest",
+												"media",
+												":uuid"
+											],
+											"variable": [
+												{
+													"key": "uuid",
+													"value": "{{$guid}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Media",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"//generate random base64",
+													"pm.environment.set(\"randomBase64\", CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(Math.random().toString(36).slice(2))));",
+													"",
+													"// select a random media type",
+													"const mediaTypes = [\"MUSIC\", \"VIDEO\", \"MOVIE\", \"DOCUMENTARY\", \"SHOW\", \"PODCAST\", \"AUDIOBOOK\"]",
+													"pm.environment.set(\"randomMediaType\", mediaTypes[Math.floor(Math.random() * mediaTypes.length)]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "title",
+													"value": "{{$randomWord}} {{$randomAdjective}} {{$randomNoun}}",
+													"type": "text"
+												},
+												{
+													"key": "description",
+													"value": "{{$randomLoremSentence}}",
+													"type": "text"
+												},
+												{
+													"key": "durationSeconds",
+													"value": "{{$randomInt}}",
+													"type": "text"
+												},
+												{
+													"key": "type",
+													"value": "{{randomMediaType}}",
+													"type": "text"
+												},
+												{
+													"key": "contentBase64",
+													"value": "{{randomBase64}}",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{HOST}}/api/rest/media/:uuid",
+											"host": [
+												"{{HOST}}"
+											],
+											"path": [
+												"api",
+												"rest",
+												"media",
+												":uuid"
+											],
+											"variable": [
+												{
+													"key": "uuid",
+													"value": "{{$guid}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Patch Media",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"//generate random base64",
+													"pm.environment.set(\"randomBase64\", CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(Math.random().toString(36).slice(2))));",
+													"",
+													"// select a random media type",
+													"const mediaTypes = [\"MUSIC\", \"VIDEO\", \"MOVIE\", \"DOCUMENTARY\", \"SHOW\", \"PODCAST\", \"AUDIOBOOK\"]",
+													"pm.environment.set(\"randomMediaType\", mediaTypes[Math.floor(Math.random() * mediaTypes.length)]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "title",
+													"value": "{{$randomWord}} {{$randomAdjective}} {{$randomNoun}}",
+													"type": "text"
+												},
+												{
+													"key": "description",
+													"value": "{{$randomLoremSentence}}",
+													"type": "text"
+												},
+												{
+													"key": "durationSeconds",
+													"value": "{{$randomInt}}",
+													"type": "text"
+												},
+												{
+													"key": "type",
+													"value": "{{randomMediaType}}",
+													"type": "text"
+												},
+												{
+													"key": "contentBase64",
+													"value": "{{randomBase64}}",
+													"type": "text"
+												},
+												{
+													"key": "available",
+													"value": "{{$randomBoolean}}",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{HOST}}/api/rest/media/:uuid",
+											"host": [
+												"{{HOST}}"
+											],
+											"path": [
+												"api",
+												"rest",
+												"media",
+												":uuid"
+											],
+											"variable": [
+												{
+													"key": "uuid",
+													"value": "{{$guid}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"auth": {
+								"type": "bearer",
+								"bearer": [
+									{
+										"key": "token",
+										"value": "{{AUTH_TOKEN}}",
+										"type": "string"
+									}
+								]
+							},
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							]
+						},
+						{
+							"name": "Get Media",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/api/rest/media/:uuid",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"api",
+										"rest",
+										"media",
+										":uuid"
+									],
+									"variable": [
+										{
+											"key": "uuid",
+											"value": "{{$guid}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search Media",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// select a random media type",
+											"const mediaTypes = [\"MUSIC\", \"VIDEO\", \"MOVIE\", \"DOCUMENTARY\", \"SHOW\", \"PODCAST\", \"AUDIOBOOK\"]",
+											"pm.environment.set(\"randomMediaType\", mediaTypes[Math.floor(Math.random() * mediaTypes.length)]);",
+											"",
+											"// generate random past timestamp",
+											"const pastDate = new Date(Date.now())",
+											"pastDate.setDate((new Date(Date.now())).getDate() - Math.random()*3)",
+											"pm.environment.set(\"randomPastDaysTimestamp\", +pastDate);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/api/rest/media?take=5&skip=0",
 									"host": [
 										"{{HOST}}"
 									],
@@ -71,346 +475,290 @@
 										"api",
 										"rest",
 										"media"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Delete Media",
-							"request": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "{{HOST}}/api/rest/media/:uuid",
-									"host": [
-										"{{HOST}}"
 									],
-									"path": [
-										"api",
-										"rest",
-										"media",
-										":uuid"
-									],
-									"variable": [
+									"query": [
 										{
-											"key": "uuid",
-											"value": "{{$guid}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Media",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"//generate random base64",
-											"pm.environment.set(\"randomBase64\", CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(Math.random().toString(36).slice(2))));",
-											"",
-											"// select a random media type",
-											"const mediaTypes = [\"MUSIC\", \"VIDEO\", \"MOVIE\", \"DOCUMENTARY\", \"SHOW\", \"PODCAST\", \"AUDIOBOOK\"]",
-											"pm.environment.set(\"randomMediaType\", mediaTypes[Math.floor(Math.random() * mediaTypes.length)]);"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "PUT",
-								"header": [],
-								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "title",
-											"value": "{{$randomWord}} {{$randomAdjective}} {{$randomNoun}}",
-											"type": "text"
+											"key": "take",
+											"value": "5",
+											"description": "items per pagination"
 										},
 										{
-											"key": "description",
-											"value": "{{$randomLoremSentence}}",
-											"type": "text"
-										},
-										{
-											"key": "durationSeconds",
-											"value": "{{$randomInt}}",
-											"type": "text"
-										},
-										{
-											"key": "type",
-											"value": "{{randomMediaType}}",
-											"type": "text"
-										},
-										{
-											"key": "contentBase64",
-											"value": "{{randomBase64}}",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{HOST}}/api/rest/media/:uuid",
-									"host": [
-										"{{HOST}}"
-									],
-									"path": [
-										"api",
-										"rest",
-										"media",
-										":uuid"
-									],
-									"variable": [
-										{
-											"key": "uuid",
-											"value": "{{$guid}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Patch Media",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"//generate random base64",
-											"pm.environment.set(\"randomBase64\", CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(Math.random().toString(36).slice(2))));",
-											"",
-											"// select a random media type",
-											"const mediaTypes = [\"MUSIC\", \"VIDEO\", \"MOVIE\", \"DOCUMENTARY\", \"SHOW\", \"PODCAST\", \"AUDIOBOOK\"]",
-											"pm.environment.set(\"randomMediaType\", mediaTypes[Math.floor(Math.random() * mediaTypes.length)]);"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "PATCH",
-								"header": [],
-								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "title",
-											"value": "{{$randomWord}} {{$randomAdjective}} {{$randomNoun}}",
-											"type": "text"
-										},
-										{
-											"key": "description",
-											"value": "{{$randomLoremSentence}}",
-											"type": "text"
-										},
-										{
-											"key": "durationSeconds",
-											"value": "{{$randomInt}}",
-											"type": "text"
-										},
-										{
-											"key": "type",
-											"value": "{{randomMediaType}}",
-											"type": "text"
-										},
-										{
-											"key": "contentBase64",
-											"value": "{{randomBase64}}",
-											"type": "text"
+											"key": "skip",
+											"value": "0",
+											"description": "page of pagination"
 										},
 										{
 											"key": "available",
 											"value": "{{$randomBoolean}}",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{HOST}}/api/rest/media/:uuid",
-									"host": [
-										"{{HOST}}"
-									],
-									"path": [
-										"api",
-										"rest",
-										"media",
-										":uuid"
-									],
-									"variable": [
+											"disabled": true
+										},
 										{
-											"key": "uuid",
-											"value": "{{$guid}}"
+											"key": "title",
+											"value": "{{$randomWord}}",
+											"disabled": true
+										},
+										{
+											"key": "description",
+											"value": "{{$randomWord}}",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "{{randomMediaType}}",
+											"disabled": true
+										},
+										{
+											"key": "durationSeconds",
+											"value": "{{$randomInt}}",
+											"disabled": true
+										},
+										{
+											"key": "views",
+											"value": "{{$randomInt}}",
+											"disabled": true
+										},
+										{
+											"key": "createdAt",
+											"value": "{{randomPastDaysTimestamp}}",
+											"disabled": true
+										},
+										{
+											"key": "username",
+											"value": "{{$randomUserName}}",
+											"disabled": true
 										}
 									]
 								}
 							},
 							"response": []
 						}
-					],
-					"auth": {
-						"type": "bearer",
-						"bearer": [
-							{
-								"key": "token",
-								"value": "{{AUTH_TOKEN}}",
-								"type": "string"
-							}
-						]
-					},
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									""
-								]
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									""
-								]
-							}
-						}
 					]
 				},
 				{
-					"name": "Get Media",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{HOST}}/api/rest/media/:uuid",
-							"host": [
-								"{{HOST}}"
-							],
-							"path": [
-								"api",
-								"rest",
-								"media",
-								":uuid"
-							],
-							"variable": [
-								{
-									"key": "uuid",
-									"value": "{{$guid}}"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Search Media",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"// select a random media type",
-									"const mediaTypes = [\"MUSIC\", \"VIDEO\", \"MOVIE\", \"DOCUMENTARY\", \"SHOW\", \"PODCAST\", \"AUDIOBOOK\"]",
-									"pm.environment.set(\"randomMediaType\", mediaTypes[Math.floor(Math.random() * mediaTypes.length)]);",
-									"",
-									"// generate random past timestamp",
-									"const pastDate = new Date(Date.now())",
-									"pastDate.setDate((new Date(Date.now())).getDate() - Math.random()*3)",
-									"pm.environment.set(\"randomPastDaysTimestamp\", +pastDate);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{HOST}}/api/rest/media?take=5&skip=0",
-							"host": [
-								"{{HOST}}"
-							],
-							"path": [
-								"api",
-								"rest",
-								"media"
-							],
-							"query": [
-								{
-									"key": "take",
-									"value": "5",
-									"description": "items per pagination"
-								},
-								{
-									"key": "skip",
-									"value": "0",
-									"description": "page of pagination"
-								},
-								{
-									"key": "available",
-									"value": "{{$randomBoolean}}",
-									"disabled": true
-								},
-								{
-									"key": "title",
-									"value": "{{$randomWord}}",
-									"disabled": true
-								},
-								{
-									"key": "description",
-									"value": "{{$randomWord}}",
-									"disabled": true
-								},
-								{
-									"key": "type",
-									"value": "{{randomMediaType}}",
-									"disabled": true
-								},
-								{
-									"key": "durationSeconds",
-									"value": "{{$randomInt}}",
-									"disabled": true
-								},
-								{
-									"key": "views",
-									"value": "{{$randomInt}}",
-									"disabled": true
-								},
-								{
-									"key": "createdAt",
-									"value": "{{randomPastDaysTimestamp}}",
-									"disabled": true
-								},
-								{
-									"key": "owner",
-									"value": "{{$randomUserName}}",
-									"disabled": true
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "user",
-			"item": [
-				{
-					"name": "private",
+					"name": "user",
 					"item": [
 						{
-							"name": "admin",
+							"name": "private",
 							"item": [
 								{
-									"name": "Admin Get User",
+									"name": "admin",
+									"item": [
+										{
+											"name": "Admin View User",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															""
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{HOST}}/api/rest/user/:uuid",
+													"host": [
+														"{{HOST}}"
+													],
+													"path": [
+														"api",
+														"rest",
+														"user",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid",
+															"value": "{{$randomUUID}}"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Admin Delete User",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															""
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{HOST}}/api/rest/user/:uuid",
+													"host": [
+														"{{HOST}}"
+													],
+													"path": [
+														"api",
+														"rest",
+														"user",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid",
+															"value": "{{$randomUUID}}"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Admin Update User",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"// select a random user gender",
+															"const userGenders = [\"MALE\", \"FEMALE\", \"OTHER\"]",
+															"pm.environment.set(\"randomUserGender\", userGenders[Math.floor(Math.random() * userGenders.length)]);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [],
+												"body": {
+													"mode": "urlencoded",
+													"urlencoded": [
+														{
+															"key": "username",
+															"value": "{{$randomUserName}}",
+															"type": "text"
+														},
+														{
+															"key": "email",
+															"value": "{{$randomEmail}}",
+															"type": "text"
+														},
+														{
+															"key": "gender",
+															"value": "{{randomUserGender}}",
+															"type": "text"
+														},
+														{
+															"key": "age",
+															"value": "{{$randomInt}}",
+															"type": "text"
+														},
+														{
+															"key": "password",
+															"value": "{{$randomPassword}}",
+															"type": "text"
+														}
+													]
+												},
+												"url": {
+													"raw": "{{HOST}}/api/rest/user/:uuid",
+													"host": [
+														"{{HOST}}"
+													],
+													"path": [
+														"api",
+														"rest",
+														"user",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid",
+															"value": "{{$randomUUID}}"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Admin Patch User",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"// select a random user gender",
+															"const userGenders = [\"MALE\", \"FEMALE\", \"OTHER\"]",
+															"pm.environment.set(\"randomUserGender\", userGenders[Math.floor(Math.random() * userGenders.length)]);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "PATCH",
+												"header": [],
+												"body": {
+													"mode": "urlencoded",
+													"urlencoded": [
+														{
+															"key": "username",
+															"value": "{{$randomUserName}}",
+															"type": "text"
+														},
+														{
+															"key": "email",
+															"value": "{{$randomEmail}}",
+															"type": "text"
+														},
+														{
+															"key": "gender",
+															"value": "{{randomUserGender}}",
+															"type": "text"
+														},
+														{
+															"key": "age",
+															"value": "{{$randomInt}}",
+															"type": "text"
+														},
+														{
+															"key": "password",
+															"value": "{{$randomPassword}}",
+															"type": "text"
+														}
+													]
+												},
+												"url": {
+													"raw": "{{HOST}}/api/rest/user/:uuid",
+													"host": [
+														"{{HOST}}"
+													],
+													"path": [
+														"api",
+														"rest",
+														"user",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid",
+															"value": "{{$randomUUID}}"
+														}
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "Get Current User",
 									"event": [
 										{
 											"listen": "prerequest",
@@ -426,7 +774,7 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{HOST}}/api/rest/user/:uuid",
+											"raw": "{{HOST}}/api/rest/user/current",
 											"host": [
 												"{{HOST}}"
 											],
@@ -434,57 +782,14 @@
 												"api",
 												"rest",
 												"user",
-												":uuid"
-											],
-											"variable": [
-												{
-													"key": "uuid",
-													"value": "{{$randomUUID}}"
-												}
+												"current"
 											]
 										}
 									},
 									"response": []
 								},
 								{
-									"name": "Admin Delete User",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "DELETE",
-										"header": [],
-										"url": {
-											"raw": "{{HOST}}/api/rest/user/:uuid",
-											"host": [
-												"{{HOST}}"
-											],
-											"path": [
-												"api",
-												"rest",
-												"user",
-												":uuid"
-											],
-											"variable": [
-												{
-													"key": "uuid",
-													"value": "{{$randomUUID}}"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Admin Update User",
+									"name": "Update Current User",
 									"event": [
 										{
 											"listen": "prerequest",
@@ -532,7 +837,7 @@
 											]
 										},
 										"url": {
-											"raw": "{{HOST}}/api/rest/user/:uuid",
+											"raw": "{{HOST}}/api/rest/user/current",
 											"host": [
 												"{{HOST}}"
 											],
@@ -540,20 +845,14 @@
 												"api",
 												"rest",
 												"user",
-												":uuid"
-											],
-											"variable": [
-												{
-													"key": "uuid",
-													"value": "{{$randomUUID}}"
-												}
+												"current"
 											]
 										}
 									},
 									"response": []
 								},
 								{
-									"name": "Admin Patch User",
+									"name": "Patch Current User",
 									"event": [
 										{
 											"listen": "prerequest",
@@ -601,7 +900,7 @@
 											]
 										},
 										"url": {
-											"raw": "{{HOST}}/api/rest/user/:uuid",
+											"raw": "{{HOST}}/api/rest/user/current",
 											"host": [
 												"{{HOST}}"
 											],
@@ -609,22 +908,117 @@
 												"api",
 												"rest",
 												"user",
-												":uuid"
-											],
-											"variable": [
-												{
-													"key": "uuid",
-													"value": "{{$randomUUID}}"
-												}
+												"current"
 											]
 										}
 									},
 									"response": []
 								}
+							],
+							"auth": {
+								"type": "bearer",
+								"bearer": [
+									{
+										"key": "token",
+										"value": "{{AUTH_TOKEN}}",
+										"type": "string"
+									}
+								]
+							},
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
 							]
 						},
 						{
-							"name": "Get Current User",
+							"name": "Register User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// select a random user gender",
+											"const userGenders = [\"MALE\", \"FEMALE\", \"OTHER\"]",
+											"pm.environment.set(\"randomUserGender\", userGenders[Math.floor(Math.random() * userGenders.length)]);",
+											"",
+											"// select a random user role",
+											"const userRoles = [\"USER\", \"ADMIN\"]",
+											"pm.environment.set(\"randomUserRole\", userRoles[Math.floor(Math.random() * userRoles.length)]);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "{{$randomUserName}}",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "{{$randomPassword}}",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "{{$randomEmail}}",
+											"type": "text"
+										},
+										{
+											"key": "gender",
+											"value": "{{randomUserGender}}",
+											"type": "text"
+										},
+										{
+											"key": "age",
+											"value": "{{$randomInt}}",
+											"type": "text"
+										},
+										{
+											"key": "role",
+											"value": "{{randomUserRole}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{HOST}}/api/rest/user",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"api",
+										"rest",
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search User",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -640,378 +1034,67 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{HOST}}/api/rest/user/current",
+									"raw": "{{HOST}}/api/rest/user?username={{$randomUserName}}",
 									"host": [
 										"{{HOST}}"
 									],
 									"path": [
 										"api",
 										"rest",
-										"user",
-										"current"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Current User",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"// select a random user gender",
-											"const userGenders = [\"MALE\", \"FEMALE\", \"OTHER\"]",
-											"pm.environment.set(\"randomUserGender\", userGenders[Math.floor(Math.random() * userGenders.length)]);"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "PUT",
-								"header": [],
-								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
+										"user"
+									],
+									"query": [
 										{
 											"key": "username",
-											"value": "{{$randomUserName}}",
-											"type": "text"
+											"value": "{{$randomUserName}}"
 										},
 										{
 											"key": "email",
 											"value": "{{$randomEmail}}",
-											"type": "text"
-										},
-										{
-											"key": "gender",
-											"value": "{{randomUserGender}}",
-											"type": "text"
-										},
-										{
-											"key": "age",
-											"value": "{{$randomInt}}",
-											"type": "text"
-										},
-										{
-											"key": "password",
-											"value": "{{$randomPassword}}",
-											"type": "text"
+											"disabled": true
 										}
-									]
-								},
-								"url": {
-									"raw": "{{HOST}}/api/rest/user/current",
-									"host": [
-										"{{HOST}}"
-									],
-									"path": [
-										"api",
-										"rest",
-										"user",
-										"current"
 									]
 								}
 							},
 							"response": []
-						},
-						{
-							"name": "Patch Current User",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"// select a random user gender",
-											"const userGenders = [\"MALE\", \"FEMALE\", \"OTHER\"]",
-											"pm.environment.set(\"randomUserGender\", userGenders[Math.floor(Math.random() * userGenders.length)]);"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "PATCH",
-								"header": [],
-								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "username",
-											"value": "{{$randomUserName}}",
-											"type": "text"
-										},
-										{
-											"key": "email",
-											"value": "{{$randomEmail}}",
-											"type": "text"
-										},
-										{
-											"key": "gender",
-											"value": "{{randomUserGender}}",
-											"type": "text"
-										},
-										{
-											"key": "age",
-											"value": "{{$randomInt}}",
-											"type": "text"
-										},
-										{
-											"key": "password",
-											"value": "{{$randomPassword}}",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{HOST}}/api/rest/user/current",
-									"host": [
-										"{{HOST}}"
-									],
-									"path": [
-										"api",
-										"rest",
-										"user",
-										"current"
-									]
-								}
-							},
-							"response": []
-						}
-					],
-					"auth": {
-						"type": "bearer",
-						"bearer": [
-							{
-								"key": "token",
-								"value": "{{AUTH_TOKEN}}",
-								"type": "string"
-							}
-						]
-					},
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									""
-								]
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									""
-								]
-							}
 						}
 					]
 				},
 				{
-					"name": "Register User",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"// select a random user gender",
-									"const userGenders = [\"MALE\", \"FEMALE\", \"OTHER\"]",
-									"pm.environment.set(\"randomUserGender\", userGenders[Math.floor(Math.random() * userGenders.length)]);",
-									"",
-									"// select a random user role",
-									"const userRoles = [\"USER\", \"ADMIN\"]",
-									"pm.environment.set(\"randomUserRole\", userRoles[Math.floor(Math.random() * userRoles.length)]);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "username",
-									"value": "{{$randomUserName}}",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "{{$randomPassword}}",
-									"type": "text"
-								},
-								{
-									"key": "email",
-									"value": "{{$randomEmail}}",
-									"type": "text"
-								},
-								{
-									"key": "gender",
-									"value": "{{randomUserGender}}",
-									"type": "text"
-								},
-								{
-									"key": "age",
-									"value": "{{$randomInt}}",
-									"type": "text"
-								},
-								{
-									"key": "role",
-									"value": "{{randomUserRole}}",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{HOST}}/api/rest/user",
-							"host": [
-								"{{HOST}}"
-							],
-							"path": [
-								"api",
-								"rest",
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Search User",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
+					"name": "swagger",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{HOST}}/api/rest/user?username={{$randomUserName}}",
+							"raw": "{{HOST}}/swagger",
 							"host": [
 								"{{HOST}}"
 							],
 							"path": [
-								"api",
-								"rest",
-								"user"
-							],
-							"query": [
-								{
-									"key": "username",
-									"value": "{{$randomUserName}}"
-								},
-								{
-									"key": "email",
-									"value": "{{$randomEmail}}",
-									"disabled": true
-								}
+								"swagger"
 							]
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "auth",
-			"item": [
+				},
 				{
-					"name": "Login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Automatically saves access token to variable after login response",
-									"// pm.environment.set('AUTH_TOKEN', pm.response.json().token);",
-									"pm.collectionVariables.set('AUTH_TOKEN', pm.response.json().token)"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
+					"name": "healthCheck",
 					"request": {
-						"method": "POST",
+						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "username",
-									"value": "{{$randomUserName}}",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "{{$randomPassword}}",
-									"type": "text"
-								}
-							]
-						},
 						"url": {
-							"raw": "{{HOST}}/api/rest/auth/login",
+							"raw": "{{HOST}}/",
 							"host": [
 								"{{HOST}}"
 							],
 							"path": [
-								"api",
-								"rest",
-								"auth",
-								"login"
+								""
 							]
 						}
 					},
 					"response": []
 				}
 			]
-		},
-		{
-			"name": "swagger",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/swagger",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"swagger"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "healthCheck",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						""
-					]
-				}
-			},
-			"response": []
 		}
 	],
 	"event": [

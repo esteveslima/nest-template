@@ -6,6 +6,7 @@ import { AuthTokenService } from './auth-token.service';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AuthResolver } from './graphql/auth.resolver';
 
 @Module({
   imports: [
@@ -22,6 +23,8 @@ import { AuthService } from './auth.service';
   providers: [
     // Exposable services
     AuthService,
+    AuthResolver,
+
     // Internal services
     AuthTokenService,
   ],

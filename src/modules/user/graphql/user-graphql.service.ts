@@ -1,25 +1,23 @@
-// Responsible for containing business logic
+// Responsible for containing business logic, decoupled to serve only graphql resolvers
 
 import {
-  BadRequestException,
   Injectable,
   NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRepository } from './user.repository';
-import { HashService } from './hash.service';
+import { UserRepository } from '../user.repository';
 
-import { RegisterUserReqDTO } from './dto/req/register-user-req.dto';
-import { RegisterUserResDTO } from './dto/res/register-user-res.dto';
-import { GetUserResDTO } from './dto/res/get-user-res.dto';
-import { UpdateUserReqDTO } from './dto/req/update-user-req.dto';
-import { PatchUserReqDTO } from './dto/req/patch-user-req.dto';
-import { SearchUserReqDTO } from './dto/req/search-user-req.dto';
-import { SearchUserResDTO } from './dto/res/search-user-res.dto';
+import { UserEntity } from '../user.entity';
+import { RegisterUserArgs } from './args/register-user.args';
+import { UpdateUserArgs } from './args/update-user.args';
+import { SearchUserArgs } from './args/search-user.args';
+import { UpdateCurrentUserArgs } from './args/update-current-user.args';
+import { HashService } from '../hash.service';
 
 @Injectable()
-export class UserService {
+export class UserGraphqlService {
   // Get services and repositories from DI
   constructor(
     @InjectRepository(UserRepository) private userRepository: UserRepository,
@@ -29,7 +27,7 @@ export class UserService {
   // Define methods containing business logic
 
   // TODO: public registration aways creates with role 'USER', for role 'ADMIN' must be creted by other authorized admin
-  async registerUser(user: RegisterUserReqDTO): Promise<RegisterUserResDTO> {
+  async registerUser(user: RegisterUserArgs): Promise<UserEntity> {
     const userCreated = await this.userRepository.registerUser({
       ...user,
       password: await this.hashService.hashValue(user.password),
@@ -41,16 +39,20 @@ export class UserService {
 
     return {
       age: userCreated.age,
+      createdAt: userCreated.createdAt,
       email: userCreated.email,
       gender: userCreated.gender,
       id: userCreated.id,
       medias: userCreated.medias,
+      password: undefined,
       role: userCreated.role,
+      updatedAt: userCreated.updatedAt,
       username: userCreated.username,
     };
   }
 
-  async getUserById(uuid: string): Promise<GetUserResDTO> {
+  async getUserById(uuid: string): Promise<UserEntity> {
+    if (!uuid) return undefined;
     const userFound = await this.userRepository.getUserById(uuid);
     if (!userFound) throw new NotFoundException();
 
@@ -60,23 +62,17 @@ export class UserService {
       email: userFound.email,
       gender: userFound.gender,
       id: userFound.id,
-      medias: userFound.medias,
+      medias: userFound.medias, // removing the relation field in attempt to avoid circular nested objects
+      password: undefined,
       role: userFound.role,
+      updatedAt: userFound.updatedAt,
       username: userFound.username,
     };
   }
 
-  //TODO: forbid delete id from current user
-  async deleteUserById(uuid: string): Promise<void> {
-    const isDeleted = await this.userRepository.deleteUserById(uuid);
-    if (!isDeleted) throw new NotFoundException();
-
-    return;
-  }
-
   async modifyUserById(
     uuid: string,
-    user: UpdateUserReqDTO | PatchUserReqDTO,
+    user: UpdateUserArgs | UpdateCurrentUserArgs,
   ): Promise<void> {
     if (user.password)
       user.password = await this.hashService.hashValue(user.password);
@@ -92,20 +88,29 @@ export class UserService {
     return;
   }
 
-  async searchUsers(
-    searchUserFilters: SearchUserReqDTO,
-  ): Promise<SearchUserResDTO[]> {
-    if (Object.keys(searchUserFilters).length <= 0)
-      throw new BadRequestException('No filters were provided');
+  //TODO: forbid delete id from current user
+  async deleteUserById(uuid: string): Promise<void> {
+    const isDeleted = await this.userRepository.deleteUserById(uuid);
+    if (!isDeleted) throw new NotFoundException();
 
+    return;
+  }
+
+  async searchUserEntity(
+    searchUserFilters: SearchUserArgs,
+  ): Promise<UserEntity[]> {
     const usersFound = await this.userRepository.searchUser(searchUserFilters);
-    if (usersFound.length <= 0) throw new NotFoundException();
 
     return usersFound.map((user) => ({
+      age: user.age,
+      createdAt: user.createdAt,
       email: user.email,
+      gender: user.gender,
       id: user.id,
       medias: user.medias,
+      password: undefined,
       role: user.role,
+      updatedAt: user.updatedAt,
       username: user.username,
     }));
   }

@@ -1,16 +1,18 @@
 import { request } from 'express';
 import { IAuthUser } from 'src/modules/auth/interfaces/user/user.interface';
+import { IGraphQLInfo } from './graphql-info.interface';
 
 export interface IRequestLogPayload {
-  method: typeof request.route.path;
-  path: typeof request.route.path;
-  payload: {
-    headers: typeof request.headers;
-    params: typeof request.params;
-    query: typeof request.query;
-    body: typeof request.body;
+  http: {
+    method: string;
+    path: string;
+    payload: {
+      headers: typeof request.headers;
+      params: typeof request.params;
+      query: typeof request.query;
+      body: typeof request.body;
+    };
   };
-  auth: {
-    user: IAuthUser;
-  };
+  graphql?: IGraphQLInfo;
+  auth: IAuthUser;
 }

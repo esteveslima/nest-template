@@ -11,16 +11,19 @@ export class CustomLogger extends ConsoleLogger {
   log(message: any, context?: any, ...rest: any[]): void {
     console.log(message);
   }
+  info(message: any, context?: any, ...rest: any[]): void {
+    console.info(message);
+  }
   debug(message: any, context?: any, ...rest: any[]): void {
-    console.log(message);
+    console.debug(message);
   }
   verbose(message: any, context?: any, ...rest: any[]): void {
     console.log(message);
   }
   warn(message: any, context?: any, ...rest: any[]): void {
-    console.log(message);
+    console.warn(message);
   }
   error(message: any, stack?: any, context?: any, ...rest: any[]): void {
-    console.log(message);
+    console.error(message);
   }
 }

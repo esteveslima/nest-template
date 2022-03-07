@@ -19,3 +19,11 @@ Standard Nest project as template for future consultation.
 - Entity
 - Repository
 - disabled module tests
+
+
+TODO: list topics to be commented on this readme
+ - .
+ - authentication & authorization built on the guard to simplify applying with decorators
+ - for graphql can applied auth guard on entire methods(query/mutations) as well as only on fields(which use a custom interceptor to get user info and a field middleware to limit access only on "private" fields, creating a model with mixed permissions)
+ - //TODO: does npm packages should be wrapped as a custom provider to allow DI?
+ - 

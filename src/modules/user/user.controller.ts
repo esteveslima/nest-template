@@ -44,8 +44,8 @@ export class UserController {
   @SwaggerDoc({ tag: '/user', description: '' })
   async searchUser(
     @Query() searchUserFilters: SearchUserReqDTO,
-  ): ReturnType<typeof UserService.prototype.searchUser> {
-    return this.userService.searchUser(searchUserFilters);
+  ): ReturnType<typeof UserService.prototype.searchUsers> {
+    return this.userService.searchUsers(searchUserFilters);
   }
 
   @Get('/current')

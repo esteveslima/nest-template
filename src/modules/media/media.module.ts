@@ -5,7 +5,10 @@ import { DatabaseConfigModule } from '../database-config/database-config.module'
 import { MediaEventsListenersService } from './media-events-listeners.service';
 import { MediaController } from './media.controller';
 import { MediaRepository } from './media.repository';
+import { MediaResolver } from './graphql/media.resolver';
 import { MediaService } from './media.service';
+import { UserModule } from '../user/user.module';
+import { MediaGraphqlService } from './graphql/media-graphql.service';
 
 @Module({
   imports: [
@@ -15,13 +18,16 @@ import { MediaService } from './media.service';
     DatabaseConfigModule,
     TypeOrmModule.forFeature([MediaRepository]), // Import ORM Repositories for DI
 
-    // Import ORM Repositories for DI
-    TypeOrmModule.forFeature([MediaRepository]),
+    // Other feature modules dependencies
+    UserModule,
   ],
   controllers: [MediaController],
   providers: [
     MediaService,
     MediaEventsListenersService,
+    MediaGraphqlService,
+    MediaResolver,
   ],
+  exports: [MediaService, MediaGraphqlService],
 })
 export class MediaModule {}

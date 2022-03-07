@@ -60,10 +60,14 @@ export class UserRepository extends Repository<UserEntity> {
 
     // add conditions to search
     if (email) {
-      query.andWhere('user.email = :email', { email });
+      query.andWhere('user.email LIKE :email', {
+        email: `%${email}%`,
+      });
     }
     if (username) {
-      query.andWhere('user.username = :username', { username });
+      query.andWhere('user.username LIKE :username', {
+        username: `%${username}%`,
+      });
     }
 
     const searchResult = await query.getMany();

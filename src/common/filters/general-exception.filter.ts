@@ -5,62 +5,67 @@ import {
   HttpException,
   Logger,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { IRequestLogPayload } from 'src/common/interceptors/interfaces/log/request-log-payload.interface';
 import { IResponseLogPayload } from 'src/common/interceptors/interfaces/log/response-log-payload.interface';
-import { IAuthUser } from 'src/modules/auth/interfaces/user/user.interface';
+import { ILogPayload } from '../interceptors/interfaces/log/log-payload.interface';
+import { IResolvedRequest } from '../interceptors/interfaces/resolved-request.interface';
 
 @Catch(HttpException)
 export class GeneralExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const res = ctx.getResponse<Response>();
-    const req = ctx.getRequest<Request>();
+    const context = host.switchToHttp();
+    const req = context.getRequest<IResolvedRequest>();
+    const res = context.getResponse<Response>();
     const status = exception.getStatus();
 
-    if (!req['alreadyLogged']) {
-      this.logRequest(req, exception);
+    if (!req?.isRequestLogged) {
+      this.logRequestException(req, exception);
     }
 
-    const exceptionResponse = exception.getResponse();
-    if (typeof exceptionResponse === 'object') {
-      res.status(status).json(exceptionResponse);
-    } else {
-      res.status(status).json({
-        statusCode: status,
-        message: exception.message,
-      });
+    // Format error response(except for graphql)
+    const contextType = host.getType() as string;
+    if (contextType !== 'graphql') {
+      const exceptionResponse = exception.getResponse();
+      if (typeof exceptionResponse === 'object') {
+        res.status(status).json(exceptionResponse);
+      } else {
+        res.status(status).json({
+          statusCode: status,
+          message: exception.message,
+        });
+      }
     }
   }
 
-  private logRequest(req: Request, exception: HttpException) {
+  private logRequestException(req: IResolvedRequest, exception: HttpException) {
     const requestLogPayload: IRequestLogPayload = {
-      method: Object.keys(req.route?.methods || {})[0]?.toUpperCase(),
-      path: req.route?.path,
-      payload: {
-        headers: req.headers,
-        params: req.params,
-        query: req.query,
-        body: req.body,
+      http: {
+        method: req?.method.toUpperCase(),
+        path: `${req?.baseUrl}${req?.route?.path || ''}`,
+        payload: {
+          headers: req?.headers,
+          params: req?.params,
+          query: req?.query,
+          body: req?.body,
+        },
       },
-      auth: {
-        user: req['user'] as IAuthUser,
-      },
+      auth: req?.user,
     };
 
-    const responseLogErrorPayload: IResponseLogPayload = {
+    const responseLogPayload: IResponseLogPayload = {
       statusCode: exception.getStatus(),
       result: exception.message,
     };
 
-    Logger.error(
-      JSON.stringify({
-        request: requestLogPayload,
-        response: responseLogErrorPayload,
-        error: exception.stack,
-        startTime: undefined,
-        executionTime: undefined,
-      }),
-    );
+    const logPayload: ILogPayload = {
+      request: requestLogPayload,
+      response: responseLogPayload,
+      startTimestamp: req?.startTimestamp,
+      executionTime: undefined,
+      errorStack: exception.stack,
+    };
+
+    Logger.error(JSON.stringify(logPayload)); // Stringify logs for better visualization on cloud tools like aws cloudwatch
   }
 }

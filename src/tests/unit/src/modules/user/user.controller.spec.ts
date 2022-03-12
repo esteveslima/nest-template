@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
-import { AuthService } from 'src/modules/auth/auth.service';
+import { AuthRestService } from 'src/modules/auth/auth.service';
 import { UserController } from 'src/modules/user/user.controller';
-import { UserService } from 'src/modules/user/user.service';
+import { UserRestService } from 'src/modules/user/user-rest.service';
 import { runCommonTests } from 'src/tests/unit/common/controller/run-common-tests';
 import { testSwaggerDocApplied } from 'src/tests/unit/common/controller/test-swagger-doc-applied';
 
@@ -11,10 +11,10 @@ it('disabled due to refactoring exposed mocking hell problem', () => {
 
 // describe('UserController', () => {
 //   let userController: UserController;
-//   let userService: UserService;
+//   let userService: UserRestService;
 
 //   beforeAll(async () => {
-//     const userServiceMock: Partial<UserService> = {
+//     const userServiceMock: Partial<UserRestService> = {
 //       deleteUserById: jest.fn(),
 //       getUserById: jest.fn(),
 //       modifyUserById: jest.fn(),
@@ -26,13 +26,13 @@ it('disabled due to refactoring exposed mocking hell problem', () => {
 //     const moduleRef = await Test.createTestingModule({
 //       controllers: [UserController],
 //       providers: [
-//         { provide: UserService, useValue: userServiceMock },
-//         { provide: AuthService, useValue: {} }, // required because of guard decorator
+//         { provide: UserRestService, useValue: userServiceMock },
+//         { provide: AuthRestService, useValue: {} }, // required because of guard decorator
 //       ],
 //     }).compile();
 
 //     userController = moduleRef.get<UserController>(UserController);
-//     userService = moduleRef.get<UserService>(UserService);
+//     userService = moduleRef.get<UserRestService>(UserRestService);
 //   });
 
 //   afterEach(async () => {

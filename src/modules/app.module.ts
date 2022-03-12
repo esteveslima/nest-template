@@ -2,22 +2,22 @@
 
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { EnvironmentConfigModule } from './environment-config/environment-config.module';
-import { EventConfigModule } from './event-config/event-config.module';
-import { GraphQLConfigModule } from './graphql-config/graphql-config.module';
-import { MediaModule } from './media/media.module';
-import { UserModule } from './user/user.module';
+import { MediaModule } from './apps/media/media.module';
+import { UserModule } from './apps/user/user.module';
+import { DBModule } from './setup/db/db.module';
+import { EnvModule } from './setup/env/env.module';
+import { EventsModule } from './setup/events/events.module';
+import { GQLModule } from './setup/gql/gql.module';
 
 @Module({
   imports: [
-    // Config module
-    EnvironmentConfigModule,
-    // Events module
-    EventConfigModule,
-    // GraphQl module
-    GraphQLConfigModule,
+    // Setup modules
+    EnvModule,
+    DBModule,
+    EventsModule,
+    GQLModule,
 
-    // Feature modules
+    // Application modules
     MediaModule,
     UserModule,
   ],

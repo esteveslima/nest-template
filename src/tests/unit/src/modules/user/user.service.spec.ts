@@ -1,20 +1,20 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
-import { PatchUserReqDTO } from '../../../../../modules/user/dto/req/patch-user-req.dto';
+// import { BadRequestException, NotFoundException } from '@nestjs/common';
+// import { Test } from '@nestjs/testing';
+// import { PatchUserReqDTO } from '../../../../../modules/user/dto/rest/req/patch-user-req.dto';
 
-import { RegisterUserReqDTO } from '../../../../../modules/user/dto/req/register-user-req.dto';
-import { SearchUserReqDTO } from '../../../../../modules/user/dto/req/search-user-req.dto';
-import { UpdateUserReqDTO } from '../../../../../modules/user/dto/req/update-user-req.dto';
-import { GetUserResDTO } from '../../../../../modules/user/dto/res/get-user-res.dto';
-import { RegisterUserResDTO } from '../../../../../modules/user/dto/res/register-user-res.dto';
-import { SearchUserResDTO } from '../../../../../modules/user/dto/res/search-user-res.dto';
-import {
-  enumGenderType,
-  enumRole,
-} from '../../../../../modules/user/interfaces/entity/user.interface';
-import { UserEntity } from '../../../../../modules/user/user.entity';
-import { UserRepository } from '../../../../../modules/user/user.repository';
-import { UserService } from '../../../../../modules/user/user.service';
+// import { RegisterUserReqDTO } from '../../../../../modules/user/dto/rest/req/register-user-req.dto';
+// import { SearchUserReqDTO } from '../../../../../modules/user/dto/rest/req/search-user-req.dto';
+// import { UpdateUserReqDTO } from '../../../../../modules/user/dto/rest/req/update-user-req.dto';
+// import { GetUserResDTO } from '../../../../../modules/user/dto/res/get-user-res.dto';
+// import { RegisterUserResDTO } from '../../../../../modules/user/dto/res/register-user-res.dto';
+// import { SearchUserResDTO } from '../../../../../modules/user/dto/res/search-user-res.dto';
+// import {
+//   enumGenderType,
+//   enumRole,
+// } from '../../../../../modules/user/interfaces/entity/user.interface';
+// import { UserEntity } from '../../../../../modules/user/models/user.entity';
+// import { UserRepository } from '../../../../../modules/user/user.repository';
+// import { UserRestService } from '../../../../../modules/user/services/user-rest.service';
 
 // TODO: mock bcrypt with service
 // TODO: mock only EXTERNAL dependencies and use local dependencies integrated, relative to the APPLICATION(otherwise, mocking dependencies of local files may lead to a mocking hell)
@@ -63,8 +63,8 @@ it('disabled due to refactoring exposed mocking hell problem', () => {
 //   searchUser: jest.fn(() => Promise.resolve(undefined)),
 // };
 
-// describe('UserService', () => {
-//   let userService: UserService;
+// describe('UserRestService', () => {
+//   let userService: UserRestService;
 //   let userRepositoryMock: typeof userRepositoryMockBase;
 
 //   // Create a mock module for every test
@@ -74,14 +74,14 @@ it('disabled due to refactoring exposed mocking hell problem', () => {
 //     userRepositoryMock = userRepositoryMockBase;
 //     const module = await Test.createTestingModule({
 //       providers: [
-//         UserService,
+//         UserRestService,
 //         {
 //           provide: UserRepository,
 //           useValue: userRepositoryMock,
 //         },
 //       ],
 //     }).compile();
-//     userService = module.get(UserService);
+//     userService = module.get(UserRestService);
 //   });
 
 //   describe('registerUser', () => {

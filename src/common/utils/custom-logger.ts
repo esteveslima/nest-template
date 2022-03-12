@@ -1,12 +1,10 @@
 import { ConsoleLogger, ConsoleLoggerOptions } from '@nestjs/common';
 
+//TODO: create module for custom logger?
 export class CustomLogger extends ConsoleLogger {
-  // constructor(context?: string, options?: ConsoleLoggerOptions) {
-  //   super(context, { timestamp: true, ...options });
-  //   const isCloudEnvironment =
-  //     !!process.env.NODE_ENV && process.env.NODE_ENV !== 'local';
-  //   if (isCloudEnvironment) process.env.NO_COLOR = 'NO_COLOR'; // setting env var to disable color chracters on logs
-  // }
+  constructor(context?: string, options?: ConsoleLoggerOptions) {
+    super(context, { ...options });
+  }
 
   log(message: any, context?: any, ...rest: any[]): void {
     console.log(message);

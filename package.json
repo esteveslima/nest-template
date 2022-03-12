@@ -12,6 +12,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --watch --debug 0.0.0.0:9229",
+    "start:env": "set -o allexport && . assets/environment/.env && set +o allexport && nest start --watch",
     "debug": "node --inspect=0.0.0.0:9229 $INIT_CWD/node_modules/.bin/nest start --debug --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",

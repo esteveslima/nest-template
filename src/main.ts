@@ -2,8 +2,9 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as basicAuth from 'express-basic-auth';
-import { GeneralExceptionFilter } from './common/filters/general-exception.filter';
-import { LogInterceptor } from './common/interceptors/log.interceptor';
+import { GeneralExceptionFilter } from './common/enhancers/filters/general-exception.filter';
+import { LogInterceptor } from './common/enhancers/interceptors/log.interceptor';
+
 import { CustomLogger } from './common/utils/custom-logger';
 import { AppModule } from './modules/app.module';
 

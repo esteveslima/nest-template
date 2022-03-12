@@ -23,7 +23,16 @@ Standard Nest project as template for future consultation.
 
 TODO: list topics to be commented on this readme
  - .
- - authentication & authorization built on the guard to simplify applying with decorators
- - for graphql can applied auth guard on entire methods(query/mutations) as well as only on fields(which use a custom interceptor to get user info and a field middleware to limit access only on "private" fields, creating a model with mixed permissions)
- - //TODO: does npm packages should be wrapped as a custom provider to allow DI?
- - 
+ - providers and custom providers
+   - injectable classes can be marked as providers for modules
+   - for custom values(e.g.: npm packages) it should be wrapped as a custom provider to allow DI and also inject manually with it's token value
+ - db
+   - only access to data is through repository
+   - possible to have multiple databases and select by name
+ - doc
+   - GET /swagger on brouser to access live doc
+   - GET /api/graphql on browser to access graphql playground with live schema
+ - auth
+   - authentication & authorization built on the guard to simplify applying with decorators
+ - graphql
+   - for graphql can applied auth guard on entire methods(query/mutations) as well as only on fields(which use a custom interceptor to get user info and a field middleware to limit access only on "private" fields, creating a model with mixed permissions)

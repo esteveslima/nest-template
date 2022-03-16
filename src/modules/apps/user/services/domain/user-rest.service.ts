@@ -6,7 +6,7 @@ import {
   NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
-import { HashService } from '../utils/hash.service';
+import { HashService } from '../adapters/clients/hash.service';
 import { RegisterUserReqDTO } from '../../dtos/rest/req/register-user-req.dto';
 import { UpdateUserReqDTO } from '../../dtos/rest/req/update-user-req.dto';
 import { PatchUserReqDTO } from '../../dtos/rest/req/patch-user-req.dto';
@@ -14,7 +14,7 @@ import { SearchUserReqDTO } from '../../dtos/rest/req/search-user-req.dto';
 import { RegisterUserResDTO } from '../../dtos/rest/res/register-user-res.dto';
 import { GetUserResDTO } from '../../dtos/rest/res/get-user-res.dto';
 import { SearchUserResDTO } from '../../dtos/rest/res/search-user-res.dto';
-import { UserRepository } from '../database/repositories/user.repository';
+import { UserRepository } from '../adapters/database/repositories/user.repository';
 
 @Injectable()
 export class UserRestService {

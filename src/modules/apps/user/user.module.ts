@@ -7,11 +7,11 @@ import { UserController } from './user.controller';
 import { UserEntity } from './models/user.entity';
 import { UserRestService } from './services/domain/user-rest.service';
 import { UserGraphqlService } from './services/domain/user-graphql.service';
-import { HashService } from './services/utils/hash.service';
+import { HashService } from './services/adapters/clients/hash.service';
 import { UserInternalService } from './services/domain/user-internal.service';
-import { UserRepository } from './services/database/repositories/user.repository';
+import { UserRepository } from './services/adapters/database/repositories/user.repository';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
-import { BcryptCustomProvider } from 'src/common/providers/packages/bcrypt.provider';
+import { BcryptCustomProvider } from 'src/common/internals/providers/packages/bcrypt.provider';
 
 @Module({
   imports: [

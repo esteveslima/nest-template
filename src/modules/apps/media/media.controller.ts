@@ -21,9 +21,9 @@ import { RegisterMediaReqDTO } from './dtos/rest/req/register-media-req.dto';
 import { UpdateMediaReqDTO } from './dtos/rest/req/update-media-req.dto';
 import { SearchMediaReqDTO } from './dtos/rest/req/search-media-req.dto';
 
-import { Auth } from '../auth/decorators/auth.decorator';
-import { SwaggerDoc } from 'src/common/decorators/swagger-doc.decorator';
-import { GetAuthUserEntity } from '../auth/decorators/get-auth-user-entity.decorator';
+import { Auth } from '../auth/internals/decorators/auth.decorator';
+import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorator';
+import { GetAuthUserEntity } from '../auth/internals/decorators/get-auth-user-entity.decorator';
 
 @Controller('/rest/media')
 export class MediaController {

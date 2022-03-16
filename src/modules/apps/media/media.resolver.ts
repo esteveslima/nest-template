@@ -9,13 +9,13 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { GetGraphqlAuthUserInfo } from 'src/modules/apps/auth/decorators/graphql/graphql-user-info.decorator';
+import { GetGraphqlAuthUserInfo } from 'src/modules/apps/auth/internals/decorators/graphql/graphql-user-info.decorator';
 import { SearchMediaArgsDTO } from './dtos/graphql/args/search-media.args';
 import { RegisterMediaArgsDTO } from './dtos/graphql/args/register-media.args';
 import { MediaType } from './models/media.type';
-import { GetAuthUserEntity } from 'src/modules/apps/auth/decorators/get-auth-user-entity.decorator';
+import { GetAuthUserEntity } from 'src/modules/apps/auth/internals/decorators/get-auth-user-entity.decorator';
 import { UpdateMediaArgsDTO } from './dtos/graphql/args/update-media.args';
-import { Auth } from 'src/modules/apps/auth/decorators/auth.decorator';
+import { Auth } from 'src/modules/apps/auth/internals/decorators/auth.decorator';
 import { MediaGraphqlService } from './services/domain/media-graphql.service';
 import { UserGraphqlService } from '../user/services/domain/user-graphql.service';
 import { UserEntity } from '../user/models/user.entity';

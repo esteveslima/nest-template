@@ -9,9 +9,9 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { Auth } from 'src/modules/apps/auth/decorators/auth.decorator';
-import { GetAuthUserEntity } from 'src/modules/apps/auth/decorators/get-auth-user-entity.decorator';
-import { GetGraphqlAuthUserInfo } from 'src/modules/apps/auth/decorators/graphql/graphql-user-info.decorator';
+import { Auth } from 'src/modules/apps/auth/internals/decorators/auth.decorator';
+import { GetAuthUserEntity } from 'src/modules/apps/auth/internals/decorators/get-auth-user-entity.decorator';
+import { GetGraphqlAuthUserInfo } from 'src/modules/apps/auth/internals/decorators/graphql/graphql-user-info.decorator';
 import { UserGraphqlService } from './services/domain/user-graphql.service';
 import { UserEntity } from './models/user.entity';
 import { RegisterUserArgsDTO } from './dtos/graphql/args/register-user.args';
@@ -97,7 +97,7 @@ export class UserResolver {
 
     const normalizedMedias = medias.map((media) => {
       // Avoiding circular nested query objects for relation relation (user:media) => (1:N)
-      // A media object with an user parent object cannot expose another user object, because it wouldn't add any new information for the result
+      // A media object within an user parent object cannot expose another user object, because it wouldn't add any new information for the result
       media.user = undefined;
       return media;
     });

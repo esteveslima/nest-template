@@ -1,19 +1,16 @@
 // Responsible for containing business logic
 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MediaRepository } from '../database/repositories/media.repository';
-
+import { MediaRepository } from '../adapters/database/repositories/media.repository';
 import { UserEntity } from '../../../user/models/user.entity';
 import { RegisterMediaReqDTO } from '../../dtos/rest/req/register-media-req.dto';
 import { UpdateMediaReqDTO } from '../../dtos/rest/req/update-media-req.dto';
 import { PatchMediaReqDTO } from '../../dtos/rest/req/patch-media-req.dto';
 import { SearchMediaReqDTO } from '../../dtos/rest/req/search-media-req.dto';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { IEventMediaViewed } from '../../interfaces/services/domain/events/listeners/media-viewed.interface';
-import { MEDIA_VIEWED } from './events/listeners/constants';
 import { GetMediaResDTO } from '../../dtos/rest/res/get-media-res.dto';
 import { RegisterMediaResDTO } from '../../dtos/rest/res/register-media-res.dto';
 import { SearchMediaResDTO } from '../../dtos/rest/res/search-media-res.dto';
+import { MediaPubsubPublisherService } from '../adapters/pubsub/publishers/media-pubsub-publisher.service';
 
 @Injectable()
 export class MediaRestService {
@@ -21,7 +18,7 @@ export class MediaRestService {
   constructor(
     private mediaRepository: MediaRepository,
 
-    private eventEmitter: EventEmitter2,
+    private mediaPubsubPublisherService: MediaPubsubPublisherService,
   ) {}
 
   // Define methods containing business logic
@@ -36,6 +33,7 @@ export class MediaRestService {
     });
 
     return {
+      //TODO: create decoupled presenters
       description: mediaCreated.description,
       durationSeconds: mediaCreated.durationSeconds,
       id: mediaCreated.id,
@@ -48,9 +46,9 @@ export class MediaRestService {
     const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
     if (!mediaFound) throw new NotFoundException();
 
-    await this.eventEmitter.emitAsync(MEDIA_VIEWED, {
+    await this.mediaPubsubPublisherService.publishEvent('MEDIA_VIEWED', {
       uuid: mediaUuid,
-    } as IEventMediaViewed); //TODO: find type-safety for events by name and check if it doesn't hurt the purporse for this decoupled architecture
+    });
 
     return {
       available: mediaFound.available,

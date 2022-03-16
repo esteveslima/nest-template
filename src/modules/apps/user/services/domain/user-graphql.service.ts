@@ -10,8 +10,8 @@ import { RegisterUserArgsDTO } from '../../dtos/graphql/args/register-user.args'
 import { UpdateUserArgsDTO } from '../../dtos/graphql/args/update-user.args';
 import { SearchUserArgsDTO } from '../../dtos/graphql/args/search-user.args';
 import { UpdateCurrentUserArgsDTO } from '../../dtos/graphql/args/update-current-user.args';
-import { HashService } from '../utils/hash.service';
-import { UserRepository } from '../database/repositories/user.repository';
+import { HashService } from '../adapters/clients/hash.service';
+import { UserRepository } from '../adapters/database/repositories/user.repository';
 
 @Injectable()
 export class UserGraphqlService {

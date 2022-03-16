@@ -32,6 +32,7 @@ TODO: list topics to be commented on this readme
  - doc
    - GET /swagger on brouser to access live doc
    - GET /api/graphql on browser to access graphql playground with live schema
+   - describe dir structure with: https://medium.com/codex/clean-architecture-for-dummies-df6561d42c94#ce42
  - auth
    - authentication & authorization built on the guard to simplify applying with decorators
  - graphql

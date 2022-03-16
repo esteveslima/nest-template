@@ -2,7 +2,7 @@
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserInternalService } from '../../../user/services/domain/user-internal.service';
-import { AuthTokenService } from '../utils/auth-token.service';
+import { AuthTokenService } from '../adapters/clients/auth-token.service';
 import { LoginAuthArgsDTO } from '../../dtos/graphql/args/login-auth.args';
 import { IJwtTokenPayload } from '../../interfaces/payloads/jwt-payload.interface';
 

@@ -8,7 +8,7 @@ import {
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { GraphqlAuthField } from 'src/modules/apps/auth/decorators/graphql/graphql-auth-field.decorator';
+import { GraphqlAuthField } from 'src/modules/apps/auth/internals/decorators/graphql/graphql-auth-field.decorator';
 
 import { UserType } from '../../user/models/user.type';
 import {

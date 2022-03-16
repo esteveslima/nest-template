@@ -1,12 +1,11 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as basicAuth from 'express-basic-auth';
-import { GeneralExceptionFilter } from './common/enhancers/filters/general-exception.filter';
-import { LogInterceptor } from './common/enhancers/interceptors/log.interceptor';
-
-import { CustomLogger } from './common/utils/custom-logger';
+import { GeneralExceptionFilter } from './common/internals/enhancers/filters/general-exception.filter';
+import { LogInterceptor } from './common/internals/enhancers/interceptors/log.interceptor';
+import { CustomLogger } from './common/adapters/logger/custom-logger';
 import { AppModule } from './modules/app.module';
+import { devToolsBasicAuthMiddleware } from './common/internals/enhancers/middlewares/dev-tools-basic-auth.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -37,19 +36,14 @@ async function bootstrap() {
   const isDevelopmentEnvironment =
     process.env.NODE_ENV && !process.env.NODE_ENV.includes('prod');
   if (isDevelopmentEnvironment) {
-    // Setup basic auth for the web tools(must be set before the tools routes)
     const webToolsRoutes = {
       swaggerRoute: '/swagger',
-      // graphqlPlaygroundRoute: '/api/graphql',  // the basic auth middleware breaks communication with api(TODO: find a way to change playground UI URL)
+      graphqlPlaygroundRoute: '/api/graphql',
     };
+
+    // Apply basic auth middleware for the web tools(must be set before the tools)
     Object.values(webToolsRoutes).forEach((route) => {
-      app.use(
-        route,
-        basicAuth({
-          challenge: true,
-          users: { [process.env.DEVELOPER_USER]: process.env.DEVELOPER_PASS },
-        }),
-      );
+      app.use(route, devToolsBasicAuthMiddleware);
     });
 
     // Setup swagger

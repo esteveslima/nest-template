@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { SearchUserReqDTO } from '../../dtos/rest/req/search-user-req.dto';
 import { UserEntity } from '../../models/user.entity';
-import { UserRepository } from '../database/repositories/user.repository';
-import { HashService } from '../utils/hash.service';
+import { UserRepository } from '../adapters/database/repositories/user.repository';
+import { HashService } from '../adapters/clients/hash.service';
 
 @Injectable()
 export class UserInternalService {

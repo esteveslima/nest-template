@@ -1,8 +1,7 @@
 // Responsible for containing business logic, decoupled for graphql resolvers
 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MediaRepository } from '../database/repositories/media.repository';
-
+import { MediaRepository } from '../adapters/database/repositories/media.repository';
 import { UserEntity } from '../../../user/models/user.entity';
 import { MediaEntity } from '../../models/media.entity';
 import { UpdateMediaArgsDTO } from '../../dtos/graphql/args/update-media.args';

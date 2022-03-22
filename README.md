@@ -23,6 +23,7 @@ Standard Nest project as template for future consultation.
 
 TODO: list topics to be commented on this readme
  - .
+ - "clean architecture", separation of concerns, error handling
  - providers and custom providers
    - injectable classes can be marked as providers for modules
    - for custom values(e.g.: npm packages) it should be wrapped as a custom provider to allow DI and also inject manually with it's token value

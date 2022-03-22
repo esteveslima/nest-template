@@ -1,7 +1,7 @@
 // Interface describing entity properties
 
 import { IMedia } from '../../../../media/interfaces/models/entities/media.interface';
-
+//TODO: move types/tests/etc... closer to source codes, following the colocation principle(maybe isolating with single colocated folder)
 export enum enumGenderType {
   MALE = 'MALE',
   FEMALE = 'FEMALE',

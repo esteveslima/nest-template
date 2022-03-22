@@ -44,7 +44,6 @@ export class MediaRestService {
 
   async getMediaById(mediaUuid: string): Promise<GetMediaResDTO> {
     const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
-    if (!mediaFound) throw new NotFoundException();
 
     await this.mediaPubsubPublisherService.publishEvent('MEDIA_VIEWED', {
       uuid: mediaUuid,
@@ -64,11 +63,7 @@ export class MediaRestService {
   }
 
   async deleteMediaById(mediaUuid: string, user: UserEntity): Promise<void> {
-    const isDeleted = await this.mediaRepository.deleteMediaById(
-      mediaUuid,
-      user,
-    );
-    if (!isDeleted) throw new NotFoundException();
+    await this.mediaRepository.deleteMediaById(mediaUuid, user);
 
     return;
   }
@@ -78,12 +73,7 @@ export class MediaRestService {
     user: UserEntity,
     modifyMedia: UpdateMediaReqDTO | PatchMediaReqDTO,
   ): Promise<void> {
-    const isModified = await this.mediaRepository.modifyMediaById(
-      mediaUuid,
-      user,
-      modifyMedia,
-    );
-    if (!isModified) throw new NotFoundException();
+    await this.mediaRepository.modifyMediaById(mediaUuid, user, modifyMedia);
 
     return;
   }
@@ -91,14 +81,15 @@ export class MediaRestService {
   async searchMedia(
     searchMediaFilters: SearchMediaReqDTO,
   ): Promise<SearchMediaResDTO[]> {
+    const createdAtDate = searchMediaFilters.createdAt
+      ? new Date(searchMediaFilters.createdAt)
+      : undefined;
+
     const searchFilters = {
       ...searchMediaFilters,
-      createdAt: searchMediaFilters.createdAt
-        ? new Date(searchMediaFilters.createdAt)
-        : undefined,
+      createdAt: createdAtDate,
     };
     const searchResult = await this.mediaRepository.searchMedia(searchFilters);
-    if (searchResult.length <= 0) throw new NotFoundException();
 
     const result = searchResult.map(
       (media): SearchMediaResDTO => ({

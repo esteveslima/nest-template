@@ -81,6 +81,7 @@ export class MediaResolver {
   @ResolveField('user', () => UserType, { nullable: true })
   async getMedias(@Parent() media: MediaType): Promise<UserType> {
     const userId = media?.user?.id; //TODO: refactor after queries dont do eager loading, the field user should now be only the uuid
+    if (!userId) return undefined;
 
     const user = await this.userGraphqlService.getUserById(userId);
 

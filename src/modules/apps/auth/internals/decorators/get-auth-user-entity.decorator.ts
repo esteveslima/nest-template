@@ -4,7 +4,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { GetAuthUserEntityPipe } from '../enhancers/pipes/get-auth-user-entity.pipe';
 
-export const GetAuthUserEntity = (data = undefined) =>
+export const GetAuthUserEntity = (data: any = undefined) =>
   createParamDecorator((data: never, context: ExecutionContext) => {
     return context; // Data received by pipe
   })(data, GetAuthUserEntityPipe);

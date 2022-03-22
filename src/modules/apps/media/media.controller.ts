@@ -35,7 +35,7 @@ export class MediaController {
   @Get('/:uuid')
   @SwaggerDoc({ tag: '/media', description: '' })
   async getMediaById(
-    @Param('uuid', ParseUUIDPipe) mediaUuid,
+    @Param('uuid', ParseUUIDPipe) mediaUuid: string,
   ): ReturnType<typeof MediaRestService.prototype.getMediaById> {
     return this.mediaService.getMediaById(mediaUuid);
   }
@@ -63,7 +63,7 @@ export class MediaController {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async deleteMediaById(
-    @Param('uuid', ParseUUIDPipe) mediaUuid,
+    @Param('uuid', ParseUUIDPipe) mediaUuid: string,
     @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaRestService.prototype.deleteMediaById> {
     await this.mediaService.deleteMediaById(mediaUuid, authUser);
@@ -76,7 +76,7 @@ export class MediaController {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async updateMediaById(
-    @Param('uuid', ParseUUIDPipe) mediaUuid,
+    @Param('uuid', ParseUUIDPipe) mediaUuid: string,
     @Body() mediaObject: UpdateMediaReqDTO,
     @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaRestService.prototype.modifyMediaById> {
@@ -90,7 +90,7 @@ export class MediaController {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async patchMediaById(
-    @Param('uuid', ParseUUIDPipe) mediaUuid,
+    @Param('uuid', ParseUUIDPipe) mediaUuid: string,
     @Body() mediaObject: PatchMediaReqDTO,
     @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaRestService.prototype.modifyMediaById> {

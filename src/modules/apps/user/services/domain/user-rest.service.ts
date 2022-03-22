@@ -3,7 +3,6 @@
 import {
   BadRequestException,
   Injectable,
-  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
 import { HashService } from '../adapters/clients/hash.service';
@@ -35,10 +34,6 @@ export class UserRestService {
       password: await this.hashService.hashValue(user.password),
     });
 
-    if (!userCreated) {
-      throw new NotAcceptableException('Registration data not accepted');
-    }
-
     return {
       age: userCreated.age,
       email: userCreated.email,
@@ -52,7 +47,6 @@ export class UserRestService {
 
   async getUserById(uuid: string): Promise<GetUserResDTO> {
     const userFound = await this.userRepository.getUserById(uuid);
-    if (!userFound) throw new NotFoundException();
 
     return {
       age: userFound.age,
@@ -68,8 +62,7 @@ export class UserRestService {
 
   //TODO: forbid delete id from current user
   async deleteUserById(uuid: string): Promise<void> {
-    const isDeleted = await this.userRepository.deleteUserById(uuid);
-    if (!isDeleted) throw new NotFoundException();
+    await this.userRepository.deleteUserById(uuid);
 
     return;
   }
@@ -78,28 +71,27 @@ export class UserRestService {
     uuid: string,
     user: UpdateUserReqDTO | PatchUserReqDTO,
   ): Promise<void> {
-    if (user.password)
+    if (user.password) {
       user.password = await this.hashService.hashValue(user.password);
+    }
 
-    const modifyResult = await this.userRepository.modifyUserById(uuid, user);
-    if (modifyResult === undefined) {
-      throw new NotAcceptableException('Update data not accepted');
-    }
-    if (modifyResult === false) {
-      throw new NotFoundException();
-    }
+    await this.userRepository.modifyUserById(uuid, user);
 
     return;
   }
 
   async searchUsers(
-    searchUserFilters: SearchUserReqDTO,
+    searchUsersFilters: SearchUserReqDTO,
   ): Promise<SearchUserResDTO[]> {
-    if (Object.keys(searchUserFilters).length <= 0)
+    if (Object.keys(searchUsersFilters).length <= 0) {
       throw new BadRequestException('No filters were provided');
+    }
 
-    const usersFound = await this.userRepository.searchUser(searchUserFilters);
-    if (usersFound.length <= 0) throw new NotFoundException();
+    const usersFound = await this.userRepository.searchUser(searchUsersFilters);
+
+    if (usersFound.length <= 0) {
+      throw new NotFoundException(); // TODO: ideally it shouldn't be a http exception to provide proper isolation and separation of concerns, this was made due convenience to not having a specialized exception filter to map into http errors the custom uncaught thrown errors that bubbles up the call stack
+    }
 
     return usersFound.map((user) => ({
       email: user.email,

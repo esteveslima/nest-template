@@ -49,15 +49,19 @@ export class AuthGuardJwt implements CanActivate {
   ): Promise<IJwtTokenPayload | never> {
     // Must throw UnauthorizedException on error
 
-    if (!req.headers.authorization) throw new UnauthorizedException();
+    if (!req.headers.authorization) {
+      throw new UnauthorizedException('auth header not found');
+    }
     const [, jwtToken] = req.headers.authorization.split(' '); // "Bearer <token>"
-    if (!jwtToken) throw new UnauthorizedException();
+    if (!jwtToken) {
+      throw new UnauthorizedException('auth header token not found');
+    }
 
     try {
-      const payload = await this.authTokenService.verifyToken(jwtToken);
+      const payload = await this.authTokenService.decodeToken(jwtToken);
       return payload as IJwtTokenPayload;
-    } catch (err) {
-      throw new UnauthorizedException(`${err}`);
+    } catch (e) {
+      throw new UnauthorizedException(`${e}`); // TODO: ideally, this shouldn't provide details for more security
     }
   }
 

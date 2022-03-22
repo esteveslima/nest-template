@@ -11,7 +11,7 @@ import { IResponseLogPayload } from 'src/common/interfaces/internals/enhancers/i
 import { ILogPayload } from '../../../interfaces/internals/enhancers/interceptors/log/log-payload.interface';
 import { IResolvedRequest } from '../../../interfaces/internals/enhancers/interceptors/resolved-request.interface';
 
-@Catch(HttpException)
+@Catch(HttpException) //TODO: catching only http exceptions, make it catch all exceptions or rename?
 export class GeneralExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const context = host.switchToHttp();

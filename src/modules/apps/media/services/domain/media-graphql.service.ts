@@ -41,7 +41,6 @@ export class MediaGraphqlService {
 
   async getMediaById(mediaUuid: string): Promise<MediaEntity> {
     const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
-    if (!mediaFound) throw new NotFoundException();
 
     return {
       available: mediaFound.available,
@@ -63,22 +62,13 @@ export class MediaGraphqlService {
     user: UserEntity,
     modifyMedia: UpdateMediaArgsDTO,
   ): Promise<void> {
-    const isModified = await this.mediaRepository.modifyMediaById(
-      mediaUuid,
-      user,
-      modifyMedia,
-    );
-    if (!isModified) throw new NotFoundException();
+    await this.mediaRepository.modifyMediaById(mediaUuid, user, modifyMedia);
 
     return;
   }
 
   async deleteMediaById(mediaUuid: string, user: UserEntity): Promise<void> {
-    const isDeleted = await this.mediaRepository.deleteMediaById(
-      mediaUuid,
-      user,
-    );
-    if (!isDeleted) throw new NotFoundException();
+    await this.mediaRepository.deleteMediaById(mediaUuid, user);
 
     return;
   }

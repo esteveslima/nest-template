@@ -4,7 +4,7 @@ import { ClassConstructor } from 'class-transformer';
 
 export const runCommonTests = (
   testClass: ClassConstructor<unknown>,
-  tests: (method) => void,
+  tests: (method: FunctionConstructor) => void,
 ): void => {
   const testClassMethodsNames = Object.getOwnPropertyNames(
     testClass.prototype,

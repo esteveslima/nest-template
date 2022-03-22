@@ -47,7 +47,7 @@ export class GraphqlUserInfoInterceptor implements NestInterceptor {
     if (!jwtToken) return undefined;
 
     try {
-      const payload = await this.authTokenService.verifyToken(jwtToken);
+      const payload = await this.authTokenService.decodeToken(jwtToken);
       return payload as IJwtTokenPayload;
     } catch (err) {
       return undefined;

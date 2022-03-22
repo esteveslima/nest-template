@@ -30,10 +30,6 @@ export class UserGraphqlService {
       password: await this.hashService.hashValue(user.password),
     });
 
-    if (!userCreated) {
-      throw new NotAcceptableException('Registration data not accepted');
-    }
-
     return {
       age: userCreated.age,
       createdAt: userCreated.createdAt,
@@ -49,9 +45,7 @@ export class UserGraphqlService {
   }
 
   async getUserById(uuid: string): Promise<UserEntity> {
-    if (!uuid) return undefined;
     const userFound = await this.userRepository.getUserById(uuid);
-    if (!userFound) throw new NotFoundException();
 
     return {
       age: userFound.age,
@@ -71,32 +65,30 @@ export class UserGraphqlService {
     uuid: string,
     user: UpdateUserArgsDTO | UpdateCurrentUserArgsDTO,
   ): Promise<void> {
-    if (user.password)
+    if (user.password) {
       user.password = await this.hashService.hashValue(user.password);
+    }
 
-    const modifyResult = await this.userRepository.modifyUserById(uuid, user);
-    if (modifyResult === undefined) {
-      throw new NotAcceptableException('Update data not accepted');
-    }
-    if (modifyResult === false) {
-      throw new NotFoundException();
-    }
+    await this.userRepository.modifyUserById(uuid, user);
 
     return;
   }
 
   //TODO: forbid delete id from current user
   async deleteUserById(uuid: string): Promise<void> {
-    const isDeleted = await this.userRepository.deleteUserById(uuid);
-    if (!isDeleted) throw new NotFoundException();
+    await this.userRepository.deleteUserById(uuid);
 
     return;
   }
 
-  async searchUserEntity(
-    searchUserFilters: SearchUserArgsDTO,
+  async searchUsersEntity(
+    searchUsersFilters: SearchUserArgsDTO,
   ): Promise<UserEntity[]> {
-    const usersFound = await this.userRepository.searchUser(searchUserFilters);
+    const usersFound = await this.userRepository.searchUser(searchUsersFilters);
+
+    if (usersFound.length <= 0) {
+      throw new NotFoundException(); // TODO: ideally it shouldn't be a http exception to provide proper isolation and separation of concerns, this was made due convenience to not having a specialized exception filter to map into http errors the custom uncaught thrown errors that bubbles up the call stack
+    }
 
     return usersFound.map((user) => ({
       age: user.age,

@@ -43,7 +43,7 @@ export class UserResolver {
   async searchUsers(
     @Args() searchUserFilters: SearchUserArgsDTO,
   ): Promise<UserType[]> {
-    return this.userGraphqlService.searchUserEntity(searchUserFilters);
+    return this.userGraphqlService.searchUsersEntity(searchUserFilters);
   }
 
   @Mutation(() => UserType, { name: 'registerUser' })

@@ -2,7 +2,8 @@
 
 import { ExecutionContext, InternalServerErrorException } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { IGraphQLInfo } from '../../../interfaces/internals/enhancers/interceptors/log/graphql-info.interface';
+import { IGraphQLRequestInfo } from 'src/common/interfaces/internals/enhancers/interceptors/graphql-request-info.interface';
+
 import { IResolvedRequest } from '../../../interfaces/internals/enhancers/interceptors/resolved-request.interface';
 
 enum enumExecutionContexts {
@@ -25,7 +26,7 @@ export const getRequestObject = (
     case enumExecutionContexts.GRAPHQL: {
       const gqlContext = GqlExecutionContext.create(context);
       const { req } = gqlContext.getContext<{ req: IResolvedRequest }>();
-      req.graphQLInfo = gqlContext.getInfo() as IGraphQLInfo; // Append graphql some info to the request
+      req.graphQLInfo = gqlContext.getInfo() as IGraphQLRequestInfo; // Append graphql some info to the request
 
       return req;
     }

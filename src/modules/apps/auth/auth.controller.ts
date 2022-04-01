@@ -1,6 +1,7 @@
 // Responsible for routing requests
 
 import { Body, Controller, Post } from '@nestjs/common';
+
 import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorator';
 import { LoginAuthReqDTO } from './dtos/rest/req/login-auth-req.dto';
 import { AuthRestService } from './services/domain/auth-rest.service';

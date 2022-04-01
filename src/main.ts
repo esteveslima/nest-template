@@ -1,25 +1,24 @@
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { GeneralExceptionFilter } from './common/internals/enhancers/filters/general-exception.filter';
-import { LogInterceptor } from './common/internals/enhancers/interceptors/log.interceptor';
-import { CustomLogger } from './common/adapters/logger/custom-logger';
 import { AppModule } from './modules/app.module';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Logger } from 'nestjs-pino';
+import { AllExceptionsFilter } from './common/internals/enhancers/filters/all-exceptions.filter';
 import { devToolsBasicAuthMiddleware } from './common/internals/enhancers/middlewares/dev-tools-basic-auth.middleware';
+import { LogInterceptor } from './common/internals/enhancers/interceptors/log.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
 
-  // Set default logger to be the customized logger
-  app.useLogger(new CustomLogger());
-
-  // Add general interceptor for request logging
+  // Config default logger and requests logging
+  app.useLogger(app.get(Logger));
+  app.flushLogs();
   app.useGlobalInterceptors(new LogInterceptor());
 
-  // Add general purpose exception filter(error logging)
-  app.useGlobalFilters(new GeneralExceptionFilter());
+  // Generic filter for unhandled exceptions
+  app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
 
   // Add DTOs serializer transformation/valitations globally
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));

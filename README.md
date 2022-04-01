@@ -27,6 +27,9 @@ TODO: list topics to be commented on this readme
  - providers and custom providers
    - injectable classes can be marked as providers for modules
    - for custom values(e.g.: npm packages) it should be wrapped as a custom provider to allow DI and also inject manually with it's token value
+ - logs
+   - interceptor
+   - pino logger module(reqId on all logs for request session)
  - db
    - only access to data is through repository
    - possible to have multiple databases and select by name

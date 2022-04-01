@@ -41,8 +41,8 @@ export class UserRepository {
           throw new ConflictException(e.driverError.detail);
         }
       }
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
   }
 
@@ -53,8 +53,8 @@ export class UserRepository {
         loadRelationIds: true,
       });
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
 
     if (!userFound) {
@@ -68,8 +68,8 @@ export class UserRepository {
     try {
       deleteResult = await this.repository.delete(uuid);
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
 
     const isOperationSuccessful = deleteResult.affected > 0;
@@ -91,8 +91,8 @@ export class UserRepository {
           throw new NotAcceptableException('Update data not accepted');
         }
       }
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
 
     const isOperationSuccessful = updateResult.affected > 0;
@@ -126,8 +126,8 @@ export class UserRepository {
 
       searchResult = await query.getMany();
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
 
     return searchResult;

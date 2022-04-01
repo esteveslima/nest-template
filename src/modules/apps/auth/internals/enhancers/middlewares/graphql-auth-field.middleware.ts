@@ -1,7 +1,11 @@
 // Auth for single fields, like on methods
 // Requires the user info already present at request object(done by the custom GraphqlUserInfoInterceptor)
 
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { FieldMiddleware, MiddlewareContext, NextFn } from '@nestjs/graphql';
 import { IncomingMessage } from 'http';
 import { IResolvedRequest } from 'src/common/interfaces/internals/enhancers/interceptors/resolved-request.interface';
@@ -20,9 +24,9 @@ export const graphqlAuthFieldMiddleware: FieldMiddleware = async (
   const isAuthenticated = !!req.user; // Should be set by the custom jwt graphql user info interceptor
   if (!isAuthenticated) {
     // If user couldn't be verified, return error for user
-    return new UnauthorizedException(
-      `Not authenticated to access the field "${fieldName}"`,
-    );
+    const errorMessage = `Not authenticated to access the field "${fieldName}"`;
+    Logger.error(errorMessage);
+    return new UnauthorizedException(errorMessage);
   }
 
   const rolesMetadataKey = 'roles';
@@ -31,9 +35,9 @@ export const graphqlAuthFieldMiddleware: FieldMiddleware = async (
   const isAuthorized = authorizeUser(user, roles);
   if (!isAuthorized) {
     // If user doesn't have permissions, return error for user
-    return new ForbiddenException(
-      `Not authorized to access the field "${fieldName}"`,
-    );
+    const errorMessage = `Not authorized to access the field "${fieldName}"`;
+    Logger.error(errorMessage);
+    return new ForbiddenException(errorMessage);
   }
 
   const fieldResolvedValue = await next();

@@ -40,7 +40,7 @@ export class AuthGuardJwt implements CanActivate {
       rolesMetadataKey,
       context.getHandler(),
     ); // get the allowed roles(configured with decorator)
-    const isAuthorized = this.authorizeUser(user, roles);
+    const isAuthorized = this.checkUserAuthorization(user, roles);
     return isAuthorized; // False results in ForbiddenException
   }
 
@@ -65,7 +65,10 @@ export class AuthGuardJwt implements CanActivate {
     }
   }
 
-  private authorizeUser(user: IAuthUserInfo, roles: roleType[]): boolean {
+  private checkUserAuthorization(
+    user: IAuthUserInfo,
+    roles: roleType[],
+  ): boolean {
     if (!roles) return true; // Authorize if it doesnt require any role
     return roles.includes(user.role);
   }

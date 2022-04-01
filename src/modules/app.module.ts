@@ -8,11 +8,13 @@ import { DBModule } from './setup/db/db.module';
 import { EnvModule } from './setup/env/env.module';
 import { EventsModule } from './setup/events/events.module';
 import { GQLModule } from './setup/gql/gql.module';
+import { LogModule } from './setup/log/log.module';
 
 @Module({
   imports: [
     // Setup modules
     EnvModule,
+    LogModule,
     DBModule,
     EventsModule,
     GQLModule,

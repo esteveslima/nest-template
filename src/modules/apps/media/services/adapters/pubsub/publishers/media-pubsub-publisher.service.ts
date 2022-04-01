@@ -26,8 +26,8 @@ export class MediaPubsubPublisherService {
 
       return;
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
   }
 
@@ -41,8 +41,8 @@ export class MediaPubsubPublisherService {
 
       return;
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
   }
 

@@ -42,12 +42,15 @@
     "express-basic-auth": "^1.2.1",
     "graphql": "^16.3.0",
     "graphql-query-complexity": "^0.11.0",
+    "nestjs-pino": "^2.5.2",
     "pg": "^8.7.1",
+    "pino-http": "^6.6.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^4.3.0",
-    "typeorm": "^0.2.41"
+    "typeorm": "^0.2.41",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^15.0.0",
@@ -62,6 +65,7 @@
     "@types/passport": "^1.0.7",
     "@types/passport-jwt": "^3.0.6",
     "@types/supertest": "^2.0.11",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "commitizen": "^4.2.4",

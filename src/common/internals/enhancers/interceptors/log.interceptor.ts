@@ -1,4 +1,5 @@
 // Interceptor to log incoming requests and outgoing responses
+// Won't include guards/middlewares, check the architectural order for enhancers: https://stackoverflow.com/questions/54863655/whats-the-difference-between-interceptor-vs-middleware-vs-filter-in-nest-js
 
 import {
   Injectable,
@@ -9,12 +10,12 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { ILogPayload } from 'src/common/interfaces/internals/enhancers/interceptors/log/log-payload.interface';
-import { IRequestLogPayload } from 'src/common/interfaces/internals/enhancers/interceptors/log/request-log-payload.interface';
-import { IResponseLogPayload } from 'src/common/interfaces/internals/enhancers/interceptors/log/response-log-payload.interface';
 import { IResolvedError } from 'src/common/interfaces/internals/enhancers/interceptors/resolved-error.interface';
 import { IResolvedRequest } from 'src/common/interfaces/internals/enhancers/interceptors/resolved-request.interface';
-import { getRequestObject } from '../utils/get-request-object';
+import { getRequestObject } from 'src/common/internals/enhancers/utils/get-request-object';
+import { IHttpLogPayload } from '../../../interfaces/internals/enhancers/interceptors/log/http/http-log-payload.interface';
+import { IHttpRequestLogPayload } from '../../../interfaces/internals/enhancers/interceptors/log/http/http-request-log-payload.interface';
+import { IHttpResponseLogPayload } from '../../../interfaces/internals/enhancers/interceptors/log/http/http-response-log-payload.interface';
 
 @Injectable()
 export class LogInterceptor implements NestInterceptor {
@@ -24,7 +25,7 @@ export class LogInterceptor implements NestInterceptor {
     const req: IResolvedRequest = getRequestObject(context);
 
     // Build request log object
-    const requestLogPayload: IRequestLogPayload = {
+    const requestLogPayload: IHttpRequestLogPayload = {
       http: {
         method: req?.method.toUpperCase(),
         path: `${req?.baseUrl}${req?.route?.path || ''}`,
@@ -35,7 +36,7 @@ export class LogInterceptor implements NestInterceptor {
           body: req?.body,
         },
       },
-      graphql: {
+      graphqlInfo: {
         path: {
           typename: req.graphQLInfo?.path?.typename.toUpperCase(),
           key: req.graphQLInfo?.path?.key,
@@ -62,37 +63,39 @@ export class LogInterceptor implements NestInterceptor {
       // Runs AFTER the route handler
       tap({
         next: (result: any) => {
-          const responseLogPayload: IResponseLogPayload = {
+          const responseLogPayload: IHttpResponseLogPayload = {
             statusCode: req.res.statusCode,
             result,
           };
 
-          const logPayload: ILogPayload = {
+          const httpLogPayload: IHttpLogPayload = {
             request: requestLogPayload,
             response: responseLogPayload,
-            startTimestamp: req.startTimestamp,
-            executionTime: Date.now() - req.startTimestamp,
+            details: {
+              startTimestamp: req.startTimestamp,
+              executionTime: Date.now() - req.startTimestamp,
+            },
           };
 
-          Logger.log(JSON.stringify(logPayload)); // Stringify logs for better visualization on cloud tools like aws cloudwatch
-          req.isRequestLogged = true; // to avoid repeating logs in filters
+          Logger.log(httpLogPayload);
         },
         error: (error: IResolvedError) => {
-          const responseLogPayload: IResponseLogPayload = {
+          const responseLogPayload: IHttpResponseLogPayload = {
             statusCode: error?.status || 500,
             result: error?.response || error?.stack || error.toString(),
           };
 
-          const logPayload: ILogPayload = {
+          const httpLogPayload: IHttpLogPayload = {
             request: requestLogPayload,
             response: responseLogPayload,
-            startTimestamp: req.startTimestamp,
-            executionTime: Date.now() - req.startTimestamp,
-            errorStack: error?.stack,
+            details: {
+              startTimestamp: req.startTimestamp,
+              executionTime: Date.now() - req.startTimestamp,
+              errorStack: error?.stack,
+            },
           };
 
-          Logger.error(JSON.stringify(logPayload));
-          req.isRequestLogged = true;
+          Logger.error(httpLogPayload);
         },
       }),
     );

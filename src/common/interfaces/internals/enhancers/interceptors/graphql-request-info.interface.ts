@@ -1,6 +1,6 @@
 // import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 
-export interface IGraphQLInfo {
+export interface IGraphQLRequestInfo {
   path: {
     typename: string;
     key: string;

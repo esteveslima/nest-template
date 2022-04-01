@@ -1,5 +1,4 @@
 // Wrapping npm package as custom provider, allowing DI
-// TODO: move to a 'global' conext?
 
 import { Provider } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';

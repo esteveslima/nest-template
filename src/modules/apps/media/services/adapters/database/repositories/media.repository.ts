@@ -26,8 +26,8 @@ export class MediaRepository {
       const mediaRegistered = await this.repository.save(registerOperation);
       return mediaRegistered;
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
   }
 
@@ -38,8 +38,8 @@ export class MediaRepository {
         relations: ['user'],
       });
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
 
     if (!mediaFound) {
@@ -54,8 +54,8 @@ export class MediaRepository {
     try {
       updateResult = await this.repository.increment({ id: uuid }, 'views', 1);
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
 
     const isOperationSuccessful = updateResult.affected > 0;
@@ -71,8 +71,8 @@ export class MediaRepository {
     try {
       deleteResult = await this.repository.delete({ id: uuid, user }); // using user as criteria to allow only the owner
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
 
     const isOperationSuccessful = deleteResult.affected > 0;
@@ -93,8 +93,8 @@ export class MediaRepository {
     try {
       updateResult = await this.repository.update(criteria, media);
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
 
     const isOperationSuccessful = updateResult.affected > 0;
@@ -184,8 +184,8 @@ export class MediaRepository {
 
       searchResult = await query.getMany();
     } catch (e) {
-      Logger.log(JSON.stringify(e)); // TODO: link this log to the current request session(asynclocalstorage?)
-      throw new Error(`${e}`); // Generic error with simple message for uncaught exceptions, forcing to implement proper error handling if is catched by other layers
+      Logger.error(e);
+      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
     }
 
     return searchResult;

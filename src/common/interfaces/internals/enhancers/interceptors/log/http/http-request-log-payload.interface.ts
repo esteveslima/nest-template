@@ -1,8 +1,8 @@
 import { request } from 'express';
+import { IGraphQLRequestInfo } from 'src/common/interfaces/internals/enhancers/interceptors/graphql-request-info.interface';
 import { IAuthUserInfo } from 'src/modules/apps/auth/interfaces/payloads/auth-user-info.interface';
-import { IGraphQLInfo } from './graphql-info.interface';
 
-export interface IRequestLogPayload {
+export interface IHttpRequestLogPayload {
   http: {
     method: string;
     path: string;
@@ -13,6 +13,6 @@ export interface IRequestLogPayload {
       body: typeof request.body;
     };
   };
-  graphql?: IGraphQLInfo;
   auth: IAuthUserInfo;
+  graphqlInfo?: IGraphQLRequestInfo;
 }

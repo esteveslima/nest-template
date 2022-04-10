@@ -21,14 +21,9 @@ export class MediaPubsubPublisherService {
     T extends keyof IPubsubPredefinedEventsPayloads, // <- T points to a key
     R extends IPubsubPredefinedEventsPayloads[T], // <- R points to the type of that key
   >(event: T, payload: R): Promise<void> {
-    try {
-      await this.eventEmitter.emitAsync(event, payload);
+    await this.eventEmitter.emitAsync(event, payload);
 
-      return;
-    } catch (e) {
-      Logger.error(e);
-      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
-    }
+    return;
   }
 
   // method to publish any event string with any payload
@@ -36,14 +31,9 @@ export class MediaPubsubPublisherService {
     event: string,
     payload: Record<string, any>,
   ): Promise<void> {
-    try {
-      await this.eventEmitter.emitAsync(event, payload);
+    await this.eventEmitter.emitAsync(event, payload);
 
-      return;
-    } catch (e) {
-      Logger.error(e);
-      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
-    }
+    return;
   }
 
   // TODO: one publisher per event with fixed interfaces for payloads instead of generic methods?

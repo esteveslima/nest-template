@@ -1,8 +1,9 @@
 // Responsible for routing requests
 
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
 
 import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorator';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { LoginAuthReqDTO } from './dtos/rest/req/login-auth-req.dto';
 import { AuthRestService } from './services/domain/auth-rest.service';
 
@@ -18,6 +19,12 @@ export class AuthController {
   async loginAuth(
     @Body() loginAuthCredentials: LoginAuthReqDTO,
   ): ReturnType<typeof AuthRestService.prototype.loginAuth> {
-    return this.authService.loginAuth(loginAuthCredentials);
+    try {
+      return await this.authService.loginAuth(loginAuthCredentials);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        AuthUnhauthorized: new UnauthorizedException('Invalid credentials'),
+      });
+    }
   }
 }

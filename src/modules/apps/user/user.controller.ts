@@ -1,11 +1,15 @@
 // Responsible for routing rest api requests
 
 import {
+  BadRequestException,
   Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
   HttpCode,
+  InternalServerErrorException,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -25,6 +29,7 @@ import { Auth } from '../auth/internals/decorators/auth.decorator';
 import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorator';
 import { GetAuthUserEntity } from '../auth/internals/decorators/get-auth-user-entity.decorator';
 import { UserRestService } from './services/domain/user-rest.service';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 
 @Controller('/rest/user')
 export class UserController {
@@ -38,7 +43,13 @@ export class UserController {
   async registerUser(
     @Body() userObject: RegisterUserReqDTO,
   ): ReturnType<typeof UserRestService.prototype.registerUser> {
-    return this.userService.registerUser(userObject);
+    try {
+      return await this.userService.registerUser(userObject);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserAlreadyExists: new ConflictException('User already exists'),
+      });
+    }
   }
 
   @Get()
@@ -46,7 +57,13 @@ export class UserController {
   async searchUser(
     @Query() searchUserFilters: SearchUserReqDTO,
   ): ReturnType<typeof UserRestService.prototype.searchUsers> {
-    return this.userService.searchUsers(searchUserFilters);
+    try {
+      return await this.userService.searchUsers(searchUserFilters);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new NotFoundException('User not found'),
+      });
+    }
   }
 
   @Get('/current')
@@ -55,7 +72,15 @@ export class UserController {
   async getCurrentUser(
     @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof UserRestService.prototype.getUserById> {
-    return this.userService.getUserById(authUser.id);
+    try {
+      return await this.userService.getUserById(authUser.id);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new InternalServerErrorException(
+          'An error ocurred on getting the current user data',
+        ),
+      });
+    }
   }
 
   @Put('/current')
@@ -66,9 +91,16 @@ export class UserController {
     @GetAuthUserEntity() authUser: UserEntity,
     @Body() userObject: UpdateUserReqDTO,
   ): ReturnType<typeof UserRestService.prototype.modifyUserById> {
-    await this.userService.modifyUserById(authUser.id, userObject);
-
-    return;
+    try {
+      return await this.userService.modifyUserById(authUser.id, userObject);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new InternalServerErrorException(
+          'An error ocurred on getting the current user data',
+        ),
+        UserUpdateFail: new BadRequestException('Update data not accepted'),
+      });
+    }
   }
 
   @Patch('/current')
@@ -79,9 +111,16 @@ export class UserController {
     @GetAuthUserEntity() authUser: UserEntity,
     @Body() userObject: PatchUserReqDTO,
   ): ReturnType<typeof UserRestService.prototype.modifyUserById> {
-    await this.userService.modifyUserById(authUser.id, userObject);
-
-    return;
+    try {
+      return await this.userService.modifyUserById(authUser.id, userObject);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new InternalServerErrorException(
+          'An error ocurred on getting the current user data',
+        ),
+        UserUpdateFail: new BadRequestException('Update data not accepted'),
+      });
+    }
   }
 
   @Get('/:uuid')
@@ -90,7 +129,13 @@ export class UserController {
   async getUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
   ): ReturnType<typeof UserRestService.prototype.getUserById> {
-    return this.userService.getUserById(uuid);
+    try {
+      return await this.userService.getUserById(uuid);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new NotFoundException('User not found'),
+      });
+    }
   }
 
   @Delete('/:uuid')
@@ -100,9 +145,13 @@ export class UserController {
   async deleteUserById(
     @Param('uuid', ParseUUIDPipe) uuid: string,
   ): ReturnType<typeof UserRestService.prototype.deleteUserById> {
-    await this.userService.deleteUserById(uuid);
-
-    return;
+    try {
+      return await this.userService.deleteUserById(uuid);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new NotFoundException('User not found'),
+      });
+    }
   }
 
   @Put('/:uuid')
@@ -113,9 +162,14 @@ export class UserController {
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() userObject: UpdateUserReqDTO,
   ): ReturnType<typeof UserRestService.prototype.modifyUserById> {
-    await this.userService.modifyUserById(uuid, userObject);
-
-    return;
+    try {
+      return await this.userService.modifyUserById(uuid, userObject);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new NotFoundException('User not found'),
+        UserUpdateFail: new BadRequestException('Update data not accepted'),
+      });
+    }
   }
 
   @Patch('/:uuid')
@@ -126,8 +180,13 @@ export class UserController {
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() userObject: PatchUserReqDTO,
   ): ReturnType<typeof UserRestService.prototype.modifyUserById> {
-    await this.userService.modifyUserById(uuid, userObject);
-
-    return;
+    try {
+      return await this.userService.modifyUserById(uuid, userObject);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new NotFoundException('User not found'),
+        UserUpdateFail: new BadRequestException('Update data not accepted'),
+      });
+    }
   }
 }

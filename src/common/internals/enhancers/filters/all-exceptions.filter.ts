@@ -11,6 +11,12 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
+interface IErrorResponseBody {
+  statusCode: number;
+  message: (string | object)[];
+  error: string;
+}
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
@@ -20,23 +26,38 @@ export class AllExceptionsFilter implements ExceptionFilter {
       throw exception; // Rethrow exceptions for non-http adapters, this catch-all filter doesn't work well for other adapters
     }
 
-    // TODO: interceptor/filter to map local errors to http exceptions, so this point would have all exceptions mapped
-    const responseBody = {
-      error:
-        exception instanceof HttpException
-          ? exception.name
-          : InternalServerErrorException.name,
-      message:
-        exception instanceof HttpException ? exception.message : undefined,
-    };
+    const e = exception;
 
-    const httpStatus =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    const responseBody = this.buildErrorResponseBody(e);
 
     const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
-    httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
+    httpAdapter.reply(ctx.getResponse(), responseBody, responseBody.statusCode);
+  }
+
+  private buildErrorResponseBody(exception: unknown): IErrorResponseBody {
+    let e = exception;
+
+    // Handle only the first of an aggregate error
+    if (e instanceof AggregateError) {
+      const firstException = e.errors[0];
+      e = firstException;
+    }
+
+    const errorResponseBody: IErrorResponseBody = {
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: [InternalServerErrorException.name],
+      error: InternalServerErrorException.name,
+    };
+
+    if (e instanceof HttpException) {
+      errorResponseBody.statusCode = e.getStatus();
+      errorResponseBody.message = [(e.getResponse() as any)?.['message']].flat(
+        1,
+      ) ?? [e.getResponse()];
+      errorResponseBody.error = e.name;
+    }
+
+    return errorResponseBody;
   }
 }

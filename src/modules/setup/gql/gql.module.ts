@@ -20,8 +20,8 @@ const isDevelopmentEnvironment =
 
       formatError: (error) => {
         // Remove errors stack trace from response
-        if (!!error?.extensions?.exception?.stacktrace) {
-          error.extensions.exception.stacktrace = undefined;
+        if (!!error?.extensions?.exception) {
+          error.extensions.exception = undefined;
         }
         return error;
       },

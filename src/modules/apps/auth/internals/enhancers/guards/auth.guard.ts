@@ -5,6 +5,7 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -32,7 +33,7 @@ export class AuthGuardJwt implements CanActivate {
     // Authentication
     const authPayload = await this.authenticateRequest(req);
     const user: IAuthUserInfo = { ...authPayload };
-    req.user = user; // Insert user to request object, allowing to recover it on controllers
+    req.user = user; // Insert user to request object, allowing to recover it in the future
 
     // Authorization
     const rolesMetadataKey = 'roles';
@@ -45,23 +46,24 @@ export class AuthGuardJwt implements CanActivate {
   }
 
   private async authenticateRequest(
-    req: Request, //
+    req: Request,
   ): Promise<IJwtTokenPayload | never> {
     // Must throw UnauthorizedException on error
 
     if (!req.headers.authorization) {
-      throw new UnauthorizedException('auth header not found');
+      throw new UnauthorizedException('Auth header not found');
     }
     const [, jwtToken] = req.headers.authorization.split(' '); // "Bearer <token>"
     if (!jwtToken) {
-      throw new UnauthorizedException('auth header token not found');
+      throw new UnauthorizedException('Auth header token not found');
     }
 
     try {
       const payload = await this.authTokenService.decodeToken(jwtToken);
       return payload as IJwtTokenPayload;
     } catch (e) {
-      throw new UnauthorizedException(`${e}`); // TODO: ideally, this shouldn't provide details for more security
+      Logger.error(e);
+      throw new UnauthorizedException('Auth token invalid');
     }
   }
 
@@ -69,7 +71,7 @@ export class AuthGuardJwt implements CanActivate {
     user: IAuthUserInfo,
     roles: roleType[],
   ): boolean {
-    if (!roles) return true; // Authorize if it doesnt require any role
+    if (!roles) return true;
     return roles.includes(user.role);
   }
 }

@@ -1,15 +1,9 @@
 // Responsible for data access logic in the database
 // TypeORM Repository API: https://typeorm.io/#/repository-api
 
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  Logger,
-  NotAcceptableException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
 import {
   DeleteResult,
@@ -36,45 +30,33 @@ export class UserRepository {
       const userRegistered = await this.repository.save(registerOperation);
       return userRegistered;
     } catch (e) {
+      Logger.error(e);
       if (e instanceof QueryFailedError) {
         if (e.driverError.code === '23505') {
-          throw new ConflictException(e.driverError.detail);
+          throw new CustomException('UserAlreadyExists');
         }
       }
-      Logger.error(e);
-      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
+      throw e;
     }
   }
 
   async getUserById(uuid: string): Promise<UserEntity> {
-    let userFound: UserEntity;
-    try {
-      userFound = await this.repository.findOne(uuid, {
-        loadRelationIds: true,
-      });
-    } catch (e) {
-      Logger.error(e);
-      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
-    }
+    const userFound = await this.repository.findOne(uuid, {
+      loadRelationIds: true,
+    });
 
     if (!userFound) {
-      throw new NotFoundException(); // TODO: ideally it shouldn't be a http exception to provide proper isolation and separation of concerns, this was made due convenience to not having a specialized exception filter to map into http errors the custom uncaught thrown errors that bubbles up the call stack
+      throw new CustomException('UserNotFound');
     }
     return userFound;
   }
 
   async deleteUserById(uuid: string): Promise<void> {
-    let deleteResult: DeleteResult;
-    try {
-      deleteResult = await this.repository.delete(uuid);
-    } catch (e) {
-      Logger.error(e);
-      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
-    }
+    const deleteResult = await this.repository.delete(uuid);
 
     const isOperationSuccessful = deleteResult.affected > 0;
     if (!isOperationSuccessful) {
-      throw new NotFoundException(); // TODO: ideally it shouldn't be a http exception to provide proper isolation and separation of concerns, this was made due convenience to not having a specialized exception filter to map into http errors the custom uncaught thrown errors that bubbles up the call stack
+      throw new CustomException('UserNotFound');
     }
   }
 
@@ -86,18 +68,18 @@ export class UserRepository {
     try {
       updateResult = await this.repository.update(uuid, user); // using user as criteria to allow only the owner
     } catch (e) {
+      Logger.error(e);
       if (e instanceof QueryFailedError) {
         if (e.driverError.code === '22P02') {
-          throw new NotAcceptableException('Update data not accepted');
+          throw new CustomException('UserUpdateFail');
         }
       }
-      Logger.error(e);
-      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
+      throw e;
     }
 
     const isOperationSuccessful = updateResult.affected > 0;
     if (!isOperationSuccessful) {
-      throw new NotFoundException(); // TODO: ideally it shouldn't be a http exception to provide proper isolation and separation of concerns, this was made due convenience to not having a specialized exception filter to map into http errors the custom uncaught thrown errors that bubbles up the call stack
+      throw new CustomException('UserNotFound');
     }
 
     return;
@@ -108,27 +90,21 @@ export class UserRepository {
   ): Promise<UserEntity[]> {
     const { email, username } = searchFilters;
 
-    let searchResult: UserEntity[];
-    try {
-      const query = this.repository.createQueryBuilder('user');
+    const query = this.repository.createQueryBuilder('user');
 
-      // add conditions to search
-      if (email) {
-        query.andWhere('user.email LIKE :email', {
-          email: `%${email}%`,
-        });
-      }
-      if (username) {
-        query.andWhere('user.username LIKE :username', {
-          username: `%${username}%`,
-        });
-      }
-
-      searchResult = await query.getMany();
-    } catch (e) {
-      Logger.error(e);
-      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
+    // add conditions to search
+    if (email) {
+      query.andWhere('user.email LIKE :email', {
+        email: `%${email}%`,
+      });
     }
+    if (username) {
+      query.andWhere('user.username LIKE :username', {
+        username: `%${username}%`,
+      });
+    }
+
+    const searchResult = await query.getMany();
 
     return searchResult;
   }

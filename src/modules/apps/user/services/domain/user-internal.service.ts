@@ -1,14 +1,11 @@
 // Helper methods decoupled to be used only internally and not exposed to users
 
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SearchUserReqDTO } from '../../dtos/rest/req/search-user-req.dto';
 import { UserEntity } from '../../models/user.entity';
 import { UserRepository } from '../adapters/database/repositories/user.repository';
 import { HashService } from '../adapters/clients/hash.service';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 
 @Injectable()
 export class UserInternalService {
@@ -23,12 +20,13 @@ export class UserInternalService {
   async searchUserEntity(
     searchUserFilters: SearchUserReqDTO,
   ): Promise<UserEntity> {
-    if (Object.keys(searchUserFilters).length <= 0)
-      throw new BadRequestException('No filters were provided');
+    if (Object.keys(searchUserFilters).length <= 0) {
+      throw new CustomException('UserSearchInvalidFilters');
+    }
 
     const usersFound = await this.userRepository.searchUser(searchUserFilters);
     const userFound = usersFound[0];
-    if (!userFound) throw new NotFoundException();
+    if (!userFound) throw new CustomException('UserNotFound');
 
     return userFound;
   }

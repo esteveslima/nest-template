@@ -1,10 +1,6 @@
 // Responsible for containing business logic(decoupled for graphql resolvers)
 
-import {
-  Injectable,
-  NotAcceptableException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserEntity } from '../../models/user.entity';
 import { RegisterUserArgsDTO } from '../../dtos/graphql/args/register-user.args';
 import { UpdateUserArgsDTO } from '../../dtos/graphql/args/update-user.args';
@@ -12,6 +8,7 @@ import { SearchUserArgsDTO } from '../../dtos/graphql/args/search-user.args';
 import { UpdateCurrentUserArgsDTO } from '../../dtos/graphql/args/update-current-user.args';
 import { HashService } from '../adapters/clients/hash.service';
 import { UserRepository } from '../adapters/database/repositories/user.repository';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 
 @Injectable()
 export class UserGraphqlService {
@@ -87,7 +84,7 @@ export class UserGraphqlService {
     const usersFound = await this.userRepository.searchUser(searchUsersFilters);
 
     if (usersFound.length <= 0) {
-      throw new NotFoundException(); // TODO: ideally it shouldn't be a http exception to provide proper isolation and separation of concerns, this was made due convenience to not having a specialized exception filter to map into http errors the custom uncaught thrown errors that bubbles up the call stack
+      throw new CustomException('UserNotFound');
     }
 
     return usersFound.map((user) => ({

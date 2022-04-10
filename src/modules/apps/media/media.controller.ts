@@ -6,6 +6,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -24,6 +25,7 @@ import { SearchMediaReqDTO } from './dtos/rest/req/search-media-req.dto';
 import { Auth } from '../auth/internals/decorators/auth.decorator';
 import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorator';
 import { GetAuthUserEntity } from '../auth/internals/decorators/get-auth-user-entity.decorator';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 
 @Controller('/rest/media')
 export class MediaController {
@@ -37,7 +39,13 @@ export class MediaController {
   async getMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid: string,
   ): ReturnType<typeof MediaRestService.prototype.getMediaById> {
-    return this.mediaService.getMediaById(mediaUuid);
+    try {
+      return await this.mediaService.getMediaById(mediaUuid);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        MediaNotFound: new NotFoundException('Media not found'),
+      });
+    }
   }
 
   @Get()
@@ -45,7 +53,11 @@ export class MediaController {
   async searchMedia(
     @Query() searchMediaFilters: SearchMediaReqDTO,
   ): ReturnType<typeof MediaRestService.prototype.searchMedia> {
-    return this.mediaService.searchMedia(searchMediaFilters);
+    try {
+      return await this.mediaService.searchMedia(searchMediaFilters);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {});
+    }
   }
 
   @Post()
@@ -55,7 +67,11 @@ export class MediaController {
     @Body() mediaObject: RegisterMediaReqDTO,
     @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaRestService.prototype.registerMedia> {
-    return this.mediaService.registerMedia(mediaObject, authUser);
+    try {
+      return await this.mediaService.registerMedia(mediaObject, authUser);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {});
+    }
   }
 
   @Delete('/:uuid')
@@ -66,9 +82,13 @@ export class MediaController {
     @Param('uuid', ParseUUIDPipe) mediaUuid: string,
     @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaRestService.prototype.deleteMediaById> {
-    await this.mediaService.deleteMediaById(mediaUuid, authUser);
-
-    return;
+    try {
+      return await this.mediaService.deleteMediaById(mediaUuid, authUser);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        MediaNotFound: new NotFoundException('Media not found'),
+      });
+    }
   }
 
   @Put('/:uuid')
@@ -80,9 +100,17 @@ export class MediaController {
     @Body() mediaObject: UpdateMediaReqDTO,
     @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaRestService.prototype.modifyMediaById> {
-    await this.mediaService.modifyMediaById(mediaUuid, authUser, mediaObject);
-
-    return;
+    try {
+      return await this.mediaService.modifyMediaById(
+        mediaUuid,
+        authUser,
+        mediaObject,
+      );
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        MediaNotFound: new NotFoundException('Media not found'),
+      });
+    }
   }
 
   @Patch('/:uuid')
@@ -94,8 +122,16 @@ export class MediaController {
     @Body() mediaObject: PatchMediaReqDTO,
     @GetAuthUserEntity() authUser: UserEntity,
   ): ReturnType<typeof MediaRestService.prototype.modifyMediaById> {
-    await this.mediaService.modifyMediaById(mediaUuid, authUser, mediaObject);
-
-    return;
+    try {
+      return await this.mediaService.modifyMediaById(
+        mediaUuid,
+        authUser,
+        mediaObject,
+      );
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        MediaNotFound: new NotFoundException('Media not found'),
+      });
+    }
   }
 }

@@ -1,6 +1,6 @@
 // Utility function to get request object based on current execution context
 
-import { ExecutionContext, InternalServerErrorException } from '@nestjs/common';
+import { ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { IGraphQLRequestInfo } from 'src/common/interfaces/internals/enhancers/interceptors/graphql-request-info.interface';
 
@@ -33,7 +33,7 @@ export const getRequestObject = (
     default: {
       const req = context.switchToHttp().getRequest<IResolvedRequest>();
       if (!req) {
-        throw new InternalServerErrorException('Request context not found');
+        throw new Error(`Invalid request context: ${context}`);
       }
 
       return req;

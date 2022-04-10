@@ -1,10 +1,11 @@
 // Responsible for containing business logic
 
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserInternalService } from '../../../user/services/domain/user-internal.service';
 import { AuthTokenService } from '../adapters/clients/auth-token.service';
 import { LoginAuthArgsDTO } from '../../dtos/graphql/args/login-auth.args';
 import { IJwtTokenPayload } from '../../interfaces/payloads/jwt-payload.interface';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 
 @Injectable()
 export class AuthGraphqlService {
@@ -24,7 +25,7 @@ export class AuthGraphqlService {
       password,
     );
 
-    if (!isAuthenticated) throw new UnauthorizedException();
+    if (!isAuthenticated) throw new CustomException('AuthUnhauthorized');
 
     const user = await this.userInternalService.searchUserEntity({ username });
 

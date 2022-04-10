@@ -1,6 +1,6 @@
 // Responsible for defining resolvers for graphql operations(like controllers)
 
-import { ParseUUIDPipe } from '@nestjs/common';
+import { NotFoundException, ParseUUIDPipe } from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -20,6 +20,7 @@ import { MediaGraphqlService } from './services/domain/media-graphql.service';
 import { UserGraphqlService } from '../user/services/domain/user-graphql.service';
 import { UserEntity } from '../user/models/user.entity';
 import { UserType } from '../user/models/user.type';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 
 @Resolver(() => MediaType)
 @GetGraphqlAuthUserInfo() // required for auth field middleware
@@ -37,14 +38,26 @@ export class MediaResolver {
   async getMediaById(
     @Args('id', ParseUUIDPipe) id: string,
   ): Promise<MediaType> {
-    return this.mediaGraphqlService.getMediaById(id);
+    try {
+      return await this.mediaGraphqlService.getMediaById(id);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        MediaNotFound: new NotFoundException('Media not found'),
+      });
+    }
   }
 
   @Query(() => [MediaType], { name: 'medias' })
   async searchMedias(
     @Args() searchMediaFilters: SearchMediaArgsDTO,
   ): Promise<MediaType[]> {
-    return this.mediaGraphqlService.searchMediaEntity(searchMediaFilters);
+    try {
+      return await this.mediaGraphqlService.searchMediaEntity(
+        searchMediaFilters,
+      );
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {});
+    }
   }
 
   @Mutation(() => MediaType, { name: 'registerMedia' })
@@ -53,7 +66,11 @@ export class MediaResolver {
     @Args() media: RegisterMediaArgsDTO,
     @GetAuthUserEntity() user: UserEntity,
   ): Promise<MediaType> {
-    return this.mediaGraphqlService.registerMedia(media, user);
+    try {
+      return await this.mediaGraphqlService.registerMedia(media, user);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {});
+    }
   }
 
   @Mutation(() => Boolean, { name: 'updateMedia' })
@@ -62,9 +79,15 @@ export class MediaResolver {
     @Args() media: UpdateMediaArgsDTO,
     @GetAuthUserEntity() user: UserEntity,
   ): Promise<boolean> {
-    await this.mediaGraphqlService.modifyMediaById(media.id, user, media);
+    try {
+      await this.mediaGraphqlService.modifyMediaById(media.id, user, media);
 
-    return true;
+      return true;
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        MediaNotFound: new NotFoundException('Media not found'),
+      });
+    }
   }
 
   @Mutation(() => Boolean, { name: 'deleteMedia' })
@@ -73,9 +96,15 @@ export class MediaResolver {
     @Args('id', ParseUUIDPipe) id: string,
     @GetAuthUserEntity() user: UserEntity,
   ): Promise<boolean> {
-    await this.mediaGraphqlService.deleteMediaById(id, user);
+    try {
+      await this.mediaGraphqlService.deleteMediaById(id, user);
 
-    return true;
+      return true;
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        MediaNotFound: new NotFoundException('Media not found'),
+      });
+    }
   }
 
   @ResolveField('user', () => UserType, { nullable: true })
@@ -83,7 +112,14 @@ export class MediaResolver {
     const userId = media?.user?.id; //TODO: refactor after queries dont do eager loading, the field user should now be only the uuid
     if (!userId) return undefined;
 
-    const user = await this.userGraphqlService.getUserById(userId);
+    let user: UserEntity;
+    try {
+      user = await this.userGraphqlService.getUserById(userId);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new NotFoundException('User not found'),
+      });
+    }
 
     return user;
   }

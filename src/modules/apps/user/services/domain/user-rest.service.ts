@@ -1,10 +1,6 @@
 // Responsible for containing business logic(decoupled for rest controllers)
 
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HashService } from '../adapters/clients/hash.service';
 import { RegisterUserReqDTO } from '../../dtos/rest/req/register-user-req.dto';
 import { UpdateUserReqDTO } from '../../dtos/rest/req/update-user-req.dto';
@@ -14,6 +10,7 @@ import { RegisterUserResDTO } from '../../dtos/rest/res/register-user-res.dto';
 import { GetUserResDTO } from '../../dtos/rest/res/get-user-res.dto';
 import { SearchUserResDTO } from '../../dtos/rest/res/search-user-res.dto';
 import { UserRepository } from '../adapters/database/repositories/user.repository';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 
 @Injectable()
 export class UserRestService {
@@ -84,13 +81,13 @@ export class UserRestService {
     searchUsersFilters: SearchUserReqDTO,
   ): Promise<SearchUserResDTO[]> {
     if (Object.keys(searchUsersFilters).length <= 0) {
-      throw new BadRequestException('No filters were provided');
+      throw new CustomException('UserSearchInvalidFilters');
     }
 
     const usersFound = await this.userRepository.searchUser(searchUsersFilters);
 
     if (usersFound.length <= 0) {
-      throw new NotFoundException(); // TODO: ideally it shouldn't be a http exception to provide proper isolation and separation of concerns, this was made due convenience to not having a specialized exception filter to map into http errors the custom uncaught thrown errors that bubbles up the call stack
+      throw new CustomException('UserNotFound');
     }
 
     return usersFound.map((user) => ({

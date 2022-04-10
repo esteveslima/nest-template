@@ -10,7 +10,6 @@ import {
   getComplexity,
   simpleEstimator,
 } from 'graphql-query-complexity';
-import { BadRequestException } from '@nestjs/common';
 
 @Plugin()
 export class GraphqlComplexityPlugin implements ApolloServerPlugin {
@@ -33,7 +32,7 @@ export class GraphqlComplexityPlugin implements ApolloServerPlugin {
           ],
         });
         if (complexity > maxComplexity) {
-          throw new BadRequestException(
+          throw new Error(
             `Query is too complex: ${complexity}. Maximum allowed complexity: ${maxComplexity}`,
           );
         }

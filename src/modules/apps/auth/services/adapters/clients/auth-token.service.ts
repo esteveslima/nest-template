@@ -2,6 +2,7 @@
 
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 
 @Injectable()
 export class AuthTokenService {
@@ -17,29 +18,24 @@ export class AuthTokenService {
     } catch (e: any) {
       Logger.error(e);
       if (e.name === 'TokenExpiredError') {
-        throw new Error('token expired');
+        throw new CustomException('AuthTokenExpired', token);
       }
       if (e.name === 'JsonWebTokenError' || 'SyntaxError') {
-        throw new Error('malformed token');
+        throw new CustomException('AuthTokenMalformed', token);
       }
-      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
+      throw e;
     }
 
     if (typeof tokenPayload !== 'object') {
-      throw new Error('invalid token payload');
+      throw new CustomException('AuthTokenPayloadInvalid', token);
     }
 
     return tokenPayload;
   }
 
   async generateToken(tokenPayload: Record<string, any>): Promise<string> {
-    try {
-      const token = this.jwtService.sign(tokenPayload);
+    const token = this.jwtService.sign(tokenPayload);
 
-      return token;
-    } catch (e) {
-      Logger.error(e);
-      throw new Error(`${e}`); // Generic opaque error with simple message and no details for uncaught exceptions, forcing to implement proper error handling if the error is required to catch by other layers
-    }
+    return token;
   }
 }

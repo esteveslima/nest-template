@@ -1,6 +1,12 @@
 // Responsible for defining resolvers for graphql operations(like controllers)
 
-import { BadRequestException, ParseUUIDPipe } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  InternalServerErrorException,
+  NotFoundException,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -22,6 +28,8 @@ import { UserType } from './models/user.type';
 import { MediaGraphqlService } from '../media/services/domain/media-graphql.service';
 import { MediaType } from '../media/models/media.type';
 import { SearchMediaArgsDTO } from '../media/dtos/graphql/args/search-media.args';
+import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
+import { MediaEntity } from '../media/models/media.entity';
 
 @Resolver(() => UserType)
 @GetGraphqlAuthUserInfo() // required for auth field middleware
@@ -36,27 +44,52 @@ export class UserResolver {
 
   @Query(() => UserType, { name: 'user' })
   async getUserById(@Args('id', ParseUUIDPipe) id: string): Promise<UserType> {
-    return this.userGraphqlService.getUserById(id);
+    try {
+      return await this.userGraphqlService.getUserById(id);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new NotFoundException('User not found'),
+      });
+    }
   }
 
   @Query(() => [UserType], { name: 'users' })
   async searchUsers(
     @Args() searchUserFilters: SearchUserArgsDTO,
   ): Promise<UserType[]> {
-    return this.userGraphqlService.searchUsersEntity(searchUserFilters);
+    try {
+      return await this.userGraphqlService.searchUsersEntity(searchUserFilters);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new NotFoundException('User not found'),
+      });
+    }
   }
 
   @Mutation(() => UserType, { name: 'registerUser' })
   async registerUser(@Args() user: RegisterUserArgsDTO): Promise<UserType> {
-    return this.userGraphqlService.registerUser(user);
+    try {
+      return await this.userGraphqlService.registerUser(user);
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserAlreadyExists: new ConflictException('User already exists'),
+      });
+    }
   }
 
   @Mutation(() => Boolean, { name: 'updateUser' })
   @Auth('ADMIN')
   async updateUser(@Args() user: UpdateUserArgsDTO): Promise<boolean> {
-    await this.userGraphqlService.modifyUserById(user.id, user);
+    try {
+      await this.userGraphqlService.modifyUserById(user.id, user);
 
-    return true;
+      return true;
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new NotFoundException('User not found'),
+        UserUpdateFail: new BadRequestException('Update data not accepted'),
+      });
+    }
   }
 
   @Mutation(() => Boolean, { name: 'updateCurrentUser' })
@@ -65,17 +98,32 @@ export class UserResolver {
     @GetAuthUserEntity() currentUser: UserEntity,
     @Args() user: UpdateCurrentUserArgsDTO,
   ): Promise<boolean> {
-    await this.userGraphqlService.modifyUserById(currentUser.id, user);
+    try {
+      await this.userGraphqlService.modifyUserById(currentUser.id, user);
 
-    return true;
+      return true;
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new InternalServerErrorException(
+          'An error ocurred on getting the current user data',
+        ),
+        UserUpdateFail: new BadRequestException('Update data not accepted'),
+      });
+    }
   }
 
   @Mutation(() => Boolean, { name: 'deleteUser' })
   @Auth('ADMIN')
   async deleteUser(@Args('id', ParseUUIDPipe) id: string): Promise<boolean> {
-    await this.userGraphqlService.deleteUserById(id);
+    try {
+      await this.userGraphqlService.deleteUserById(id);
 
-    return true;
+      return true;
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {
+        UserNotFound: new NotFoundException('User not found'),
+      });
+    }
   }
 
   @ResolveField('medias', () => [MediaType], { nullable: 'itemsAndList' })
@@ -90,10 +138,15 @@ export class UserResolver {
     }
 
     const { username } = user;
-    const medias = await this.mediaGraphqlService.searchMediaEntity({
-      ...searchMediaFilters,
-      username,
-    });
+    let medias: MediaEntity[];
+    try {
+      medias = await this.mediaGraphqlService.searchMediaEntity({
+        ...searchMediaFilters,
+        username,
+      });
+    } catch (e) {
+      throw CustomException.mapHttpException(e, {});
+    }
 
     const normalizedMedias = medias.map((media) => {
       // Avoiding circular nested query objects for relation relation (user:media) => (1:N)

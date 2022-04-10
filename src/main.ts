@@ -56,7 +56,9 @@ async function bootstrap() {
       app,
       swaggerDocumentConfig,
     );
-    SwaggerModule.setup(webToolsRoutes.swaggerRoute, app, swaggerDocument);
+    SwaggerModule.setup(webToolsRoutes.swaggerRoute, app, swaggerDocument, {
+      swaggerOptions: { defaultModelsExpandDepth: 0 },
+    });
   }
 
   // Setup cors for all subdomains from specific client domain

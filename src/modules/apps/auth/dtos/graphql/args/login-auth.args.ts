@@ -1,7 +1,7 @@
 import { ArgsType, Field, PickType } from '@nestjs/graphql';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 
-@ArgsType() //TODO: rename to ...ArgsDTO
+@ArgsType()
 export class LoginAuthArgsDTO {
   @Field(() => String)
   @IsNotEmpty()

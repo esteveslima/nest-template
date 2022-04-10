@@ -1,6 +1,6 @@
 # Setting up a nest container as development environment
 
-# Use the official node image
+# Use the official node image(this project requires node 15+)
 FROM node:lts-alpine as nodeBuilderStage
 
 # Install extra useful packages for alpine version

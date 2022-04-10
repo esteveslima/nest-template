@@ -14,7 +14,9 @@ import { LogModule } from './setup/log/log.module';
   imports: [
     // Setup modules
     EnvModule,
-    LogModule,
+    LogModule.setup({
+      interceptor: { lookupRequestExtraProperties: ['user'] },
+    }),
     DBModule,
     EventsModule,
     GQLModule,

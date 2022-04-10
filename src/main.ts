@@ -5,17 +5,15 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { AllExceptionsFilter } from './common/internals/enhancers/filters/all-exceptions.filter';
 import { devToolsBasicAuthMiddleware } from './common/internals/enhancers/middlewares/dev-tools-basic-auth.middleware';
-import { LogInterceptor } from './common/internals/enhancers/interceptors/log.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
 
-  // Config default logger and requests logging
+  // Config logger
   app.useLogger(app.get(Logger));
   app.flushLogs();
-  app.useGlobalInterceptors(new LogInterceptor());
 
   // Generic filter for unhandled exceptions
   app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));

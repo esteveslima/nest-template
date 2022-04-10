@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { FieldMiddleware, MiddlewareContext, NextFn } from '@nestjs/graphql';
 import { IncomingMessage } from 'http';
-import { IResolvedRequest } from 'src/common/interfaces/internals/enhancers/interceptors/resolved-request.interface';
+import { IResolvedRequest } from 'src/common/interfaces/resolved-request.interface';
 import { roleType } from '../../../interfaces/payloads/jwt-payload.interface';
 import { IAuthUserInfo } from '../../../interfaces/payloads/auth-user-info.interface';
 

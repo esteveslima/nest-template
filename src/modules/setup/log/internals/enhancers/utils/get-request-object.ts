@@ -2,8 +2,7 @@
 
 import { ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-
-import { IResolvedRequest } from '../../../interfaces/resolved-request.interface';
+import { ILogInterceptorRequestObject } from '../interceptors/types/log-interceptor-request-object.interface';
 
 enum enumExecutionContexts {
   HTTP = 'http',
@@ -14,22 +13,27 @@ enum enumExecutionContexts {
 
 export const getRequestObject = (
   context: ExecutionContext,
-): IResolvedRequest => {
+): ILogInterceptorRequestObject => {
   const contextType = context.getType() as enumExecutionContexts;
   switch (contextType) {
     case enumExecutionContexts.HTTP: {
-      const req = context.switchToHttp().getRequest<IResolvedRequest>();
+      const req = context
+        .switchToHttp()
+        .getRequest<ILogInterceptorRequestObject>();
 
       return req;
     }
     case enumExecutionContexts.GRAPHQL: {
       const gqlContext = GqlExecutionContext.create(context);
-      const { req } = gqlContext.getContext<{ req: IResolvedRequest }>();
+      const { req } =
+        gqlContext.getContext<{ req: ILogInterceptorRequestObject }>();
 
       return req;
     }
     default: {
-      const req = context.switchToHttp().getRequest<IResolvedRequest>();
+      const req = context
+        .switchToHttp()
+        .getRequest<ILogInterceptorRequestObject>();
       if (!req) {
         throw new Error(`Invalid request context: ${context}`);
       }

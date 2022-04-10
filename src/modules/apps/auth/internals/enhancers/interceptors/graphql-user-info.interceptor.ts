@@ -11,7 +11,7 @@ import {
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { IResolvedRequest } from 'src/common/interfaces/internals/enhancers/interceptors/resolved-request.interface';
+import { IResolvedRequest } from 'src/common/interfaces/resolved-request.interface';
 import { IJwtTokenPayload } from 'src/modules/apps/auth/interfaces/payloads/jwt-payload.interface';
 import { AuthTokenService } from '../../../services/adapters/clients/auth-token.service';
 

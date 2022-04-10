@@ -1,6 +1,5 @@
 import { request } from 'express';
-import { IGraphQLRequestInfo } from 'src/common/interfaces/internals/enhancers/interceptors/graphql-request-info.interface';
-import { IAuthUserInfo } from 'src/modules/apps/auth/interfaces/payloads/auth-user-info.interface';
+import { IGraphQLRequestInfo } from '../graphql-request-info.interface';
 
 export interface IHttpRequestLogPayload {
   http: {
@@ -13,6 +12,7 @@ export interface IHttpRequestLogPayload {
       body: typeof request.body;
     };
   };
-  auth: IAuthUserInfo;
-  graphqlInfo?: IGraphQLRequestInfo;
+  graphQLInfo?: IGraphQLRequestInfo;
+
+  [lookupKey: string]: any; // extra keys to lookup for logs
 }

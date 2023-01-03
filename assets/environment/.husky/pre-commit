@@ -1,0 +1,8 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# npx tsc --noEmit
+# npx eslint --max-warnings 0 --fix
+# npm run test #-- --findRelatedTests --bail
+
+npx lint-staged --verbose --concurrent 1

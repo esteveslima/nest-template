@@ -19,10 +19,6 @@
 // TODO: mock bcrypt with service
 // TODO: mock only EXTERNAL dependencies and use local dependencies integrated, relative to the APPLICATION(otherwise, mocking dependencies of local files may lead to a mocking hell)
 
-it('disabled due to refactoring exposed mocking hell problem', () => {
-  expect(true).toBeTruthy();
-});
-
 // const userEntityMock: UserEntity = {
 //   id: 'id',
 //   createdAt: new Date(),

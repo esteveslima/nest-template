@@ -1,13 +1,9 @@
-import { Test } from '@nestjs/testing';
-import { AuthRestService } from 'src/modules/auth/auth.service';
-import { UserController } from 'src/modules/user/user.controller';
-import { UserRestService } from 'src/modules/user/user-rest.service';
-import { runCommonTests } from 'src/tests/unit/common/controller/run-common-tests';
-import { testSwaggerDocApplied } from 'src/tests/unit/common/controller/test-swagger-doc-applied';
-
-it('disabled due to refactoring exposed mocking hell problem', () => {
-  expect(true).toBeTruthy();
-});
+// import { Test } from '@nestjs/testing';
+// import { AuthRestService } from 'src/modules/auth/auth.service';
+// import { UserController } from 'src/modules/user/user.controller';
+// import { UserRestService } from 'src/modules/user/user-rest.service';
+// import { runCommonTests } from 'src/tests/unit/common/controller/run-common-tests';
+// import { testSwaggerDocApplied } from 'src/tests/unit/common/controller/test-swagger-doc-applied';
 
 // describe('UserController', () => {
 //   let userController: UserController;

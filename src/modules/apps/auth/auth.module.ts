@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
-
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
-import { AuthTokenService } from './services/adapters/clients/auth-token.service';
-
-import { AuthController } from './auth.controller';
-import { AuthRestService } from './services/domain/auth-rest.service';
-import { AuthResolver } from './auth.resolver';
-import { AuthGraphqlService } from './services/domain/auth-graphql.service';
+import { TokenService } from './adapters/gateways/clients/token.service';
+import { AuthController } from './adapters/ports/controllers/auth.controller';
+import { AuthRestService } from './application/auth-rest.service';
+import { AuthResolver } from './adapters/ports/resolvers/auth.resolver';
+import { AuthGraphqlService } from './application/auth-graphql.service';
 
 @Module({
   imports: [
@@ -31,8 +29,8 @@ import { AuthGraphqlService } from './services/domain/auth-graphql.service';
     AuthResolver,
 
     // Internal services
-    AuthTokenService,
+    TokenService,
   ],
-  exports: [AuthRestService, AuthTokenService],
+  exports: [AuthRestService, TokenService],
 })
 export class AuthModule {}

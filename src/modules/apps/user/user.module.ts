@@ -2,16 +2,16 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { MediaModule } from '../media/media.module';
-import { UserResolver } from './user.resolver';
-import { UserController } from './user.controller';
-import { UserEntity } from './models/user.entity';
-import { UserRestService } from './services/domain/user-rest.service';
-import { UserGraphqlService } from './services/domain/user-graphql.service';
-import { HashService } from './services/adapters/clients/hash.service';
-import { UserInternalService } from './services/domain/user-internal.service';
-import { UserRepository } from './services/adapters/database/repositories/user.repository';
+import { UserResolver } from './adapters/ports/resolvers/user.resolver';
+import { UserController } from './adapters/ports/controllers/user.controller';
+import { UserEntity } from './adapters/gateways/databases/entities/user.entity';
+import { UserGraphqlService } from './application/user-graphql.service';
+import { HashService } from './application/hash.service';
+import { UserRepository } from './adapters/gateways/databases/repositories/user.repository';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
 import { BcryptCustomProvider } from 'src/common/internals/providers/packages/bcrypt.provider';
+import { UserRestService } from './application/user-rest.service';
+import { UserInternalService } from './application/user-internal.service';
 
 @Module({
   imports: [

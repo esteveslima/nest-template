@@ -5,6 +5,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { AllExceptionsFilter } from './common/internals/enhancers/filters/all-exceptions.filter';
 import { devToolsBasicAuthMiddleware } from './common/internals/enhancers/middlewares/dev-tools-basic-auth.middleware';
+import { ExpressAdapter } from '@bull-board/express';
+import { createBullBoard } from '@bull-board/api';
+import { BullAdapter } from '@bull-board/api/bullAdapter';
+import { Queue } from 'bull';
+import { getQueueToken } from '@nestjs/bull';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -12,29 +17,26 @@ async function bootstrap() {
   });
 
   // Config logger
-  app.useLogger(app.get(Logger));
+  app.useLogger(app.get<Logger>(Logger));
   app.flushLogs();
 
-  // Generic filter for unhandled exceptions
+  // Config exceptions filter
   app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
 
-  // Add DTOs serializer transformation/valitations globally
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
-  // Add built-in validation pipe to purge incoming request data globally
+  // Extra configs
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector))); // Add DTOs serializer transformation/valitations globally
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }), // Add built-in validation pipe to purge incoming request data globally
   );
+  app.setGlobalPrefix('/api', { exclude: ['/'] }); // Add base prefix for routes
 
-  // Add base prefix for routes
-  app.setGlobalPrefix('/api', { exclude: ['/'] });
-
-  // Setup developer web tools for non development environments
+  // Setup developer web tools for non production environments
   const isDevelopmentEnvironment =
     process.env.NODE_ENV && !process.env.NODE_ENV.includes('prod');
   if (isDevelopmentEnvironment) {
     const webToolsRoutes = {
       swaggerRoute: '/swagger',
+      bullBoardRoute: '/bull-board',
       graphqlPlaygroundRoute: '/api/graphql',
     };
 
@@ -46,7 +48,7 @@ async function bootstrap() {
     // Setup swagger
     const swaggerDocumentConfig = new DocumentBuilder()
       .setTitle('media-collection')
-      .setVersion('1.0')
+      .setVersion('0.0.0')
       .setDescription('Practice template project on Nest.js')
       .addBearerAuth({ type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' })
       .build();
@@ -57,6 +59,21 @@ async function bootstrap() {
     SwaggerModule.setup(webToolsRoutes.swaggerRoute, app, swaggerDocument, {
       swaggerOptions: { defaultModelsExpandDepth: 0 },
     });
+
+    // // Setup Bull board
+    // const serverAdapter = new ExpressAdapter();
+    // const queueNames = QueueModule.registeredQueuesConfig.map(
+    //   (queueConfig) => queueConfig.name,
+    // );
+    // createBullBoard({
+    //   queues: queueNames.map(
+    //     (queueName) =>
+    //       new BullAdapter(app.get<Queue>(getQueueToken(queueName))),
+    //   ),
+    //   serverAdapter,
+    // });
+    // serverAdapter.setBasePath(webToolsRoutes.bullBoardRoute);
+    // app.use(webToolsRoutes.bullBoardRoute, serverAdapter.getRouter());
   }
 
   // Setup cors for all subdomains from specific client domain

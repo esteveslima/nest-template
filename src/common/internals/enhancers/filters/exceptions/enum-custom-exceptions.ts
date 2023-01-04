@@ -4,10 +4,13 @@ enum enumInternalCustomExceptions {
   AuthUserEntityNotFound,
 }
 
+enum TokenCustomExceptions {
+  TokenExpired,
+  TokenMalformed,
+  TokenPayloadInvalid,
+}
+
 enum enumAuthCustomExceptions {
-  AuthTokenExpired,
-  AuthTokenMalformed,
-  AuthTokenPayloadInvalid,
   AuthUnhauthorized,
 }
 
@@ -25,6 +28,7 @@ enum enumMediaCustomExceptions {
 
 export const enumCustomExceptions = {
   ...enumInternalCustomExceptions,
+  ...TokenCustomExceptions,
   ...enumAuthCustomExceptions,
   ...enumUserCustomExceptions,
   ...enumMediaCustomExceptions,

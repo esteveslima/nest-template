@@ -3,7 +3,7 @@
 import { ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
-import { IResolvedRequest } from '../../../interfaces/resolved-request.interface';
+import { IResolvedRequest } from '../../../types/resolved-request.interface';
 
 enum enumExecutionContexts {
   HTTP = 'http',

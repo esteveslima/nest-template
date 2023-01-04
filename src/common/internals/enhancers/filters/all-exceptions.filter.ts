@@ -13,7 +13,7 @@ import { HttpAdapterHost } from '@nestjs/core';
 
 interface IErrorResponseBody {
   statusCode: number;
-  message: (string | object)[];
+  result: object;
   error: string;
 }
 
@@ -46,16 +46,29 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const errorResponseBody: IErrorResponseBody = {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: [InternalServerErrorException.name],
       error: InternalServerErrorException.name,
+      result: {},
     };
 
     if (e instanceof HttpException) {
       errorResponseBody.statusCode = e.getStatus();
-      errorResponseBody.message = [(e.getResponse() as any)?.['message']].flat(
-        1,
-      ) ?? [e.getResponse()];
       errorResponseBody.error = e.name;
+
+      switch (typeof e.getResponse()) {
+        case 'object': {
+          if ((e.getResponse() as any)?.['message']) {
+            errorResponseBody.result = {
+              feedback: (e.getResponse() as any)?.['message'],
+            };
+          } else {
+            errorResponseBody.result = e.getResponse() as object;
+          }
+          break;
+        }
+        default: {
+          errorResponseBody.result = { feedback: e.getResponse() };
+        }
+      }
     }
 
     return errorResponseBody;

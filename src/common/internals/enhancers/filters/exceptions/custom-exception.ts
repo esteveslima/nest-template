@@ -19,25 +19,35 @@ export class CustomException extends Error {
 
   // method to reduce boilerplate code when mapping internal exceptions into interface adapters(http) errors
   public static mapHttpException(
-    e: unknown,
+    exception: unknown,
     exceptionMap: Partial<
-      Record<keyof typeof CustomException.customExceptions, HttpException>
+      Record<
+        keyof typeof CustomException.customExceptions,
+        (customException: CustomException) => HttpException
+      >
     >,
-  ): HttpException {
+  ): HttpException | unknown {
+    let e = exception;
+
+    if (e instanceof AggregateError) {
+      const firstException = e.errors[0];
+      e = firstException;
+    }
+
     if (e instanceof CustomException) {
-      const mappedException =
-        exceptionMap[e.type] ?? new InternalServerErrorException();
+      const mappedExceptionFactory = exceptionMap[e.type];
+      const mappedException = mappedExceptionFactory
+        ? mappedExceptionFactory(e)
+        : new InternalServerErrorException();
       mappedException.stack = e.stack;
       return mappedException;
     }
 
-    const defaultException = new InternalServerErrorException();
-    defaultException.stack = (e as Error)?.stack;
-    return defaultException;
+    return e;
   }
 }
 
-// // (not being used anymore, leaving for future reference)
+// // (below not being used anymore, leaving for future reference)
 // // Workaround for typing static objects without losing the autocomplete
 // function asSomeType<T extends ISomeType>(arg: T): T {
 //   return arg;

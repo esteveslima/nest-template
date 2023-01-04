@@ -41,3 +41,13 @@ TODO: list topics to be commented on this readme
    - authentication & authorization built on the guard to simplify applying with decorators
  - graphql
    - for graphql can applied auth guard on entire methods(query/mutations) as well as only on fields(which use a custom interceptor to get user info and a field middleware to limit access only on "private" fields, creating a model with mixed permissions)
+
+---
+
+2023:
+-criar interface para application
+-fazer dtos dependerem da interface da application
+-ajustar parametros dos controllers/resolvers
+-ajustar nomes interfaces com padrao unico
+-finalizar com ajuste da camada de infra
+-fix swagger responses

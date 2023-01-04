@@ -2,17 +2,17 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 
-import { MediaController } from './media.controller';
-import { MediaRepository } from './services/adapters/database/repositories/media.repository';
-import { MediaResolver } from './media.resolver';
-import { MediaRestService } from './services/domain/media-rest.service';
+import { MediaController } from './adapters/ports/controllers/media.controller';
+import { MediaRepository } from './adapters/gateways/databases/repositories/media.repository';
+import { MediaResolver } from './adapters/ports/resolvers/media.resolver';
 import { UserModule } from '../user/user.module';
-import { MediaGraphqlService } from './services/domain/media-graphql.service';
-import { MediaEntity } from './models/media.entity';
+import { MediaGraphqlService } from './application/media-graphql.service';
+import { MediaEntity } from './adapters/gateways/databases/entities/media.entity';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
-import { MediaEventsPubsubHandlerService } from './services/domain/events/pubsub/media-events-pubsub-handler.service';
-import { MediaPubsubSubscriberService } from './services/adapters/pubsub/subscribers/media-pubsub-subscriber.service';
-import { MediaPubsubPublisherService } from './services/adapters/pubsub/publishers/media-pubsub-publisher.service';
+import { MediaEventsHandlerService } from './application/handlers/media-events-handler.service';
+import { MediaPubsubSubscriberService } from './adapters/ports/subscribers/media-pubsub-subscriber.service';
+import { MediaPubsubPublisherService } from './adapters/gateways/publishers/media-pubsub-publisher.service';
+import { MediaRestService } from './application/media-rest.service';
 
 @Module({
   imports: [
@@ -38,7 +38,7 @@ import { MediaPubsubPublisherService } from './services/adapters/pubsub/publishe
     MediaRepository,
     MediaPubsubPublisherService,
     MediaPubsubSubscriberService,
-    MediaEventsPubsubHandlerService,
+    MediaEventsHandlerService,
   ],
   exports: [MediaRestService, MediaGraphqlService],
 })

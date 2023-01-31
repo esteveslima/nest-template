@@ -6,7 +6,7 @@ import { RegisterMediaArgsDTO } from '../adapters/entrypoints/resolvers/dtos/arg
 import { UpdateMediaArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-media.args';
 import { SearchMediaArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/search-media.args';
 import { Media } from '../domain/media.interface';
-import { User } from '../../user/domain/user.interface';
+import { User } from '../../user/domain/entities/user';
 
 @Injectable()
 export class MediaGraphqlService {

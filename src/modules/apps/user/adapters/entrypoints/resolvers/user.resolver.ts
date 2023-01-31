@@ -16,7 +16,6 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { UserGraphqlService } from '../../../application/user-graphql.service';
-import { UserEntity } from '../../gateways/databases/entities/user.entity';
 import { RegisterUserArgsDTO } from './dtos/args/register-user.args';
 import { UserType } from './dtos/types/user.type';
 import { MediaGraphqlService } from '../../../../media/application/media-graphql.service';
@@ -25,11 +24,12 @@ import { CustomException } from 'src/common/internals/enhancers/filters/exceptio
 import { MediaEntity } from '../../../../media/adapters/gateways/databases/entities/media.entity';
 import { GetGraphqlAuthUserInfo } from '../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-user-info.decorator';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
-import { GetAuthUserEntity } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user-entity.decorator';
+import { GetAuthUser } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user-entity.decorator';
 import { SearchMediaArgsDTO } from '../../../../media/adapters/entrypoints/resolvers/dtos/args/search-media.args';
 import { SearchUserArgsDTO } from './dtos/args/search-user.args';
 import { UpdateUserArgsDTO } from './dtos/args/update-user.args';
 import { UpdateCurrentUserArgsDTO } from './dtos/args/update-current-user.args';
+import { User } from '../../../domain/entities/user';
 
 @Resolver(() => UserType)
 @GetGraphqlAuthUserInfo() // required for auth field middleware
@@ -43,9 +43,9 @@ export class UserResolver {
   // Define resolvers for graphql operations
 
   @Query(() => UserType, { name: 'user' })
-  async getUserById(@Args('id', ParseUUIDPipe) id: string): Promise<UserType> {
+  async getUser(@Args('id', ParseUUIDPipe) id: string): Promise<UserType> {
     try {
-      return await this.userGraphqlService.getUserById(id);
+      return await this.userGraphqlService.getUser(id);
     } catch (e) {
       throw CustomException.mapHttpException(e, {
         UserNotFound: (customException) =>
@@ -84,7 +84,7 @@ export class UserResolver {
   @Auth('ADMIN')
   async updateUser(@Args() user: UpdateUserArgsDTO): Promise<boolean> {
     try {
-      await this.userGraphqlService.modifyUserById(user.id, user);
+      await this.userGraphqlService.modifyUser(user.id, user);
 
       return true;
     } catch (e) {
@@ -100,11 +100,11 @@ export class UserResolver {
   @Mutation(() => Boolean, { name: 'updateCurrentUser' })
   @Auth('ADMIN', 'USER')
   async updateCurrentUser(
-    @GetAuthUserEntity() currentUser: UserEntity,
+    @GetAuthUser() currentUser: User,
     @Args() user: UpdateCurrentUserArgsDTO,
   ): Promise<boolean> {
     try {
-      await this.userGraphqlService.modifyUserById(currentUser.id, user);
+      await this.userGraphqlService.modifyUser(currentUser.id, user);
 
       return true;
     } catch (e) {
@@ -123,7 +123,7 @@ export class UserResolver {
   @Auth('ADMIN')
   async deleteUser(@Args('id', ParseUUIDPipe) id: string): Promise<boolean> {
     try {
-      await this.userGraphqlService.deleteUserById(id);
+      await this.userGraphqlService.deleteUser(id);
 
       return true;
     } catch (e) {

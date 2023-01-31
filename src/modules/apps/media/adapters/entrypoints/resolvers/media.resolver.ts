@@ -12,15 +12,15 @@ import {
 import { MediaType } from './dtos/types/media.type';
 import { MediaGraphqlService } from '../../../application/media-graphql.service';
 import { UserGraphqlService } from '../../../../user/application/user-graphql.service';
-import { UserEntity } from '../../../../user/adapters/gateways/databases/entities/user.entity';
 import { UserType } from '../../../../user/adapters/entrypoints/resolvers/dtos/types/user.type';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { GetGraphqlAuthUserInfo } from '../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-user-info.decorator';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
-import { GetAuthUserEntity } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user-entity.decorator';
+import { GetAuthUser } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user-entity.decorator';
 import { SearchMediaArgsDTO } from './dtos/args/search-media.args';
 import { RegisterMediaArgsDTO } from './dtos/args/register-media.args';
 import { UpdateMediaArgsDTO } from './dtos/args/update-media.args';
+import { User } from 'src/modules/apps/user/domain/entities/user';
 
 @Resolver(() => MediaType)
 @GetGraphqlAuthUserInfo() // required for auth field middleware
@@ -63,7 +63,7 @@ export class MediaResolver {
   @Auth('ADMIN', 'USER')
   async registerMedia(
     @Args() media: RegisterMediaArgsDTO,
-    @GetAuthUserEntity() user: UserEntity,
+    @GetAuthUser() user: User,
   ): Promise<MediaType> {
     try {
       return await this.mediaGraphqlService.registerMedia(media, user);
@@ -76,7 +76,7 @@ export class MediaResolver {
   @Auth('ADMIN', 'USER')
   async updateMedia(
     @Args() media: UpdateMediaArgsDTO,
-    @GetAuthUserEntity() user: UserEntity,
+    @GetAuthUser() user: User,
   ): Promise<boolean> {
     try {
       await this.mediaGraphqlService.modifyMediaById(media.id, user, media);
@@ -94,7 +94,7 @@ export class MediaResolver {
   @Auth('ADMIN', 'USER')
   async deleteMedia(
     @Args('id', ParseUUIDPipe) id: string,
-    @GetAuthUserEntity() user: UserEntity,
+    @GetAuthUser() user: User,
   ): Promise<boolean> {
     try {
       await this.mediaGraphqlService.deleteMediaById(id, user);
@@ -113,9 +113,9 @@ export class MediaResolver {
     const userId = media?.user?.id; //TODO: refactor after queries dont do eager loading, the field user should now be only the uuid
     if (!userId) return undefined;
 
-    let user: UserEntity;
+    let user: User;
     try {
-      user = await this.userGraphqlService.getUserById(userId);
+      user = await this.userGraphqlService.getUser(userId);
     } catch (e) {
       throw CustomException.mapHttpException(e, {
         UserNotFound: (customException) =>

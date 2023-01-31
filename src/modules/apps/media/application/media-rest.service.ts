@@ -1,7 +1,7 @@
 // Responsible for containing business logic
 
 import { Injectable } from '@nestjs/common';
-import { User } from '../../user/domain/user.interface';
+import { User } from '../../user/domain/entities/user';
 import { MediaPubsubPublisherService } from '../adapters/gateways/publishers/media-pubsub-publisher.service';
 import { PatchMediaReqDTO } from '../adapters/entrypoints/controllers/dtos/req/patch-media-req.dto';
 import { RegisterMediaReqDTO } from '../adapters/entrypoints/controllers/dtos/req/register-media-req.dto';

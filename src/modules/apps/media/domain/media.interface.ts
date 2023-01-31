@@ -1,6 +1,6 @@
 // Interface describing entity properties
 
-import { User } from '../../user/domain/user.interface';
+import { User } from '../../user/domain/entities/user';
 
 export enum enumMediaType {
   MUSIC = 'MUSIC',

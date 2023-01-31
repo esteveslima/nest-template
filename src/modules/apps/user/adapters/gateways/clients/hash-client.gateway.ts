@@ -1,28 +1,28 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { BCRYPT_PROVIDER } from 'src/common/internals/providers/constants';
 import { BcryptProviderType } from 'src/common/internals/providers/packages/bcrypt.provider';
-import { HashGateway } from '../../../application/interfaces/ports/hash/hash-gateway.interface';
+import { IHashGateway } from '../../../application/ports/hash/hash-gateway.interface';
 import {
-  HashGatewayCompareHashParams,
-  HashGatewayCompareHashResult,
-} from '../../../application/interfaces/ports/hash/methods/compare-hash.interface';
+  IHashGatewayCompareHashParams,
+  IHashGatewayCompareHashResult,
+} from '../../../application/ports/hash/methods/compare-hash.interface';
 import {
-  HashGatewayHashValueParams,
-  HashGatewayHashValueResult,
-} from '../../../application/interfaces/ports/hash/methods/hash-value.interface';
+  IHashGatewayHashValueParams,
+  IHashGatewayHashValueResult,
+} from '../../../application/ports/hash/methods/hash-value.interface';
 
 // concrete implementation of the application hash dependency
 
 @Injectable()
-export class HashGatewayGateway implements HashGateway {
+export class HashClientGateway implements IHashGateway {
   constructor(
     @Inject(BCRYPT_PROVIDER)
     private bcrypt: BcryptProviderType,
   ) {}
 
   async hashValue(
-    params: HashGatewayHashValueParams,
-  ): Promise<HashGatewayHashValueResult> {
+    params: IHashGatewayHashValueParams,
+  ): Promise<IHashGatewayHashValueResult> {
     const { value } = params;
 
     const hash = await this.bcrypt.hash(value, 10);
@@ -31,8 +31,8 @@ export class HashGatewayGateway implements HashGateway {
   }
 
   async compareHash(
-    params: HashGatewayCompareHashParams,
-  ): Promise<HashGatewayCompareHashResult> {
+    params: IHashGatewayCompareHashParams,
+  ): Promise<IHashGatewayCompareHashResult> {
     const { hash, value } = params;
 
     if (!value || !hash) return false;

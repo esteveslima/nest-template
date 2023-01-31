@@ -4,15 +4,16 @@ import { AuthModule } from '../auth/auth.module';
 import { MediaModule } from '../media/media.module';
 import { UserResolver } from './adapters/entrypoints/resolvers/user.resolver';
 import { UserController } from './adapters/entrypoints/controllers/user.controller';
-import { UserEntity } from './adapters/gateways/databases/entities/user.entity';
 import { UserGraphqlService } from './application/user-graphql.service';
-import { HashGatewayGateway } from './adapters/gateways/clients/hash-client.gateway';
-import { UserRepository } from './adapters/gateways/databases/repositories/user.repository';
+import { HashClientGateway } from './adapters/gateways/clients/hash-client.gateway';
+import { UserRepositoryGateway } from './adapters/gateways/databases/repositories/user-repository.gateway';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
 import { BcryptCustomProvider } from 'src/common/internals/providers/packages/bcrypt.provider';
 import { UserRestService } from './application/user-rest.service';
 import { UserInternalService } from './application/user-internal.service';
-import { HashGateway } from './application/interfaces/ports/hash/hash-gateway.interface';
+import { IHashGateway } from './application/ports/hash/hash-gateway.interface';
+import { UserDatabaseEntity } from './adapters/gateways/databases/entities/user.entity';
+import { IUserGateway } from './domain/repositories/user/user-gateway.interface';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { HashGateway } from './application/interfaces/ports/hash/hash-gateway.in
     forwardRef(() => AuthModule), // resolving modules circular dependency(referencing the least deppendant modules)
 
     // Import ORM Entities Repositories for DI and select connection by name
-    TypeOrmModule.forFeature([UserEntity], SINGLE_DB),
+    TypeOrmModule.forFeature([UserDatabaseEntity], SINGLE_DB),
 
     // Other feature modules dependencies
     forwardRef(() => MediaModule), // resolving modules circular dependency(referencing the least deppendant modules)
@@ -36,10 +37,13 @@ import { HashGateway } from './application/interfaces/ports/hash/hash-gateway.in
     UserResolver,
 
     // Internal services
-    UserRepository,
     {
-      provide: HashGateway,
-      useClass: HashGatewayGateway,
+      provide: IUserGateway,
+      useClass: UserRepositoryGateway,
+    },
+    {
+      provide: IHashGateway,
+      useClass: HashClientGateway,
     },
     UserInternalService,
   ],

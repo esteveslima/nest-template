@@ -12,7 +12,7 @@ import { getRequestObject } from 'src/common/internals/enhancers/utils/get-reque
 import { UserInternalService } from 'src/modules/apps/user/application/user-internal.service';
 
 @Injectable()
-export class GetAuthUserEntityPipe implements PipeTransform {
+export class GetAuthUserPipe implements PipeTransform {
   constructor(
     @Inject(UserInternalService)
     private userInternalService: UserInternalService,
@@ -26,14 +26,14 @@ export class GetAuthUserEntityPipe implements PipeTransform {
 
     // Fails if somehow doesnt receive all parameters for search
     if (Object.values(searchUserFilters).includes(undefined)) {
-      throw new Error('GetAuthUserEntityPipe: search parameters not found');
+      throw new Error('GetAuthUserPipe: search parameters not found');
     }
 
-    const userFound = await this.userInternalService.searchUserEntity(
+    const userFound = await this.userInternalService.searchUser(
       searchUserFilters,
     );
     if (!userFound) {
-      throw new Error('GetAuthUserEntityPipe: entity parameters not found');
+      throw new Error('GetAuthUserPipe: entity parameters not found');
     }
 
     return userFound;

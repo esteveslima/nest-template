@@ -1,5 +1,6 @@
 // Responsible for defining data format and relations in the database
 
+import { UserDatabaseEntity } from 'src/modules/apps/user/adapters/gateways/databases/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,7 +9,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'; // typeORM tools https://orkhan.gitbook.io/typeorm/docs/embedded-entities
-import { UserEntity } from '../../../../../user/adapters/gateways/databases/entities/user.entity';
 import { enumMediaType, Media } from '../../../../domain/media.interface';
 
 @Entity()
@@ -26,11 +26,11 @@ export class MediaEntity implements Media {
 
   // Relational fields
 
-  @ManyToOne(() => UserEntity, (user) => user.medias, {
+  @ManyToOne(() => UserDatabaseEntity, (user) => user.medias, {
     eager: false,
     onDelete: 'SET NULL',
   })
-  user: UserEntity;
+  user: UserDatabaseEntity;
 
   // Editable fields
 

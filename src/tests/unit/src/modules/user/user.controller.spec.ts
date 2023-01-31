@@ -11,9 +11,9 @@
 
 //   beforeAll(async () => {
 //     const userServiceMock: Partial<UserRestService> = {
-//       deleteUserById: jest.fn(),
-//       getUserById: jest.fn(),
-//       modifyUserById: jest.fn(),
+//       deleteUser: jest.fn(),
+//       getUser: jest.fn(),
+//       modifyUser: jest.fn(),
 //       registerUser: jest.fn(),
 //       searchUser: jest.fn(),
 //       // verifyUserPassword: jest.fn(),

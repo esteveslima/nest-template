@@ -1,4 +1,4 @@
-import { enumRole } from 'src/modules/apps/user/domain/user.interface';
+import { enumRole } from 'src/modules/apps/user/domain/entities/user';
 
 export class AuthTokenPayload {
   id: string;

@@ -3,7 +3,7 @@
 
 import { PickType } from '@nestjs/swagger'; // mapped-types
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
-import { User } from 'src/modules/apps/user/domain/user.interface';
+import { User } from 'src/modules/apps/user/domain/entities/user';
 
 export class GetUserResDTO extends PickType(User, [
   'id',

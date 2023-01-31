@@ -13,7 +13,7 @@
 //   enumRole,
 // } from '../../../../../modules/user/interfaces/entity/user.interface';
 // import { UserEntity } from '../../../../../modules/user/models/user.entity';
-// import { UserRepository } from '../../../../../modules/user/user.repository';
+// import { IUserGateway } from '../../../../../modules/user/user.repository';
 // import { UserRestService } from '../../../../../modules/user/services/user-rest.service';
 
 // TODO: mock bcrypt with service
@@ -32,48 +32,48 @@
 //   medias: [],
 // };
 
-// const userRepositoryMockBase = {
+// const userGatewayMockBase = {
 //   registerUser: jest.fn(),
-//   getUserById: jest.fn(),
-//   deleteUserById: jest.fn(),
-//   modifyUserById: jest.fn(),
+//   getUser: jest.fn(),
+//   deleteUser: jest.fn(),
+//   modifyUser: jest.fn(),
 //   searchUser: jest.fn(),
 // };
 
-// const userRepositoryMockSuccess = {
+// const userGatewayMockSuccess = {
 //   registerUser: jest.fn((params: RegisterUserReqDTO) =>
 //     Promise.resolve({ ...userEntityMock, ...params }),
 //   ),
-//   getUserById: jest.fn(() => Promise.resolve(userEntityMock)),
-//   deleteUserById: jest.fn(() => Promise.resolve(true)),
-//   modifyUserById: jest.fn(() => Promise.resolve(true)),
+//   getUser: jest.fn(() => Promise.resolve(userEntityMock)),
+//   deleteUser: jest.fn(() => Promise.resolve(true)),
+//   modifyUser: jest.fn(() => Promise.resolve(true)),
 //   searchUser: jest.fn(() => Promise.resolve(userEntityMock)),
 // };
-// const userRepositoryMockFail = {
+// const userGatewayMockFail = {
 //   registerUser: jest.fn(() => {
 //     throw new Error();
 //   }),
-//   getUserById: jest.fn(() => Promise.resolve(undefined)),
-//   deleteUserById: jest.fn(() => Promise.resolve(false)),
-//   modifyUserById: jest.fn(() => Promise.resolve(false)),
+//   getUser: jest.fn(() => Promise.resolve(undefined)),
+//   deleteUser: jest.fn(() => Promise.resolve(false)),
+//   modifyUser: jest.fn(() => Promise.resolve(false)),
 //   searchUser: jest.fn(() => Promise.resolve(undefined)),
 // };
 
 // describe('UserRestService', () => {
 //   let userService: UserRestService;
-//   let userRepositoryMock: typeof userRepositoryMockBase;
+//   let userGatewayMock: typeof userGatewayMockBase;
 
 //   // Create a mock module for every test
 //   beforeEach(async () => {
 //     jest.restoreAllMocks();
 
-//     userRepositoryMock = userRepositoryMockBase;
+//     userGatewayMock = userGatewayMockBase;
 //     const module = await Test.createTestingModule({
 //       providers: [
 //         UserRestService,
 //         {
-//           provide: UserRepository,
-//           useValue: userRepositoryMock,
+//           provide: IUserGateway,
+//           useValue: userGatewayMock,
 //         },
 //       ],
 //     }).compile();
@@ -81,8 +81,8 @@
 //   });
 
 //   describe('registerUser', () => {
-//     it('calls userRepository.registerUser with hashed password', async () => {
-//       userRepositoryMock.registerUser = userRepositoryMockSuccess.registerUser;
+//     it('calls userGateway.registerUser with hashed password', async () => {
+//       userGatewayMock.registerUser = userGatewayMockSuccess.registerUser;
 //       const userMock: RegisterUserReqDTO = {
 //         username: 'username',
 //         password: 'password',
@@ -94,16 +94,16 @@
 
 //       await userService.registerUser(userMock);
 
-//       const userRepositoryMockCallParams: RegisterUserReqDTO =
-//         userRepositoryMock.registerUser.mock.calls[0][0];
+//       const userGatewayMockCallParams: RegisterUserReqDTO =
+//         userGatewayMock.registerUser.mock.calls[0][0];
 
-//       expect(userRepositoryMock.registerUser).toBeCalled();
-//       expect(userRepositoryMock.registerUser).not.toBeCalledWith(userMock);
-//       expect(userRepositoryMockCallParams.password).not.toBe(userMock.password);
+//       expect(userGatewayMock.registerUser).toBeCalled();
+//       expect(userGatewayMock.registerUser).not.toBeCalledWith(userMock);
+//       expect(userGatewayMockCallParams.password).not.toBe(userMock.password);
 //     });
 
 //     it('returns created object without password', async () => {
-//       userRepositoryMock.registerUser = userRepositoryMockSuccess.registerUser;
+//       userGatewayMock.registerUser = userGatewayMockSuccess.registerUser;
 //       const userMock: RegisterUserReqDTO = {
 //         username: 'username',
 //         password: 'password',
@@ -130,23 +130,23 @@
 //     });
 //   });
 
-//   describe('getUserById', () => {
+//   describe('getUser', () => {
 //     it('throws NotFoundException if user is not found', async () => {
-//       userRepositoryMock.getUserById = userRepositoryMockFail.getUserById;
+//       userGatewayMock.getUser = userGatewayMockFail.getUser;
 //       const uuid = 'uuid';
 
-//       await expect(userService.getUserById(uuid)).rejects.toThrowError(
+//       await expect(userService.getUser(uuid)).rejects.toThrowError(
 //         NotFoundException,
 //       );
 //     });
 
 //     it('returns found object without password', async () => {
-//       userRepositoryMock.getUserById = userRepositoryMockSuccess.getUserById;
+//       userGatewayMock.getUser = userGatewayMockSuccess.getUser;
 //       const uuid = 'uuid';
 
-//       const result = await userService.getUserById(uuid);
+//       const result = await userService.getUser(uuid);
 
-//       expect(userRepositoryMock.getUserById).toBeCalled();
+//       expect(userGatewayMock.getUser).toBeCalled();
 //       expect(result['password']).not.toBeDefined();
 //       expect(result).toEqual(
 //         expect.objectContaining({
@@ -163,31 +163,31 @@
 //     });
 //   });
 
-//   describe('deleteUserById', () => {
+//   describe('deleteUser', () => {
 //     it('throws NotFoundException if user is not found', async () => {
-//       userRepositoryMock.deleteUserById = userRepositoryMockFail.deleteUserById;
+//       userGatewayMock.deleteUser = userGatewayMockFail.deleteUser;
 //       const uuid = 'uuid';
 
-//       await expect(userService.deleteUserById(uuid)).rejects.toThrowError(
+//       await expect(userService.deleteUser(uuid)).rejects.toThrowError(
 //         NotFoundException,
 //       );
 //     });
 
 //     it('returns void if operation was sucessful', async () => {
-//       userRepositoryMock.deleteUserById =
-//         userRepositoryMockSuccess.deleteUserById;
+//       userGatewayMock.deleteUser =
+//         userGatewayMockSuccess.deleteUser;
 //       const uuid = 'uuid';
 
-//       const result = await userService.deleteUserById(uuid);
+//       const result = await userService.deleteUser(uuid);
 
-//       expect(userRepositoryMock.deleteUserById).toBeCalled();
+//       expect(userGatewayMock.deleteUser).toBeCalled();
 //       expect(result).toBeUndefined();
 //     });
 //   });
 
-//   describe('modifyUserById', () => {
+//   describe('modifyUser', () => {
 //     it('throws NotFoundException if user is not found', async () => {
-//       userRepositoryMock.modifyUserById = userRepositoryMockFail.modifyUserById;
+//       userGatewayMock.modifyUser = userGatewayMockFail.modifyUser;
 //       const uuid = 'uuid';
 //       const userMock: PatchUserReqDTO | UpdateUserReqDTO = {
 //         username: 'username',
@@ -198,13 +198,13 @@
 //       };
 
 //       await expect(
-//         userService.modifyUserById(uuid, userMock),
+//         userService.modifyUser(uuid, userMock),
 //       ).rejects.toThrowError(NotFoundException);
 //     });
 
-//     it('calls userRepository.modifyUserById with hashed password if provided', async () => {
-//       userRepositoryMock.modifyUserById =
-//         userRepositoryMockSuccess.modifyUserById;
+//     it('calls userGateway.modifyUser with hashed password if provided', async () => {
+//       userGatewayMock.modifyUser =
+//         userGatewayMockSuccess.modifyUser;
 //       const uuid = 'uuid';
 //       const userMock: PatchUserReqDTO | UpdateUserReqDTO = {
 //         username: 'username',
@@ -214,19 +214,19 @@
 //         gender: enumGenderType.OTHER,
 //       };
 
-//       await userService.modifyUserById(uuid, userMock);
+//       await userService.modifyUser(uuid, userMock);
 
-//       const userRepositoryMockCallParams: PatchUserReqDTO | UpdateUserReqDTO =
-//         userRepositoryMock.modifyUserById.mock.calls[0][0];
+//       const userGatewayMockCallParams: PatchUserReqDTO | UpdateUserReqDTO =
+//         userGatewayMock.modifyUser.mock.calls[0][0];
 
-//       expect(userRepositoryMock.modifyUserById).toBeCalled();
-//       expect(userRepositoryMock.modifyUserById).not.toBeCalledWith(userMock);
-//       expect(userRepositoryMockCallParams.password).not.toBe(userMock.password);
+//       expect(userGatewayMock.modifyUser).toBeCalled();
+//       expect(userGatewayMock.modifyUser).not.toBeCalledWith(userMock);
+//       expect(userGatewayMockCallParams.password).not.toBe(userMock.password);
 //     });
 
 //     it('returns void if operation was sucessful', async () => {
-//       userRepositoryMock.modifyUserById =
-//         userRepositoryMockSuccess.modifyUserById;
+//       userGatewayMock.modifyUser =
+//         userGatewayMockSuccess.modifyUser;
 //       const uuid = 'uuid';
 //       const userMock: PatchUserReqDTO | UpdateUserReqDTO = {
 //         username: 'username',
@@ -236,9 +236,9 @@
 //         gender: enumGenderType.OTHER,
 //       };
 
-//       const result = await userService.modifyUserById(uuid, userMock);
+//       const result = await userService.modifyUser(uuid, userMock);
 
-//       expect(userRepositoryMock.modifyUserById).toBeCalled();
+//       expect(userGatewayMock.modifyUser).toBeCalled();
 //       expect(result).toBeUndefined();
 //     });
 //   });
@@ -250,11 +250,11 @@
 //       await expect(
 //         userService.searchUser(searchFiltersMock),
 //       ).rejects.toThrowError(BadRequestException);
-//       expect(userRepositoryMock.searchUser).not.toBeCalled();
+//       expect(userGatewayMock.searchUser).not.toBeCalled();
 //     });
 
 //     it('throws NotFoundException if no user was found', async () => {
-//       userRepositoryMock.searchUser = userRepositoryMockFail.searchUser;
+//       userGatewayMock.searchUser = userGatewayMockFail.searchUser;
 //       const searchFiltersMock: SearchUserReqDTO = {
 //         email: 'email',
 //         username: 'username',
@@ -263,11 +263,11 @@
 //       await expect(
 //         userService.searchUser(searchFiltersMock),
 //       ).rejects.toThrowError(NotFoundException);
-//       expect(userRepositoryMock.searchUser).toBeCalled();
+//       expect(userGatewayMock.searchUser).toBeCalled();
 //     });
 
 //     it('returns found object without password', async () => {
-//       userRepositoryMock.searchUser = userRepositoryMockSuccess.searchUser;
+//       userGatewayMock.searchUser = userGatewayMockSuccess.searchUser;
 //       const searchFiltersMock: SearchUserReqDTO = {
 //         email: 'email',
 //         username: 'username',
@@ -275,7 +275,7 @@
 
 //       const result = await userService.searchUser(searchFiltersMock);
 
-//       expect(userRepositoryMock.searchUser).toBeCalled();
+//       expect(userGatewayMock.searchUser).toBeCalled();
 //       expect(result['password']).not.toBeDefined();
 //       expect(result).toEqual(
 //         // TODO: remove objectContaining to assert exact object properties with no extras? (after applying plaintoclass to service)
@@ -312,7 +312,7 @@
 //     });
 
 //     it('return false if somehow the username is not found', async () => {
-//       userRepositoryMock.searchUser = userRepositoryMockFail.searchUser;
+//       userGatewayMock.searchUser = userGatewayMockFail.searchUser;
 //       const username = 'username';
 //       const password = 'password';
 
@@ -331,7 +331,7 @@
 //         role: enumRole.USER,
 //       };
 //       // Custom mock for searchUser to return a non-hashed password for the sake of the test
-//       userRepositoryMock.searchUser = jest.fn(() => ({
+//       userGatewayMock.searchUser = jest.fn(() => ({
 //         ...userMock,
 //         password: userMock.password,
 //       }));

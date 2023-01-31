@@ -16,7 +16,7 @@ import {
   enumMediaType,
   Media,
 } from 'src/modules/apps/media/domain/media.interface';
-import { User } from 'src/modules/apps/user/domain/user.interface';
+import { User } from 'src/modules/apps/user/domain/entities/user';
 
 export class MediaRestValidationDTO implements Media {
   // Auto generated fields

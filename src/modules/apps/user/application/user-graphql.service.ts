@@ -1,30 +1,40 @@
 // Responsible for containing business logic(decoupled for graphql resolvers)
 
 import { Injectable } from '@nestjs/common';
-import { UserEntity } from '../adapters/gateways/databases/entities/user.entity';
 import { RegisterUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/register-user.args';
-import { UserRepository } from '../adapters/gateways/databases/repositories/user.repository';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { UpdateCurrentUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-current-user.args';
 import { UpdateUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-user.args';
 import { SearchUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/search-user.args';
-import { HashGateway } from './interfaces/ports/hash/hash-gateway.interface';
+import { IHashGateway } from './ports/hash/hash-gateway.interface';
+import { User } from '../domain/entities/user';
+import { IUserGateway } from '../domain/repositories/user/user-gateway.interface';
 
 @Injectable()
 export class UserGraphqlService {
   // Get services and repositories from DI
   constructor(
-    private userRepository: UserRepository,
-    private hashGateway: HashGateway,
+    private userGateway: IUserGateway,
+    private hashGateway: IHashGateway,
   ) {}
 
   // Define methods containing business logic
 
   // TODO: public registration aways creates with role 'USER', for role 'ADMIN' must be creted by other authorized admin
-  async registerUser(user: RegisterUserArgsDTO): Promise<UserEntity> {
-    const userCreated = await this.userRepository.registerUser({
-      ...user,
-      password: await this.hashGateway.hashValue({ value: user.password }),
+  async registerUser(user: RegisterUserArgsDTO): Promise<User> {
+    const { age, email, gender, password, role, username } = user;
+
+    const hashedPassword = await this.hashGateway.hashValue({
+      value: password,
+    });
+
+    const userCreated = await this.userGateway.registerUser({
+      age,
+      email,
+      gender,
+      role,
+      username,
+      password: hashedPassword,
     });
 
     return {
@@ -41,8 +51,8 @@ export class UserGraphqlService {
     };
   }
 
-  async getUserById(uuid: string): Promise<UserEntity> {
-    const userFound = await this.userRepository.getUserById(uuid);
+  async getUser(uuid: string): Promise<User> {
+    const userFound = await this.userGateway.getUser({ id: uuid });
 
     return {
       age: userFound.age,
@@ -58,7 +68,7 @@ export class UserGraphqlService {
     };
   }
 
-  async modifyUserById(
+  async modifyUser(
     uuid: string,
     user: UpdateUserArgsDTO | UpdateCurrentUserArgsDTO,
   ): Promise<void> {
@@ -68,22 +78,22 @@ export class UserGraphqlService {
       });
     }
 
-    await this.userRepository.modifyUserById(uuid, user);
+    await this.userGateway.modifyUser({ data: user, id: uuid });
 
     return;
   }
 
   //TODO: forbid delete id from current user
-  async deleteUserById(uuid: string): Promise<void> {
-    await this.userRepository.deleteUserById(uuid);
+  async deleteUser(uuid: string): Promise<void> {
+    await this.userGateway.deleteUser({ id: uuid });
 
     return;
   }
 
   async searchUsersEntity(
     searchUsersFilters: SearchUserArgsDTO,
-  ): Promise<UserEntity[]> {
-    const usersFound = await this.userRepository.searchUser(searchUsersFilters);
+  ): Promise<User[]> {
+    const usersFound = await this.userGateway.searchUser(searchUsersFilters);
 
     if (usersFound.length <= 0) {
       throw new CustomException('UserNotFound');

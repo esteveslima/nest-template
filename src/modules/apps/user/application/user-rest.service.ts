@@ -2,7 +2,6 @@
 
 import { Injectable } from '@nestjs/common';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
-import { UserRepository } from '../adapters/gateways/databases/repositories/user.repository';
 import { PatchUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/patch-user-req.dto';
 import { RegisterUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/register-user-req.dto';
 import { SearchUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/search-user-req.dto';
@@ -10,7 +9,8 @@ import { UpdateUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/u
 import { GetUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/get-user-res.dto';
 import { RegisterUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/register-user-res.dto';
 import { SearchUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/search-user-res.dto';
-import { HashGateway } from './interfaces/ports/hash/hash-gateway.interface';
+import { IUserGateway } from '../domain/repositories/user/user-gateway.interface';
+import { IHashGateway } from './ports/hash/hash-gateway.interface';
 
 @Injectable()
 export class UserRestService {
@@ -18,8 +18,8 @@ export class UserRestService {
 
   // Get services and repositories from DI
   constructor(
-    private userRepository: UserRepository,
-    private hashGateway: HashGateway,
+    private userGateway: IUserGateway,
+    private hashGateway: IHashGateway,
   ) {}
 
   // Define methods containing business logic
@@ -30,7 +30,7 @@ export class UserRestService {
       value: user.password,
     });
 
-    const userCreated = await this.userRepository.registerUser({
+    const userCreated = await this.userGateway.registerUser({
       ...user,
       password: hashedPassword,
     });
@@ -46,8 +46,8 @@ export class UserRestService {
     };
   }
 
-  async getUserById(uuid: string): Promise<GetUserResDTO> {
-    const userFound = await this.userRepository.getUserById(uuid);
+  async getUser(uuid: string): Promise<GetUserResDTO> {
+    const userFound = await this.userGateway.getUser({ id: uuid });
 
     return {
       age: userFound.age,
@@ -62,13 +62,13 @@ export class UserRestService {
   }
 
   //TODO: forbid delete id from current user
-  async deleteUserById(uuid: string): Promise<void> {
-    await this.userRepository.deleteUserById(uuid);
+  async deleteUser(uuid: string): Promise<void> {
+    await this.userGateway.deleteUser({ id: uuid });
 
     return;
   }
 
-  async modifyUserById(
+  async modifyUser(
     uuid: string,
     user: UpdateUserReqDTO | PatchUserReqDTO,
   ): Promise<void> {
@@ -78,7 +78,7 @@ export class UserRestService {
       });
     }
 
-    await this.userRepository.modifyUserById(uuid, user);
+    await this.userGateway.modifyUser({ data: user, id: uuid });
 
     return;
   }
@@ -90,7 +90,7 @@ export class UserRestService {
       throw new CustomException('UserSearchInvalidFilters');
     }
 
-    const usersFound = await this.userRepository.searchUser(searchUsersFilters);
+    const usersFound = await this.userGateway.searchUser(searchUsersFilters);
 
     if (usersFound.length <= 0) {
       throw new CustomException('UserNotFound');

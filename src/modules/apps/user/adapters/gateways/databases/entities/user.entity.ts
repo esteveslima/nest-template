@@ -14,10 +14,10 @@ import {
   enumGenderType,
   enumRole,
   User,
-} from '../../../../domain/user.interface';
+} from '../../../../domain/entities/user';
 
 @Entity()
-export class UserEntity implements User {
+export class UserDatabaseEntity implements User {
   // Auto generated fields
 
   @PrimaryGeneratedColumn('uuid')

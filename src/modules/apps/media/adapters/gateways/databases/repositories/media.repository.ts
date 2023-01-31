@@ -3,7 +3,7 @@
 
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { MediaEntity } from '../entities/media.entity';
-import { User } from '../../../../../user/domain/user.interface';
+import { User } from '../../../../../user/domain/entities/user';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, Logger } from '@nestjs/common';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';

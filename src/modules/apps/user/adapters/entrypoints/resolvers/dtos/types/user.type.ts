@@ -15,7 +15,7 @@ import {
   enumGenderType,
   enumRole,
   User,
-} from '../../../../../domain/user.interface';
+} from '../../../../../domain/entities/user';
 
 registerEnumType(enumRole, { name: 'enumRole' });
 registerEnumType(enumGenderType, { name: 'enumGenderType' });

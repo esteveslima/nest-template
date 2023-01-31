@@ -11,7 +11,7 @@ import {
   enumGenderType,
   enumRole,
   User,
-} from 'src/modules/apps/user/domain/user.interface';
+} from 'src/modules/apps/user/domain/entities/user';
 
 import { UserRestValidationDTO } from '../../../controllers/dtos/base/user-rest-validation.dto';
 

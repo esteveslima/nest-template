@@ -16,7 +16,7 @@ import {
   enumGenderType,
   enumRole,
   User,
-} from '../../../../../domain/user.interface';
+} from '../../../../../domain/entities/user';
 
 export class UserRestValidationDTO implements User {
   // Auto generated fields

@@ -1,8 +1,8 @@
 // Interface for repository methods
 // May extend Entity and modify or omit certain properties to match the operation
 
-import { User } from '../../../../../domain/user.interface';
+import { User } from '../../../entities/user';
 
-export type IParamsRepositorySearchUser = Partial<
+export type IUserGatewaySearchUserParams = Partial<
   Pick<User, 'username' | 'email'>
 >;

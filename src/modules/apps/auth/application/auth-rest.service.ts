@@ -30,7 +30,7 @@ export class AuthRestService {
 
     if (!isAuthenticated) throw new CustomException('AuthUnhauthorized');
 
-    const user = await this.userInternalService.searchUserEntity({ username });
+    const user = await this.userInternalService.searchUser({ username });
 
     const payload: AuthTokenPayload = {
       id: user.id,

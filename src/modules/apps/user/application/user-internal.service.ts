@@ -5,14 +5,14 @@ import { CustomException } from 'src/common/internals/enhancers/filters/exceptio
 import { UserEntity } from '../adapters/gateways/databases/entities/user.entity';
 import { UserRepository } from '../adapters/gateways/databases/repositories/user.repository';
 import { SearchUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/search-user-req.dto';
-import { HashService } from './hash.service';
+import { HashGateway } from './interfaces/ports/hash/hash-gateway.interface';
 
 @Injectable()
 export class UserInternalService {
   // Get services and repositories from DI
   constructor(
     private userRepository: UserRepository,
-    private hashService: HashService,
+    private hashGateway: HashGateway,
   ) {}
 
   // Define methods containing business logic
@@ -42,10 +42,10 @@ export class UserInternalService {
     if (!userFound) return false;
 
     const userHashPassword = userFound.password;
-    const isValidPassword = await this.hashService.compareHash(
-      password,
-      userHashPassword,
-    );
+    const isValidPassword = await this.hashGateway.compareHash({
+      hash: userHashPassword,
+      value: password,
+    });
 
     return isValidPassword;
   }

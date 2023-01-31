@@ -10,7 +10,7 @@ import { UpdateUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/u
 import { GetUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/get-user-res.dto';
 import { RegisterUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/register-user-res.dto';
 import { SearchUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/search-user-res.dto';
-import { HashService } from './hash.service';
+import { HashGateway } from './interfaces/ports/hash/hash-gateway.interface';
 
 @Injectable()
 export class UserRestService {
@@ -19,14 +19,16 @@ export class UserRestService {
   // Get services and repositories from DI
   constructor(
     private userRepository: UserRepository,
-    private hashService: HashService,
+    private hashGateway: HashGateway,
   ) {}
 
   // Define methods containing business logic
 
   // TODO: public registration aways creates with role 'USER', for role 'ADMIN' must be creted by other authorized admin
   async registerUser(user: RegisterUserReqDTO): Promise<RegisterUserResDTO> {
-    const hashedPassword = await this.hashService.hashValue(user.password);
+    const hashedPassword = await this.hashGateway.hashValue({
+      value: user.password,
+    });
 
     const userCreated = await this.userRepository.registerUser({
       ...user,
@@ -71,7 +73,9 @@ export class UserRestService {
     user: UpdateUserReqDTO | PatchUserReqDTO,
   ): Promise<void> {
     if (user.password) {
-      user.password = await this.hashService.hashValue(user.password);
+      user.password = await this.hashGateway.hashValue({
+        value: user.password,
+      });
     }
 
     await this.userRepository.modifyUserById(uuid, user);

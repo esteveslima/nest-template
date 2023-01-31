@@ -6,12 +6,13 @@ import { UserResolver } from './adapters/entrypoints/resolvers/user.resolver';
 import { UserController } from './adapters/entrypoints/controllers/user.controller';
 import { UserEntity } from './adapters/gateways/databases/entities/user.entity';
 import { UserGraphqlService } from './application/user-graphql.service';
-import { HashService } from './application/hash.service';
+import { HashGatewayGateway } from './adapters/gateways/clients/hash-client.gateway';
 import { UserRepository } from './adapters/gateways/databases/repositories/user.repository';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
 import { BcryptCustomProvider } from 'src/common/internals/providers/packages/bcrypt.provider';
 import { UserRestService } from './application/user-rest.service';
 import { UserInternalService } from './application/user-internal.service';
+import { HashGateway } from './application/interfaces/ports/hash/hash-gateway.interface';
 
 @Module({
   imports: [
@@ -36,7 +37,10 @@ import { UserInternalService } from './application/user-internal.service';
 
     // Internal services
     UserRepository,
-    HashService,
+    {
+      provide: HashGateway,
+      useClass: HashGatewayGateway,
+    },
     UserInternalService,
   ],
   exports: [UserRestService, UserGraphqlService, UserInternalService],

@@ -3,19 +3,19 @@
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from '../adapters/gateways/databases/entities/user.entity';
 import { RegisterUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/register-user.args';
-import { HashService } from './hash.service';
 import { UserRepository } from '../adapters/gateways/databases/repositories/user.repository';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { UpdateCurrentUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-current-user.args';
 import { UpdateUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-user.args';
 import { SearchUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/search-user.args';
+import { HashGateway } from './interfaces/ports/hash/hash-gateway.interface';
 
 @Injectable()
 export class UserGraphqlService {
   // Get services and repositories from DI
   constructor(
     private userRepository: UserRepository,
-    private hashService: HashService,
+    private hashGateway: HashGateway,
   ) {}
 
   // Define methods containing business logic
@@ -24,7 +24,7 @@ export class UserGraphqlService {
   async registerUser(user: RegisterUserArgsDTO): Promise<UserEntity> {
     const userCreated = await this.userRepository.registerUser({
       ...user,
-      password: await this.hashService.hashValue(user.password),
+      password: await this.hashGateway.hashValue({ value: user.password }),
     });
 
     return {
@@ -63,7 +63,9 @@ export class UserGraphqlService {
     user: UpdateUserArgsDTO | UpdateCurrentUserArgsDTO,
   ): Promise<void> {
     if (user.password) {
-      user.password = await this.hashService.hashValue(user.password);
+      user.password = await this.hashGateway.hashValue({
+        value: user.password,
+      });
     }
 
     await this.userRepository.modifyUserById(uuid, user);

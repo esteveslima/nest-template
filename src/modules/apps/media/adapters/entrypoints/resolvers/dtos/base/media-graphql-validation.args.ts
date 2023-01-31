@@ -13,7 +13,7 @@ import {
   enumMediaType,
   Media,
 } from 'src/modules/apps/media/domain/media.interface';
-import { UserType } from 'src/modules/apps/user/adapters/ports/resolvers/dtos/types/user.type';
+import { UserType } from 'src/modules/apps/user/adapters/entrypoints/resolvers/dtos/types/user.type';
 
 @ArgsType()
 // Extending base validation DTO to reuse class-validator decorators

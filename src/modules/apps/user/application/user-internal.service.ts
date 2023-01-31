@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { UserEntity } from '../adapters/gateways/databases/entities/user.entity';
 import { UserRepository } from '../adapters/gateways/databases/repositories/user.repository';
-import { SearchUserReqDTO } from '../adapters/ports/controllers/dtos/req/search-user-req.dto';
+import { SearchUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/search-user-req.dto';
 import { HashService } from './hash.service';
 
 @Injectable()

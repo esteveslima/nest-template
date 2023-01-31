@@ -10,7 +10,7 @@ import {
 } from '@nestjs/graphql';
 import { GraphqlAuthField } from '../../../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-auth-field.decorator';
 
-import { UserType } from '../../../../../../user/adapters/ports/resolvers/dtos/types/user.type';
+import { UserType } from '../../../../../../user/adapters/entrypoints/resolvers/dtos/types/user.type';
 import { enumMediaType, Media } from '../../../../../domain/media.interface';
 
 registerEnumType(enumMediaType, { name: 'enumMediaType' });

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/graphql';
 import { GraphqlAuthField } from '../../../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-auth-field.decorator';
 
-import { MediaType } from '../../../../../../media/adapters/ports/resolvers/dtos/types/media.type';
+import { MediaType } from '../../../../../../media/adapters/entrypoints/resolvers/dtos/types/media.type';
 import {
   enumGenderType,
   enumRole,

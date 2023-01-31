@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { MediaPubsubSubscriberService } from '../../ports/subscribers/media-pubsub-subscriber.service';
+import { MediaPubsubSubscriberService } from '../../entrypoints/subscribers/media-pubsub-subscriber.service';
 import { PUBSUB_PUBLISH_EVENTS_MEDIA } from './events/constants';
 
 @Injectable()

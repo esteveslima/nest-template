@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
 import { TokenService } from './adapters/gateways/clients/token.service';
-import { AuthController } from './adapters/ports/controllers/auth.controller';
+import { AuthController } from './adapters/entrypoints/controllers/auth.controller';
 import { AuthRestService } from './application/auth-rest.service';
-import { AuthResolver } from './adapters/ports/resolvers/auth.resolver';
+import { AuthResolver } from './adapters/entrypoints/resolvers/auth.resolver';
 import { AuthGraphqlService } from './application/auth-graphql.service';
 
 @Module({

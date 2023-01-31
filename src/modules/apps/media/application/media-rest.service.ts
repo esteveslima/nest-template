@@ -3,13 +3,13 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../../user/domain/user.interface';
 import { MediaPubsubPublisherService } from '../adapters/gateways/publishers/media-pubsub-publisher.service';
-import { PatchMediaReqDTO } from '../adapters/ports/controllers/dtos/req/patch-media-req.dto';
-import { RegisterMediaReqDTO } from '../adapters/ports/controllers/dtos/req/register-media-req.dto';
-import { SearchMediaReqDTO } from '../adapters/ports/controllers/dtos/req/search-media-req.dto';
-import { UpdateMediaReqDTO } from '../adapters/ports/controllers/dtos/req/update-media-req.dto';
-import { GetMediaResDTO } from '../adapters/ports/controllers/dtos/res/get-media-res.dto';
-import { RegisterMediaResDTO } from '../adapters/ports/controllers/dtos/res/register-media-res.dto';
-import { SearchMediaResDTO } from '../adapters/ports/controllers/dtos/res/search-media-res.dto';
+import { PatchMediaReqDTO } from '../adapters/entrypoints/controllers/dtos/req/patch-media-req.dto';
+import { RegisterMediaReqDTO } from '../adapters/entrypoints/controllers/dtos/req/register-media-req.dto';
+import { SearchMediaReqDTO } from '../adapters/entrypoints/controllers/dtos/req/search-media-req.dto';
+import { UpdateMediaReqDTO } from '../adapters/entrypoints/controllers/dtos/req/update-media-req.dto';
+import { GetMediaResDTO } from '../adapters/entrypoints/controllers/dtos/res/get-media-res.dto';
+import { RegisterMediaResDTO } from '../adapters/entrypoints/controllers/dtos/res/register-media-res.dto';
+import { SearchMediaResDTO } from '../adapters/entrypoints/controllers/dtos/res/search-media-res.dto';
 import { MediaRepository } from '../adapters/gateways/databases/repositories/media.repository';
 
 @Injectable()

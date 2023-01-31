@@ -2,9 +2,9 @@
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { MediaRepository } from '../adapters/gateways/databases/repositories/media.repository';
-import { RegisterMediaArgsDTO } from '../adapters/ports/resolvers/dtos/args/register-media.args';
-import { UpdateMediaArgsDTO } from '../adapters/ports/resolvers/dtos/args/update-media.args';
-import { SearchMediaArgsDTO } from '../adapters/ports/resolvers/dtos/args/search-media.args';
+import { RegisterMediaArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/register-media.args';
+import { UpdateMediaArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-media.args';
+import { SearchMediaArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/search-media.args';
 import { Media } from '../domain/media.interface';
 import { User } from '../../user/domain/user.interface';
 

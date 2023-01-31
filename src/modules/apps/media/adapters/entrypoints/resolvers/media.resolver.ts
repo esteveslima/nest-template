@@ -13,7 +13,7 @@ import { MediaType } from './dtos/types/media.type';
 import { MediaGraphqlService } from '../../../application/media-graphql.service';
 import { UserGraphqlService } from '../../../../user/application/user-graphql.service';
 import { UserEntity } from '../../../../user/adapters/gateways/databases/entities/user.entity';
-import { UserType } from '../../../../user/adapters/ports/resolvers/dtos/types/user.type';
+import { UserType } from '../../../../user/adapters/entrypoints/resolvers/dtos/types/user.type';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { GetGraphqlAuthUserInfo } from '../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-user-info.decorator';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';

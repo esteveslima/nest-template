@@ -2,15 +2,15 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 
-import { MediaController } from './adapters/ports/controllers/media.controller';
+import { MediaController } from './adapters/entrypoints/controllers/media.controller';
 import { MediaRepository } from './adapters/gateways/databases/repositories/media.repository';
-import { MediaResolver } from './adapters/ports/resolvers/media.resolver';
+import { MediaResolver } from './adapters/entrypoints/resolvers/media.resolver';
 import { UserModule } from '../user/user.module';
 import { MediaGraphqlService } from './application/media-graphql.service';
 import { MediaEntity } from './adapters/gateways/databases/entities/media.entity';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
 import { MediaEventsHandlerService } from './application/handlers/media-events-handler.service';
-import { MediaPubsubSubscriberService } from './adapters/ports/subscribers/media-pubsub-subscriber.service';
+import { MediaPubsubSubscriberService } from './adapters/entrypoints/subscribers/media-pubsub-subscriber.service';
 import { MediaPubsubPublisherService } from './adapters/gateways/publishers/media-pubsub-publisher.service';
 import { MediaRestService } from './application/media-rest.service';
 

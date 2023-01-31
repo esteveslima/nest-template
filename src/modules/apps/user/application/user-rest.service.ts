@@ -3,13 +3,13 @@
 import { Injectable } from '@nestjs/common';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { UserRepository } from '../adapters/gateways/databases/repositories/user.repository';
-import { PatchUserReqDTO } from '../adapters/ports/controllers/dtos/req/patch-user-req.dto';
-import { RegisterUserReqDTO } from '../adapters/ports/controllers/dtos/req/register-user-req.dto';
-import { SearchUserReqDTO } from '../adapters/ports/controllers/dtos/req/search-user-req.dto';
-import { UpdateUserReqDTO } from '../adapters/ports/controllers/dtos/req/update-user-req.dto';
-import { GetUserResDTO } from '../adapters/ports/controllers/dtos/res/get-user-res.dto';
-import { RegisterUserResDTO } from '../adapters/ports/controllers/dtos/res/register-user-res.dto';
-import { SearchUserResDTO } from '../adapters/ports/controllers/dtos/res/search-user-res.dto';
+import { PatchUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/patch-user-req.dto';
+import { RegisterUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/register-user-req.dto';
+import { SearchUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/search-user-req.dto';
+import { UpdateUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/update-user-req.dto';
+import { GetUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/get-user-res.dto';
+import { RegisterUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/register-user-res.dto';
+import { SearchUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/search-user-res.dto';
 import { HashService } from './hash.service';
 
 @Injectable()

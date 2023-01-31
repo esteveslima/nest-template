@@ -2,13 +2,13 @@
 
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from '../adapters/gateways/databases/entities/user.entity';
-import { RegisterUserArgsDTO } from '../adapters/ports/resolvers/dtos/args/register-user.args';
+import { RegisterUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/register-user.args';
 import { HashService } from './hash.service';
 import { UserRepository } from '../adapters/gateways/databases/repositories/user.repository';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
-import { UpdateCurrentUserArgsDTO } from '../adapters/ports/resolvers/dtos/args/update-current-user.args';
-import { UpdateUserArgsDTO } from '../adapters/ports/resolvers/dtos/args/update-user.args';
-import { SearchUserArgsDTO } from '../adapters/ports/resolvers/dtos/args/search-user.args';
+import { UpdateCurrentUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-current-user.args';
+import { UpdateUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-user.args';
+import { SearchUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/search-user.args';
 
 @Injectable()
 export class UserGraphqlService {

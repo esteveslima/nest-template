@@ -6,7 +6,7 @@ import {
   Int,
   registerEnumType,
 } from '@nestjs/graphql';
-import { MediaType } from 'src/modules/apps/media/adapters/ports/resolvers/dtos/types/media.type';
+import { MediaType } from 'src/modules/apps/media/adapters/entrypoints/resolvers/dtos/types/media.type';
 import {
   enumGenderType,
   enumRole,

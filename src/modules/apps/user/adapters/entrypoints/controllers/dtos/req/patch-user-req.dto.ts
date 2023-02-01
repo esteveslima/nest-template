@@ -4,14 +4,24 @@
 import { PartialType, PickType } from '@nestjs/swagger';
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { UserRestValidationDTO } from '../base/user-rest-validation.dto';
+import { IUserRestServiceModifyUserParams } from 'src/modules/apps/user/application/interfaces/services/user-rest/methods/modify-user.interface';
+import { UserValidatorDTO } from './base/user-validator.dto';
 
-export class PatchUserReqDTO extends PartialType(
-  PickType(UserRestValidationDTO, [
-    'username',
-    'password',
-    'email',
-    'gender',
-    'age',
-  ] as const),
-) {}
+type IPatchUserIndexes = IUserRestServiceModifyUserParams['indexes'];
+type IPatchUserData = IUserRestServiceModifyUserParams['data'];
+
+export class PatchUserReqParamsDTO
+  extends PickType(UserValidatorDTO, ['id'] as const)
+  implements IPatchUserIndexes {}
+
+export class PatchUserReqBodyDTO
+  extends PartialType(
+    PickType(UserValidatorDTO, [
+      'username',
+      'password',
+      'email',
+      'gender',
+      'age',
+    ] as const),
+  )
+  implements IPatchUserData {}

@@ -11,7 +11,7 @@ import {
   Repository,
   UpdateResult,
 } from 'typeorm';
-import { UserDatabaseEntity } from '../entities/user.entity';
+import { UserDatabaseModel } from '../models/user.model';
 import { User } from 'src/modules/apps/user/domain/entities/user';
 import { IUserGateway } from 'src/modules/apps/user/domain/repositories/user/user-gateway.interface';
 import { IUserGatewayRegisterUserParams } from 'src/modules/apps/user/domain/repositories/user/methods/register-user.interface';
@@ -22,10 +22,10 @@ import { IUserGatewayGetUserParams } from 'src/modules/apps/user/domain/reposito
 
 //TODO: interface for whole classes composing the interfaces for it's methods(which have isolated interfaces), use colocation
 @Injectable()
-export class UserRepositoryGateway implements IUserGateway {
+export class UserDatabaseRepositoryGateway implements IUserGateway {
   constructor(
-    @InjectRepository(UserDatabaseEntity, SINGLE_DB)
-    private repository: Repository<UserDatabaseEntity>,
+    @InjectRepository(UserDatabaseModel, SINGLE_DB)
+    private repository: Repository<UserDatabaseModel>,
   ) {}
 
   async registerUser(params: IUserGatewayRegisterUserParams): Promise<User> {
@@ -91,7 +91,8 @@ export class UserRepositoryGateway implements IUserGateway {
   }
 
   async modifyUser(params: IUserGatewayModifyUserParams): Promise<void> {
-    const { data, id: uuid } = params;
+    const { data, indexes } = params;
+    const { id: uuid } = indexes;
     const { age, email, gender, password, username } = data;
 
     let updateResult: UpdateResult;

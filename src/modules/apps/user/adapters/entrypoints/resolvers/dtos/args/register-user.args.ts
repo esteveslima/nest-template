@@ -1,9 +1,9 @@
 import { ArgsType, Field, PickType } from '@nestjs/graphql';
 import { IsNotEmpty, Length } from 'class-validator';
-import { UserEntityBaseArgsDTO } from '../base/user-entity-base.args';
+import { UserBaseArgsDTO } from './base/user-base.args';
 
 @ArgsType()
-export class RegisterUserArgsDTO extends PickType(UserEntityBaseArgsDTO, [
+export class RegisterUserArgsDTO extends PickType(UserBaseArgsDTO, [
   'username',
   // 'password',
   'email',

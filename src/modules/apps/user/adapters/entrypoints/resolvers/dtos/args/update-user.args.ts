@@ -1,10 +1,10 @@
 import { ArgsType, Field, ID, PartialType, PickType } from '@nestjs/graphql';
 import { IsOptional, IsUUID, Length } from 'class-validator';
-import { UserEntityBaseArgsDTO } from '../base/user-entity-base.args';
+import { UserBaseArgsDTO } from './base/user-base.args';
 
 @ArgsType()
 export class UpdateUserArgsDTO extends PartialType(
-  PickType(UserEntityBaseArgsDTO, [
+  PickType(UserBaseArgsDTO, [
     'username',
     // 'password',
     'email',

@@ -8,19 +8,22 @@ import {
   IsInt,
   IsNotEmpty,
   IsString,
+  IsUUID,
   Length,
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { Media } from '../../../../../../media/domain/media.interface';
+import { Media } from '../../../../../../../media/domain/media.interface';
 import {
   enumGenderType,
   enumRole,
   User,
-} from '../../../../../domain/entities/user';
+} from '../../../../../../domain/entities/user';
 
-export class UserRestValidationDTO implements User {
+export class UserValidatorDTO implements User {
   // Auto generated fields
 
+  @IsString()
+  @IsUUID()
   id: string;
 
   createdAt: Date;

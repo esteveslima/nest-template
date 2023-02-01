@@ -4,7 +4,7 @@
 import { User } from '../../../entities/user';
 
 export interface IUserGatewayModifyUserParams {
-  id: string;
+  indexes: Pick<User, 'id'>;
   data: Partial<
     Pick<User, 'username' | 'password' | 'email' | 'gender' | 'age'>
   >;

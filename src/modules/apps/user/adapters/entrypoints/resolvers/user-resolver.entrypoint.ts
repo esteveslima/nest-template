@@ -17,11 +17,11 @@ import {
 } from '@nestjs/graphql';
 import { UserGraphqlService } from '../../../application/user-graphql.service';
 import { RegisterUserArgsDTO } from './dtos/args/register-user.args';
-import { UserType } from './dtos/types/user.type';
+import { UserGraphqlType } from './dtos/types/user-graphql.type';
 import { MediaGraphqlService } from '../../../../media/application/media-graphql.service';
 import { MediaType } from '../../../../media/adapters/entrypoints/resolvers/dtos/types/media.type';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
-import { MediaEntity } from '../../../../media/adapters/gateways/databases/entities/media.entity';
+import { MediaEntity } from '../../../../media/adapters/gateways/databases/models/media.model';
 import { GetGraphqlAuthUserInfo } from '../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-user-info.decorator';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
 import { GetAuthUser } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user-entity.decorator';
@@ -31,9 +31,9 @@ import { UpdateUserArgsDTO } from './dtos/args/update-user.args';
 import { UpdateCurrentUserArgsDTO } from './dtos/args/update-current-user.args';
 import { User } from '../../../domain/entities/user';
 
-@Resolver(() => UserType)
+@Resolver(() => UserGraphqlType)
 @GetGraphqlAuthUserInfo() // required for auth field middleware
-export class UserResolver {
+export class UserResolverEntrypoint {
   // Get services and modules from DI
   constructor(
     private userGraphqlService: UserGraphqlService,
@@ -42,8 +42,10 @@ export class UserResolver {
 
   // Define resolvers for graphql operations
 
-  @Query(() => UserType, { name: 'user' })
-  async getUser(@Args('id', ParseUUIDPipe) id: string): Promise<UserType> {
+  @Query(() => UserGraphqlType, { name: 'user' })
+  async getUser(
+    @Args('id', ParseUUIDPipe) id: string,
+  ): Promise<UserGraphqlType> {
     try {
       return await this.userGraphqlService.getUser(id);
     } catch (e) {
@@ -54,12 +56,12 @@ export class UserResolver {
     }
   }
 
-  @Query(() => [UserType], { name: 'users' })
-  async searchUsers(
+  @Query(() => [UserGraphqlType], { name: 'users' })
+  async searchUser(
     @Args() searchUserFilters: SearchUserArgsDTO,
-  ): Promise<UserType[]> {
+  ): Promise<UserGraphqlType[]> {
     try {
-      return await this.userGraphqlService.searchUsersEntity(searchUserFilters);
+      return await this.userGraphqlService.searchUserEntity(searchUserFilters);
     } catch (e) {
       throw CustomException.mapHttpException(e, {
         UserNotFound: (customException) =>
@@ -68,8 +70,10 @@ export class UserResolver {
     }
   }
 
-  @Mutation(() => UserType, { name: 'registerUser' })
-  async registerUser(@Args() user: RegisterUserArgsDTO): Promise<UserType> {
+  @Mutation(() => UserGraphqlType, { name: 'registerUser' })
+  async registerUser(
+    @Args() user: RegisterUserArgsDTO,
+  ): Promise<UserGraphqlType> {
     try {
       return await this.userGraphqlService.registerUser(user);
     } catch (e) {
@@ -136,7 +140,7 @@ export class UserResolver {
 
   @ResolveField('medias', () => [MediaType], { nullable: 'itemsAndList' })
   async getMedias(
-    @Parent() user: UserType,
+    @Parent() user: UserGraphqlType,
     @Args() searchMediaFilters: SearchMediaArgsDTO,
   ): Promise<MediaType[]> {
     if (searchMediaFilters.username) {

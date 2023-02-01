@@ -40,9 +40,7 @@ export class AuthGraphqlService {
       name: user.username,
       role: user.role,
     };
-    const token = await this.tokenService.generateToken({
-      tokenPayload: payload,
-    });
+    const token = await this.tokenService.generateToken(payload);
 
     return token;
   }

@@ -2,18 +2,32 @@
 
 import { Injectable } from '@nestjs/common';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
-import { PatchUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/patch-user-req.dto';
-import { RegisterUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/register-user-req.dto';
-import { SearchUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/search-user-req.dto';
-import { UpdateUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/update-user-req.dto';
-import { GetUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/get-user-res.dto';
-import { RegisterUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/register-user-res.dto';
-import { SearchUserResDTO } from '../adapters/entrypoints/controllers/dtos/res/search-user-res.dto';
 import { IUserGateway } from '../domain/repositories/user/user-gateway.interface';
-import { IHashGateway } from './ports/hash/hash-gateway.interface';
+import { IHashGateway } from './interfaces/ports/hash/hash-gateway.interface';
+import {
+  IUserRestServiceDeleteUserParams,
+  IUserRestServiceDeleteUserResult,
+} from './interfaces/services/user-rest/methods/delete-user.interface';
+import {
+  IUserRestServiceGetUserParams,
+  IUserRestServiceGetUserResult,
+} from './interfaces/services/user-rest/methods/get-user.interface';
+import {
+  IUserRestServiceModifyUserParams,
+  IUserRestServiceModifyUserResult,
+} from './interfaces/services/user-rest/methods/modify-user.interface';
+import {
+  IUserRestServiceRegisterUserParams,
+  IUserRestServiceRegisterUserResult,
+} from './interfaces/services/user-rest/methods/register-user.interface';
+import {
+  IUserRestServiceSearchUserParams,
+  IUserRestServiceSearchUserResult,
+} from './interfaces/services/user-rest/methods/search-user.interface';
+import { IUserRestService } from './interfaces/services/user-rest/user-rest.interface';
 
 @Injectable()
-export class UserRestService {
+export class UserRestService implements IUserRestService {
   // TODO: split methods in multiple files(?)(this way it can remain a generic name 'UserRestService' and only define the methods imported from other files): https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
 
   // Get services and repositories from DI
@@ -25,13 +39,21 @@ export class UserRestService {
   // Define methods containing business logic
 
   // TODO: public registration aways creates with role 'USER', for role 'ADMIN' must be creted by other authorized admin
-  async registerUser(user: RegisterUserReqDTO): Promise<RegisterUserResDTO> {
+  async registerUser(
+    params: IUserRestServiceRegisterUserParams,
+  ): Promise<IUserRestServiceRegisterUserResult> {
+    const { age, email, gender, password, role, username } = params;
+
     const hashedPassword = await this.hashGateway.hashValue({
-      value: user.password,
+      value: password,
     });
 
     const userCreated = await this.userGateway.registerUser({
-      ...user,
+      age,
+      email,
+      gender,
+      role,
+      username,
       password: hashedPassword,
     });
 
@@ -46,7 +68,11 @@ export class UserRestService {
     };
   }
 
-  async getUser(uuid: string): Promise<GetUserResDTO> {
+  async getUser(
+    params: IUserRestServiceGetUserParams,
+  ): Promise<IUserRestServiceGetUserResult> {
+    const { id: uuid } = params;
+
     const userFound = await this.userGateway.getUser({ id: uuid });
 
     return {
@@ -61,36 +87,17 @@ export class UserRestService {
     };
   }
 
-  //TODO: forbid delete id from current user
-  async deleteUser(uuid: string): Promise<void> {
-    await this.userGateway.deleteUser({ id: uuid });
-
-    return;
-  }
-
-  async modifyUser(
-    uuid: string,
-    user: UpdateUserReqDTO | PatchUserReqDTO,
-  ): Promise<void> {
-    if (user.password) {
-      user.password = await this.hashGateway.hashValue({
-        value: user.password,
-      });
-    }
-
-    await this.userGateway.modifyUser({ data: user, id: uuid });
-
-    return;
-  }
-
-  async searchUsers(
-    searchUsersFilters: SearchUserReqDTO,
-  ): Promise<SearchUserResDTO[]> {
-    if (Object.keys(searchUsersFilters).length <= 0) {
+  async searchUser(
+    params: IUserRestServiceSearchUserParams,
+  ): Promise<IUserRestServiceSearchUserResult> {
+    const searchUserFilters = params;
+    if (Object.keys(searchUserFilters).length <= 0) {
       throw new CustomException('UserSearchInvalidFilters');
     }
 
-    const usersFound = await this.userGateway.searchUser(searchUsersFilters);
+    const { email, username } = searchUserFilters;
+
+    const usersFound = await this.userGateway.searchUser({ email, username });
 
     if (usersFound.length <= 0) {
       throw new CustomException('UserNotFound');
@@ -103,5 +110,39 @@ export class UserRestService {
       role: user.role,
       username: user.username,
     }));
+  }
+
+  async modifyUser(
+    params: IUserRestServiceModifyUserParams,
+  ): Promise<IUserRestServiceModifyUserResult> {
+    const { data, indexes } = params;
+    const { id } = indexes;
+    const { age, email, gender, password, username } = data;
+
+    const hasModifiedPassword = !!password;
+    let hashedPassword: string;
+    if (hasModifiedPassword) {
+      hashedPassword = await this.hashGateway.hashValue({
+        value: password,
+      });
+    }
+
+    await this.userGateway.modifyUser({
+      indexes: { id },
+      data: { age, email, gender, username, password: hashedPassword },
+    });
+
+    return;
+  }
+
+  //TODO: forbid delete id from current user
+  async deleteUser(
+    params: IUserRestServiceDeleteUserParams,
+  ): Promise<IUserRestServiceDeleteUserResult> {
+    const { id: uuid } = params;
+
+    await this.userGateway.deleteUser({ id: uuid });
+
+    return;
   }
 }

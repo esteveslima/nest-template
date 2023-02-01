@@ -9,7 +9,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm'; // typeORM tools https://orkhan.gitbook.io/typeorm/docs/embedded-entities
-import { MediaEntity } from '../../../../../media/adapters/gateways/databases/entities/media.entity';
+import { MediaEntity } from '../../../../../media/adapters/gateways/databases/models/media.model';
 import {
   enumGenderType,
   enumRole,
@@ -17,7 +17,7 @@ import {
 } from '../../../../domain/entities/user';
 
 @Entity()
-export class UserDatabaseEntity implements User {
+export class UserDatabaseModel implements User {
   // Auto generated fields
 
   @PrimaryGeneratedColumn('uuid')

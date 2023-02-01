@@ -7,7 +7,7 @@ import { MediaRepository } from './adapters/gateways/databases/repositories/medi
 import { MediaResolver } from './adapters/entrypoints/resolvers/media.resolver';
 import { UserModule } from '../user/user.module';
 import { MediaGraphqlService } from './application/media-graphql.service';
-import { MediaEntity } from './adapters/gateways/databases/entities/media.entity';
+import { MediaEntity } from './adapters/gateways/databases/models/media.model';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
 import { MediaEventsHandlerService } from './application/handlers/media-events-handler.service';
 import { MediaPubsubSubscriberService } from './adapters/entrypoints/subscribers/media-pubsub-subscriber.service';

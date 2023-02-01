@@ -1,44 +1,40 @@
-// Responsible for defining data format and relations for graphql
-
 import {
+  ArgsType,
   Field,
   Float,
   ID,
   Int,
-  ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { GraphqlAuthField } from '../../../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-auth-field.decorator';
-
-import { MediaType } from '../../../../../../media/adapters/entrypoints/resolvers/dtos/types/media.type';
+import { MediaType } from 'src/modules/apps/media/adapters/entrypoints/resolvers/dtos/types/media.type';
 import {
   enumGenderType,
   enumRole,
   User,
-} from '../../../../../domain/entities/user';
+} from 'src/modules/apps/user/domain/entities/user';
+
+import { UserValidatorDTO } from '../../../../controllers/dtos/req/base/user-validator.dto';
 
 registerEnumType(enumRole, { name: 'enumRole' });
 registerEnumType(enumGenderType, { name: 'enumGenderType' });
 
-@ObjectType()
-export class UserType implements User {
+@ArgsType()
+// Extending base validation DTO to reuse class-validator decorators
+export class UserBaseArgsDTO extends UserValidatorDTO implements User {
   // Auto generated fields
 
   @Field(() => ID)
-  @GraphqlAuthField('ADMIN')
   id: string;
 
   @Field(() => Float) // Float to support big numbers
-  @GraphqlAuthField('ADMIN', 'USER')
   createdAt: Date;
 
   @Field(() => Float) // Float to support big numbers
-  @GraphqlAuthField('ADMIN')
   updatedAt: Date;
 
   // Relational fields
 
-  @Field(() => [MediaType])
+  @Field(() => [MediaType], { nullable: true })
   medias: MediaType[];
 
   // Editable fields
@@ -49,18 +45,14 @@ export class UserType implements User {
   password: string; // cannot be a field
 
   @Field(() => String)
-  @GraphqlAuthField('ADMIN')
   email: string;
 
   @Field(() => enumRole)
-  @GraphqlAuthField('ADMIN')
   role: enumRole;
 
   @Field(() => enumGenderType)
-  @GraphqlAuthField('ADMIN', 'USER')
   gender: enumGenderType;
 
   @Field(() => Int)
-  @GraphqlAuthField('ADMIN')
   age: number;
 }

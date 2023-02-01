@@ -6,7 +6,7 @@ import { CustomException } from 'src/common/internals/enhancers/filters/exceptio
 import { UpdateCurrentUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-current-user.args';
 import { UpdateUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-user.args';
 import { SearchUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/search-user.args';
-import { IHashGateway } from './ports/hash/hash-gateway.interface';
+import { IHashGateway } from './interfaces/ports/hash/hash-gateway.interface';
 import { User } from '../domain/entities/user';
 import { IUserGateway } from '../domain/repositories/user/user-gateway.interface';
 
@@ -78,7 +78,7 @@ export class UserGraphqlService {
       });
     }
 
-    await this.userGateway.modifyUser({ data: user, id: uuid });
+    await this.userGateway.modifyUser({ data: user, indexes: { id: uuid } });
 
     return;
   }
@@ -90,10 +90,10 @@ export class UserGraphqlService {
     return;
   }
 
-  async searchUsersEntity(
-    searchUsersFilters: SearchUserArgsDTO,
+  async searchUserEntity(
+    searchUserFilters: SearchUserArgsDTO,
   ): Promise<User[]> {
-    const usersFound = await this.userGateway.searchUser(searchUsersFilters);
+    const usersFound = await this.userGateway.searchUser(searchUserFilters);
 
     if (usersFound.length <= 0) {
       throw new CustomException('UserNotFound');

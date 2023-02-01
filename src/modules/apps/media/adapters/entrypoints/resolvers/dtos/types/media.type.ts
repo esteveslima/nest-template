@@ -10,7 +10,7 @@ import {
 } from '@nestjs/graphql';
 import { GraphqlAuthField } from '../../../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-auth-field.decorator';
 
-import { UserType } from '../../../../../../user/adapters/entrypoints/resolvers/dtos/types/user.type';
+import { UserGraphqlType } from '../../../../../../user/adapters/entrypoints/resolvers/dtos/types/user-graphql.type';
 import { enumMediaType, Media } from '../../../../../domain/media.interface';
 
 registerEnumType(enumMediaType, { name: 'enumMediaType' });
@@ -31,8 +31,8 @@ export class MediaType implements Media {
 
   // Relational fields
 
-  @Field(() => UserType)
-  user: UserType;
+  @Field(() => UserGraphqlType)
+  user: UserGraphqlType;
 
   // Editable fields
 

@@ -4,13 +4,16 @@
 import { PickType } from '@nestjs/swagger'; // mapped-types
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { UserRestValidationDTO } from '../base/user-rest-validation.dto';
+import { IUserRestServiceRegisterUserParams } from 'src/modules/apps/user/application/interfaces/services/user-rest/methods/register-user.interface';
+import { UserValidatorDTO } from './base/user-validator.dto';
 
-export class RegisterUserReqDTO extends PickType(UserRestValidationDTO, [
-  'username',
-  'password',
-  'email',
-  'role',
-  'gender',
-  'age',
-] as const) {}
+export class RegisterUserReqDTO
+  extends PickType(UserValidatorDTO, [
+    'username',
+    'password',
+    'email',
+    'role',
+    'gender',
+    'age',
+  ] as const)
+  implements IUserRestServiceRegisterUserParams {}

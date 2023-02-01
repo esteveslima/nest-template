@@ -2,7 +2,7 @@
 // TypeORM Repository API: https://typeorm.io/#/repository-api
 
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
-import { MediaEntity } from '../entities/media.entity';
+import { MediaEntity } from '../models/media.model';
 import { User } from '../../../../../user/domain/entities/user';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, Logger } from '@nestjs/common';

@@ -1,12 +1,12 @@
 // import { Test } from '@nestjs/testing';
 // import { AuthRestService } from 'src/modules/auth/auth.service';
-// import { UserController } from 'src/modules/user/user.controller';
+// import { UserControllerEntrypoint } from 'src/modules/user/user.controller';
 // import { UserRestService } from 'src/modules/user/user-rest.service';
 // import { runCommonTests } from 'src/tests/unit/common/controller/run-common-tests';
 // import { testSwaggerDocApplied } from 'src/tests/unit/common/controller/test-swagger-doc-applied';
 
-// describe('UserController', () => {
-//   let userController: UserController;
+// describe('UserControllerEntrypoint', () => {
+//   let userController: UserControllerEntrypoint;
 //   let userService: UserRestService;
 
 //   beforeAll(async () => {
@@ -20,14 +20,14 @@
 //     };
 
 //     const moduleRef = await Test.createTestingModule({
-//       controllers: [UserController],
+//       controllers: [UserControllerEntrypoint],
 //       providers: [
 //         { provide: UserRestService, useValue: userServiceMock },
 //         { provide: AuthRestService, useValue: {} }, // required because of guard decorator
 //       ],
 //     }).compile();
 
-//     userController = moduleRef.get<UserController>(UserController);
+//     userController = moduleRef.get<UserControllerEntrypoint>(UserControllerEntrypoint);
 //     userService = moduleRef.get<UserRestService>(UserRestService);
 //   });
 
@@ -36,7 +36,7 @@
 //   });
 
 //   describe('controller methods basic configuration', () => {
-//     runCommonTests(UserController, (method) => {
+//     runCommonTests(UserControllerEntrypoint, (method) => {
 //       testSwaggerDocApplied(method);
 //     });
 //   });

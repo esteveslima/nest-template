@@ -3,7 +3,7 @@
 import { Injectable } from '@nestjs/common';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { SearchUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/search-user-req.dto';
-import { IHashGateway } from './ports/hash/hash-gateway.interface';
+import { IHashGateway } from './interfaces/ports/hash/hash-gateway.interface';
 import { User } from '../domain/entities/user';
 import { IUserGateway } from '../domain/repositories/user/user-gateway.interface';
 

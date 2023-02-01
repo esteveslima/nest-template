@@ -12,7 +12,7 @@ import {
 import { MediaType } from './dtos/types/media.type';
 import { MediaGraphqlService } from '../../../application/media-graphql.service';
 import { UserGraphqlService } from '../../../../user/application/user-graphql.service';
-import { UserType } from '../../../../user/adapters/entrypoints/resolvers/dtos/types/user.type';
+import { UserGraphqlType } from '../../../../user/adapters/entrypoints/resolvers/dtos/types/user-graphql.type';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { GetGraphqlAuthUserInfo } from '../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-user-info.decorator';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
@@ -108,8 +108,8 @@ export class MediaResolver {
     }
   }
 
-  @ResolveField('user', () => UserType, { nullable: true })
-  async getMedias(@Parent() media: MediaType): Promise<UserType> {
+  @ResolveField('user', () => UserGraphqlType, { nullable: true })
+  async getMedias(@Parent() media: MediaType): Promise<UserGraphqlType> {
     const userId = media?.user?.id; //TODO: refactor after queries dont do eager loading, the field user should now be only the uuid
     if (!userId) return undefined;
 

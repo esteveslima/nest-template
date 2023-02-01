@@ -1,15 +1,15 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { BCRYPT_PROVIDER } from 'src/common/internals/providers/constants';
 import { BcryptProviderType } from 'src/common/internals/providers/packages/bcrypt.provider';
-import { IHashGateway } from '../../../application/ports/hash/hash-gateway.interface';
+import { IHashGateway } from '../../../application/interfaces/ports/hash/hash-gateway.interface';
 import {
   IHashGatewayCompareHashParams,
   IHashGatewayCompareHashResult,
-} from '../../../application/ports/hash/methods/compare-hash.interface';
+} from '../../../application/interfaces/ports/hash/methods/compare-hash.interface';
 import {
   IHashGatewayHashValueParams,
   IHashGatewayHashValueResult,
-} from '../../../application/ports/hash/methods/hash-value.interface';
+} from '../../../application/interfaces/ports/hash/methods/hash-value.interface';
 
 // concrete implementation of the application hash dependency
 

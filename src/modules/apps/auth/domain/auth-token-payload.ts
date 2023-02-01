@@ -5,4 +5,5 @@ export class AuthTokenPayload {
   name: string;
   email: string;
   role: keyof typeof enumRole;
+  [key: string]: unknown;
 }

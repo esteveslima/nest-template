@@ -13,7 +13,7 @@ import {
   enumMediaType,
   Media,
 } from 'src/modules/apps/media/domain/media.interface';
-import { UserType } from 'src/modules/apps/user/adapters/entrypoints/resolvers/dtos/types/user.type';
+import { UserGraphqlType } from 'src/modules/apps/user/adapters/entrypoints/resolvers/dtos/types/user-graphql.type';
 
 @ArgsType()
 // Extending base validation DTO to reuse class-validator decorators
@@ -31,8 +31,8 @@ export class MediaGraphqlValidationArgs implements Media {
 
   // Relational fields
 
-  @Field(() => UserType, { nullable: true })
-  user: UserType;
+  @Field(() => UserGraphqlType, { nullable: true })
+  user: UserGraphqlType;
 
   // Editable fields
 

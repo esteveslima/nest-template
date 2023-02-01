@@ -1,6 +1,6 @@
 // Responsible for defining data format and relations in the database
 
-import { UserDatabaseEntity } from 'src/modules/apps/user/adapters/gateways/databases/entities/user.entity';
+import { UserDatabaseModel } from 'src/modules/apps/user/adapters/gateways/databases/models/user.model';
 import {
   Column,
   CreateDateColumn,
@@ -26,11 +26,11 @@ export class MediaEntity implements Media {
 
   // Relational fields
 
-  @ManyToOne(() => UserDatabaseEntity, (user) => user.medias, {
+  @ManyToOne(() => UserDatabaseModel, (user) => user.medias, {
     eager: false,
     onDelete: 'SET NULL',
   })
-  user: UserDatabaseEntity;
+  user: UserDatabaseModel;
 
   // Editable fields
 

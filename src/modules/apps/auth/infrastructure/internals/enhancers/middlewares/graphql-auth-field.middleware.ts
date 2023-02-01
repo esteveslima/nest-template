@@ -1,5 +1,5 @@
 // Auth for single fields, like on methods
-// Requires the user info already present at request object(done by the custom GraphqlUserInfoInterceptor)
+// Requires the user info already present at request object(done by the custom GraphqlAuthDataInterceptor)
 
 import {
   ForbiddenException,
@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { FieldMiddleware, MiddlewareContext, NextFn } from '@nestjs/graphql';
 import { IncomingMessage } from 'http';
-import { IResolvedRequest } from 'src/common/types/resolved-request.interface';
 import { AuthTokenPayload } from 'src/modules/apps/auth/domain/auth-token-payload';
+import { IRequestResolvedAuth } from '../utils/resolved-request.interface';
 
 export const graphqlAuthFieldMiddleware: FieldMiddleware = async (
   ctx: MiddlewareContext,
@@ -17,10 +17,12 @@ export const graphqlAuthFieldMiddleware: FieldMiddleware = async (
 ) => {
   const { fieldName } = ctx.info;
   const { extensions } = ctx.info.parentType.getFields()[fieldName];
-  const { req } = ctx.context as { req: IncomingMessage & IResolvedRequest };
-  const { user } = req;
+  const { req } = ctx.context as {
+    req: IncomingMessage & IRequestResolvedAuth;
+  };
+  const { authData } = req;
 
-  const isAuthenticated = !!req.user; // Should be set by the custom jwt graphql user info interceptor
+  const isAuthenticated = !!req.authData; // Should be set by the custom jwt graphql user info interceptor
   if (!isAuthenticated) {
     // If user couldn't be verified, return error for user
     const errorMessage = `Not authenticated to access the field "${fieldName}"`;
@@ -31,7 +33,7 @@ export const graphqlAuthFieldMiddleware: FieldMiddleware = async (
   const rolesMetadataKey = 'roles';
   const roles = extensions[rolesMetadataKey] as AuthTokenPayload['role'][];
 
-  const isAuthorized = authorizeUser(user, roles);
+  const isAuthorized = authorizeUser(authData, roles);
   if (!isAuthorized) {
     // If user doesn't have permissions, return error for user
     const errorMessage = `Not authorized to access the field "${fieldName}"`;
@@ -44,9 +46,9 @@ export const graphqlAuthFieldMiddleware: FieldMiddleware = async (
 };
 
 const authorizeUser = (
-  user: AuthTokenPayload,
+  authData: AuthTokenPayload,
   roles: AuthTokenPayload['role'][],
 ): boolean => {
   if (!roles) return true; // Authorize if it doesnt require any role
-  return roles.includes(user.role);
+  return roles.includes(authData.role);
 };

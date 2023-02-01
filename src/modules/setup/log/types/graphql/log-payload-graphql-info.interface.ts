@@ -1,6 +1,6 @@
 // import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 
-export interface IGraphQLRequestInfo {
+export interface ILogPayloadGraphQLInfo {
   path: {
     typename: string;
     key: string;
@@ -8,7 +8,7 @@ export interface IGraphQLRequestInfo {
   fieldNodes: {
     arguments: {
       name: { value: string };
-      value: { value: any };
+      value: { value: unknown };
     }[];
   }[];
   // returnType: GraphQLObjectType;

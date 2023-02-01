@@ -8,11 +8,11 @@ import {
   Inject,
   ExecutionContext,
 } from '@nestjs/common';
-import { getRequestObject } from 'src/common/internals/enhancers/utils/get-request-object';
+import { getRequestObject } from 'src/modules/apps/auth/infrastructure/internals/enhancers/utils/get-request-object';
 import { UserInternalService } from 'src/modules/apps/user/application/user-internal.service';
 
 @Injectable()
-export class GetAuthUserPipe implements PipeTransform {
+export class GetAuthDataPipe implements PipeTransform {
   constructor(
     @Inject(UserInternalService)
     private userInternalService: UserInternalService,
@@ -21,19 +21,22 @@ export class GetAuthUserPipe implements PipeTransform {
   async transform(value: ExecutionContext, metadata: ArgumentMetadata) {
     const context = value;
     const req = getRequestObject(context);
-    const { user } = req;
-    const searchUserFilters = { email: user.email, username: user.name };
+    const { authData } = req;
+    const searchUserFilters = {
+      email: authData.email,
+      username: authData.name,
+    };
 
     // Fails if somehow doesnt receive all parameters for search
     if (Object.values(searchUserFilters).includes(undefined)) {
-      throw new Error('GetAuthUserPipe: search parameters not found');
+      throw new Error('GetAuthDataPipe: search parameters not found');
     }
 
     const userFound = await this.userInternalService.searchUser(
       searchUserFilters,
     );
     if (!userFound) {
-      throw new Error('GetAuthUserPipe: entity parameters not found');
+      throw new Error('GetAuthDataPipe: entity parameters not found');
     }
 
     return userFound;

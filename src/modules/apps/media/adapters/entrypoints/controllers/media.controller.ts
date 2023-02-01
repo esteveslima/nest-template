@@ -21,7 +21,7 @@ import { SearchMediaReqDTO } from './dtos/req/search-media-req.dto';
 import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorator';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
-import { GetAuthUser } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user-entity.decorator';
+import { GetAuthData } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-data.decorator';
 import { MediaRestService } from '../../../application/media-rest.service';
 import { SearchMediaResDTO } from './dtos/res/search-media-res.dto';
 import { User } from 'src/modules/apps/user/domain/entities/user';
@@ -65,7 +65,7 @@ export class MediaController {
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async registerMedia(
     @Body() mediaObject: RegisterMediaReqDTO,
-    @GetAuthUser() authUser: User,
+    @GetAuthData() authUser: User,
   ): ReturnType<typeof MediaRestService.prototype.registerMedia> {
     try {
       return await this.mediaService.registerMedia(mediaObject, authUser);
@@ -80,7 +80,7 @@ export class MediaController {
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async deleteMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid: string,
-    @GetAuthUser() authUser: User,
+    @GetAuthData() authUser: User,
   ): ReturnType<typeof MediaRestService.prototype.deleteMediaById> {
     try {
       return await this.mediaService.deleteMediaById(mediaUuid, authUser);
@@ -99,7 +99,7 @@ export class MediaController {
   async updateMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid: string,
     @Body() mediaObject: UpdateMediaReqDTO,
-    @GetAuthUser() authUser: User,
+    @GetAuthData() authUser: User,
   ): ReturnType<typeof MediaRestService.prototype.modifyMediaById> {
     try {
       return await this.mediaService.modifyMediaById(
@@ -122,7 +122,7 @@ export class MediaController {
   async patchMediaById(
     @Param('uuid', ParseUUIDPipe) mediaUuid: string,
     @Body() mediaObject: PatchMediaReqDTO,
-    @GetAuthUser() authUser: User,
+    @GetAuthData() authUser: User,
   ): ReturnType<typeof MediaRestService.prototype.modifyMediaById> {
     try {
       return await this.mediaService.modifyMediaById(

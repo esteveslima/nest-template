@@ -11,12 +11,12 @@ import {
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { IResolvedRequest } from 'src/common/types/resolved-request.interface';
 import { TokenService } from 'src/modules/apps/auth/adapters/gateways/clients/token.service';
 import { AuthTokenPayload } from 'src/modules/apps/auth/domain/auth-token-payload';
+import { IRequestResolvedAuth } from '../utils/resolved-request.interface';
 
 @Injectable()
-export class GraphqlUserInfoInterceptor implements NestInterceptor {
+export class GraphqlAuthDataInterceptor implements NestInterceptor {
   constructor(
     @Inject(TokenService)
     private tokenService: TokenService,
@@ -33,15 +33,15 @@ export class GraphqlUserInfoInterceptor implements NestInterceptor {
 
     // Get request
     const gqlContext = GqlExecutionContext.create(context);
-    const { req } = gqlContext.getContext<{ req: IResolvedRequest }>();
+    const { req } = gqlContext.getContext<{ req: IRequestResolvedAuth }>();
 
-    const user = await this.getJwtTokenUserInfo(req);
-    req.user = user;
+    const authData = await this.getJwtAuthData(req);
+    req.authData = authData; // may not be able to set data for some contexts, such as for log interceptor on graphql requests
 
     return next.handle();
   }
 
-  private async getJwtTokenUserInfo(req: Request): Promise<AuthTokenPayload> {
+  private async getJwtAuthData(req: Request): Promise<AuthTokenPayload> {
     if (!req.headers.authorization) return undefined;
     const [, jwtToken] = req.headers.authorization.split(' ');
     if (!jwtToken) return undefined;

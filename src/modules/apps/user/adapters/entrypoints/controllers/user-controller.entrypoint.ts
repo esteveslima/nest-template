@@ -23,7 +23,7 @@ import {
 import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorator';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
-import { GetAuthUser } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user-entity.decorator';
+import { GetAuthData } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-data.decorator';
 import { UserRestService } from '../../../application/user-rest.service';
 import { RegisterUserReqDTO } from './dtos/req/register-user-req.dto';
 import { SearchUserReqDTO } from './dtos/req/search-user-req.dto';
@@ -78,7 +78,7 @@ export class UserControllerEntrypoint {
   @Get('/current')
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
-  async getCurrentUser(@GetAuthUser() authUser: User): Promise<GetUserResDTO> {
+  async getCurrentUser(@GetAuthData() authUser: User): Promise<GetUserResDTO> {
     try {
       return await this.userService.getUser({ id: authUser.id });
     } catch (e) {
@@ -96,7 +96,7 @@ export class UserControllerEntrypoint {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async updateCurrentUser(
-    @GetAuthUser() authUser: User,
+    @GetAuthData() authUser: User,
     @Body() body: UpdateUserReqBodyDTO,
   ): Promise<void> {
     try {
@@ -121,7 +121,7 @@ export class UserControllerEntrypoint {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async patchCurrentUser(
-    @GetAuthUser() authUser: User,
+    @GetAuthData() authUser: User,
     @Body() body: PatchUserReqBodyDTO,
   ): Promise<void> {
     try {

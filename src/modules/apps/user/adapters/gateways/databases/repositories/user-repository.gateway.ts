@@ -71,7 +71,7 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
   async searchUser(params: IUserGatewaySearchUserParams): Promise<User[]> {
     const { email, username } = params;
 
-    const query = this.repository.createQueryBuilder('user');
+    const query = await this.repository.createQueryBuilder('user');
 
     // add conditions to search
     if (email) {

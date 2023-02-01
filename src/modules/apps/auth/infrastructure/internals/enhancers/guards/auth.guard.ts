@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { getRequestObject } from 'src/common/internals/enhancers/utils/get-request-object';
+import { getRequestObject } from 'src/modules/apps/auth/infrastructure/internals/enhancers/utils/get-request-object';
 import { TokenService } from 'src/modules/apps/auth/adapters/gateways/clients/token.service';
 import { AuthTokenPayload } from 'src/modules/apps/auth/domain/auth-token-payload';
 
@@ -28,8 +28,8 @@ export class AuthGuardJwt implements CanActivate {
 
     // Authentication
     const authPayload = await this.authenticateRequest(req);
-    const user: AuthTokenPayload = { ...authPayload };
-    req.user = user; // Insert user to request object, allowing to recover it in the future
+    const authData: AuthTokenPayload = { ...authPayload };
+    req.authData = authData; // Insert user to request object, allowing to recover it in the future
 
     // Authorization
     const rolesMetadataKey = 'roles';
@@ -37,7 +37,7 @@ export class AuthGuardJwt implements CanActivate {
       rolesMetadataKey,
       context.getHandler(),
     ); // get the allowed roles(configured with decorator)
-    const isAuthorized = this.checkUserAuthorization(user, allowedRoles);
+    const isAuthorized = this.checkUserAuthorization(authData, allowedRoles);
     return isAuthorized; // False results in ForbiddenException
   }
 

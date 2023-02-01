@@ -1,4 +1,4 @@
-export interface IResolvedLogInterceptorError {
+export interface IResolvedInterceptorError {
   status: number;
   message: string;
   response: object;

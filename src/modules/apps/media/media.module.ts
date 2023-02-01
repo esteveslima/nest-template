@@ -13,6 +13,7 @@ import { MediaEventsHandlerService } from './application/handlers/media-events-h
 import { MediaPubsubSubscriberService } from './adapters/entrypoints/subscribers/media-pubsub-subscriber.service';
 import { MediaPubsubPublisherService } from './adapters/gateways/publishers/media-pubsub-publisher.service';
 import { MediaRestService } from './application/media-rest.service';
+import { DBModule } from 'src/modules/setup/db/db.module';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { MediaRestService } from './application/media-rest.service';
     AuthModule,
 
     // Import ORM Entities Repositories for DI and select connection by name
-    TypeOrmModule.forFeature([MediaEntity], SINGLE_DB),
+    DBModule.setup([MediaEntity]),
 
     // Other feature modules dependencies
     UserModule,

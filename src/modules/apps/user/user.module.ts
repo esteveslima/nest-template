@@ -14,6 +14,7 @@ import { UserInternalService } from './application/user-internal.service';
 import { IHashGateway } from './application/interfaces/ports/hash/hash-gateway.interface';
 import { UserDatabaseModel } from './adapters/gateways/databases/models/user.model';
 import { IUserGateway } from './domain/repositories/user/user-gateway.interface';
+import { DBModule } from 'src/modules/setup/db/db.module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { IUserGateway } from './domain/repositories/user/user-gateway.interface'
     forwardRef(() => AuthModule), // resolving modules circular dependency(referencing the least deppendant modules)
 
     // Import ORM Entities Repositories for DI and select connection by name
-    TypeOrmModule.forFeature([UserDatabaseModel], SINGLE_DB),
+    DBModule.setup([UserDatabaseModel]),
 
     // Other feature modules dependencies
     forwardRef(() => MediaModule), // resolving modules circular dependency(referencing the least deppendant modules)

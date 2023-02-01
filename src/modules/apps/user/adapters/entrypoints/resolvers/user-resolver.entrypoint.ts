@@ -22,9 +22,9 @@ import { MediaGraphqlService } from '../../../../media/application/media-graphql
 import { MediaType } from '../../../../media/adapters/entrypoints/resolvers/dtos/types/media.type';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { MediaEntity } from '../../../../media/adapters/gateways/databases/models/media.model';
-import { GetGraphqlAuthUserInfo } from '../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-user-info.decorator';
+import { GetGraphqlAuthData } from '../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-auth-data.decorator';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
-import { GetAuthUser } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user-entity.decorator';
+import { GetAuthData } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-data.decorator';
 import { SearchMediaArgsDTO } from '../../../../media/adapters/entrypoints/resolvers/dtos/args/search-media.args';
 import { SearchUserArgsDTO } from './dtos/args/search-user.args';
 import { UpdateUserArgsDTO } from './dtos/args/update-user.args';
@@ -32,7 +32,7 @@ import { UpdateCurrentUserArgsDTO } from './dtos/args/update-current-user.args';
 import { User } from '../../../domain/entities/user';
 
 @Resolver(() => UserGraphqlType)
-@GetGraphqlAuthUserInfo() // required for auth field middleware
+@GetGraphqlAuthData() // required for auth field middleware
 export class UserResolverEntrypoint {
   // Get services and modules from DI
   constructor(
@@ -104,7 +104,7 @@ export class UserResolverEntrypoint {
   @Mutation(() => Boolean, { name: 'updateCurrentUser' })
   @Auth('ADMIN', 'USER')
   async updateCurrentUser(
-    @GetAuthUser() currentUser: User,
+    @GetAuthData() currentUser: User,
     @Args() user: UpdateCurrentUserArgsDTO,
   ): Promise<boolean> {
     try {

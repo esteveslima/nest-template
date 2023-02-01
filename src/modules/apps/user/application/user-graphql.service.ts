@@ -9,9 +9,30 @@ import { SearchUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/s
 import { IHashGateway } from './interfaces/ports/hash/hash-gateway.interface';
 import { User } from '../domain/entities/user';
 import { IUserGateway } from '../domain/repositories/user/user-gateway.interface';
+import { IUserGraphqlService } from './interfaces/services/user-graphql/user-graphql.interface';
+import {
+  IUserGraphqlServiceRegisterUserParams,
+  IUserGraphqlServiceRegisterUserResult,
+} from './interfaces/services/user-graphql/methods/register-user.interface';
+import {
+  IUserGraphqlServiceGetUserParams,
+  IUserGraphqlServiceGetUserResult,
+} from './interfaces/services/user-graphql/methods/get-user.interface';
+import {
+  IUserGraphqlServiceSearchUserParams,
+  IUserGraphqlServiceSearchUserResult,
+} from './interfaces/services/user-graphql/methods/search-user.interface';
+import {
+  IUserGraphqlServiceModifyUserParams,
+  IUserGraphqlServiceModifyUserResult,
+} from './interfaces/services/user-graphql/methods/modify-user.interface';
+import {
+  IUserGraphqlServiceDeleteUserParams,
+  IUserGraphqlServiceDeleteUserResult,
+} from './interfaces/services/user-graphql/methods/delete-user.interface';
 
 @Injectable()
-export class UserGraphqlService {
+export class UserGraphqlService implements IUserGraphqlService {
   // Get services and repositories from DI
   constructor(
     private userGateway: IUserGateway,
@@ -21,8 +42,10 @@ export class UserGraphqlService {
   // Define methods containing business logic
 
   // TODO: public registration aways creates with role 'USER', for role 'ADMIN' must be creted by other authorized admin
-  async registerUser(user: RegisterUserArgsDTO): Promise<User> {
-    const { age, email, gender, password, role, username } = user;
+  async registerUser(
+    params: IUserGraphqlServiceRegisterUserParams,
+  ): Promise<IUserGraphqlServiceRegisterUserResult> {
+    const { age, email, gender, password, role, username } = params;
 
     const hashedPassword = await this.hashGateway.hashValue({
       value: password,
@@ -51,8 +74,12 @@ export class UserGraphqlService {
     };
   }
 
-  async getUser(uuid: string): Promise<User> {
-    const userFound = await this.userGateway.getUser({ id: uuid });
+  async getUser(
+    params: IUserGraphqlServiceGetUserParams,
+  ): Promise<IUserGraphqlServiceGetUserResult> {
+    const { id } = params;
+
+    const userFound = await this.userGateway.getUser({ id });
 
     return {
       age: userFound.age,
@@ -69,33 +96,48 @@ export class UserGraphqlService {
   }
 
   async modifyUser(
-    uuid: string,
-    user: UpdateUserArgsDTO | UpdateCurrentUserArgsDTO,
-  ): Promise<void> {
-    if (user.password) {
-      user.password = await this.hashGateway.hashValue({
-        value: user.password,
+    params: IUserGraphqlServiceModifyUserParams,
+  ): Promise<IUserGraphqlServiceModifyUserResult> {
+    const { data, indexes } = params;
+    const { age, email, gender, password, username } = data;
+    const { id } = indexes;
+
+    const hasModifiedPassword = !!password;
+    let hashedPassword: string;
+    if (hasModifiedPassword) {
+      hashedPassword = await this.hashGateway.hashValue({
+        value: password,
       });
     }
 
-    await this.userGateway.modifyUser({ data: user, indexes: { id: uuid } });
+    await this.userGateway.modifyUser({
+      data: { age, email, gender, username, password: hashedPassword },
+      indexes: { id },
+    });
 
     return;
   }
 
   //TODO: forbid delete id from current user
-  async deleteUser(uuid: string): Promise<void> {
-    await this.userGateway.deleteUser({ id: uuid });
+  async deleteUser(
+    params: IUserGraphqlServiceDeleteUserParams,
+  ): Promise<IUserGraphqlServiceDeleteUserResult> {
+    const { id } = params;
+
+    await this.userGateway.deleteUser({ id });
 
     return;
   }
 
-  async searchUserEntity(
-    searchUserFilters: SearchUserArgsDTO,
-  ): Promise<User[]> {
-    const usersFound = await this.userGateway.searchUser(searchUserFilters);
+  async searchUser(
+    params: IUserGraphqlServiceSearchUserParams,
+  ): Promise<IUserGraphqlServiceSearchUserResult> {
+    const { email, username } = params;
 
-    if (usersFound.length <= 0) {
+    const usersFound = await this.userGateway.searchUser({ email, username });
+
+    const foundUser = usersFound.length <= 0;
+    if (!foundUser) {
       throw new CustomException('UserNotFound');
     }
 

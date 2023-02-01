@@ -30,6 +30,8 @@ import { SearchUserArgsDTO } from './dtos/args/search-user.args';
 import { UpdateUserArgsDTO } from './dtos/args/update-user.args';
 import { UpdateCurrentUserArgsDTO } from './dtos/args/update-current-user.args';
 import { User } from '../../../domain/entities/user';
+import { GetUserArgsDTO } from './dtos/args/get-user.args';
+import { DeleteUserArgsDTO } from './dtos/args/delete-user.args';
 
 @Resolver(() => UserGraphqlType)
 @GetGraphqlAuthData() // required for auth field middleware
@@ -43,11 +45,9 @@ export class UserResolverEntrypoint {
   // Define resolvers for graphql operations
 
   @Query(() => UserGraphqlType, { name: 'user' })
-  async getUser(
-    @Args('id', ParseUUIDPipe) id: string,
-  ): Promise<UserGraphqlType> {
+  async getUser(@Args() args: GetUserArgsDTO): Promise<UserGraphqlType> {
     try {
-      return await this.userGraphqlService.getUser(id);
+      return await this.userGraphqlService.getUser(args);
     } catch (e) {
       throw CustomException.mapHttpException(e, {
         UserNotFound: (customException) =>
@@ -58,10 +58,10 @@ export class UserResolverEntrypoint {
 
   @Query(() => [UserGraphqlType], { name: 'users' })
   async searchUser(
-    @Args() searchUserFilters: SearchUserArgsDTO,
+    @Args() args: SearchUserArgsDTO,
   ): Promise<UserGraphqlType[]> {
     try {
-      return await this.userGraphqlService.searchUserEntity(searchUserFilters);
+      return await this.userGraphqlService.searchUser(args);
     } catch (e) {
       throw CustomException.mapHttpException(e, {
         UserNotFound: (customException) =>
@@ -72,10 +72,10 @@ export class UserResolverEntrypoint {
 
   @Mutation(() => UserGraphqlType, { name: 'registerUser' })
   async registerUser(
-    @Args() user: RegisterUserArgsDTO,
+    @Args() args: RegisterUserArgsDTO,
   ): Promise<UserGraphqlType> {
     try {
-      return await this.userGraphqlService.registerUser(user);
+      return await this.userGraphqlService.registerUser(args);
     } catch (e) {
       throw CustomException.mapHttpException(e, {
         UserAlreadyExists: (customException) =>
@@ -86,9 +86,10 @@ export class UserResolverEntrypoint {
 
   @Mutation(() => Boolean, { name: 'updateUser' })
   @Auth('ADMIN')
-  async updateUser(@Args() user: UpdateUserArgsDTO): Promise<boolean> {
+  async updateUser(@Args() args: UpdateUserArgsDTO): Promise<boolean> {
     try {
-      await this.userGraphqlService.modifyUser(user.id, user);
+      const { id, ...data } = args;
+      await this.userGraphqlService.modifyUser({ data, indexes: { id } });
 
       return true;
     } catch (e) {
@@ -104,11 +105,14 @@ export class UserResolverEntrypoint {
   @Mutation(() => Boolean, { name: 'updateCurrentUser' })
   @Auth('ADMIN', 'USER')
   async updateCurrentUser(
-    @GetAuthData() currentUser: User,
-    @Args() user: UpdateCurrentUserArgsDTO,
+    @GetAuthData() authData: User,
+    @Args() args: UpdateCurrentUserArgsDTO,
   ): Promise<boolean> {
     try {
-      await this.userGraphqlService.modifyUser(currentUser.id, user);
+      await this.userGraphqlService.modifyUser({
+        indexes: { id: authData.id },
+        data: args,
+      });
 
       return true;
     } catch (e) {
@@ -125,9 +129,9 @@ export class UserResolverEntrypoint {
 
   @Mutation(() => Boolean, { name: 'deleteUser' })
   @Auth('ADMIN')
-  async deleteUser(@Args('id', ParseUUIDPipe) id: string): Promise<boolean> {
+  async deleteUser(@Args() args: DeleteUserArgsDTO): Promise<boolean> {
     try {
-      await this.userGraphqlService.deleteUser(id);
+      await this.userGraphqlService.deleteUser(args);
 
       return true;
     } catch (e) {

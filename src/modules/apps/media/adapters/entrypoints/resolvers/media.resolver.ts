@@ -115,7 +115,7 @@ export class MediaResolver {
 
     let user: User;
     try {
-      user = await this.userGraphqlService.getUser(userId);
+      user = await this.userGraphqlService.getUser({ id: userId });
     } catch (e) {
       throw CustomException.mapHttpException(e, {
         UserNotFound: (customException) =>

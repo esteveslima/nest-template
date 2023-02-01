@@ -35,9 +35,13 @@ import { DBModule } from 'src/modules/setup/db/db.module';
     // Exposable services
     UserRestService,
     UserGraphqlService,
+    UserInternalService,
+
+    // Non-controllers entry-points
     UserResolverEntrypoint,
 
     // Internal services
+    // manually ensuring clean architecture dependency rule
     {
       provide: IUserGateway,
       useClass: UserDatabaseRepositoryGateway,
@@ -46,7 +50,6 @@ import { DBModule } from 'src/modules/setup/db/db.module';
       provide: IHashGateway,
       useClass: HashClientGateway,
     },
-    UserInternalService,
   ],
   exports: [UserRestService, UserGraphqlService, UserInternalService],
 })

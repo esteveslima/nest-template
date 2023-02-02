@@ -136,7 +136,7 @@ export class UserGraphqlService implements IUserGraphqlService {
 
     const usersFound = await this.userGateway.searchUsers({ email, username });
 
-    const foundUser = usersFound.length <= 0;
+    const foundUser = usersFound.length > 0;
     if (!foundUser) {
       throw new CustomException('UserNotFound');
     }

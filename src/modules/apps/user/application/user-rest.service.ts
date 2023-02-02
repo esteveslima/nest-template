@@ -99,7 +99,8 @@ export class UserRestService implements IUserRestService {
 
     const usersFound = await this.userGateway.searchUsers({ email, username });
 
-    if (usersFound.length <= 0) {
+    const foundUser = usersFound.length > 0;
+    if (!foundUser) {
       throw new CustomException('UserNotFound');
     }
 

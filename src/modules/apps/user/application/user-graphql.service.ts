@@ -19,9 +19,9 @@ import {
   IUserGraphqlServiceGetUserResult,
 } from './interfaces/services/user-graphql/methods/get-user.interface';
 import {
-  IUserGraphqlServiceSearchUserParams,
-  IUserGraphqlServiceSearchUserResult,
-} from './interfaces/services/user-graphql/methods/search-user.interface';
+  IUserGraphqlServiceSearchUsersParams,
+  IUserGraphqlServiceSearchUsersResult,
+} from './interfaces/services/user-graphql/methods/search-users.interface';
 import {
   IUserGraphqlServiceModifyUserParams,
   IUserGraphqlServiceModifyUserResult,
@@ -129,12 +129,12 @@ export class UserGraphqlService implements IUserGraphqlService {
     return;
   }
 
-  async searchUser(
-    params: IUserGraphqlServiceSearchUserParams,
-  ): Promise<IUserGraphqlServiceSearchUserResult> {
+  async searchUsers(
+    params: IUserGraphqlServiceSearchUsersParams,
+  ): Promise<IUserGraphqlServiceSearchUsersResult> {
     const { email, username } = params;
 
-    const usersFound = await this.userGateway.searchUser({ email, username });
+    const usersFound = await this.userGateway.searchUsers({ email, username });
 
     const foundUser = usersFound.length <= 0;
     if (!foundUser) {

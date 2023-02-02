@@ -2,33 +2,49 @@
 // TypeORM Repository API: https://typeorm.io/#/repository-api
 
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
-import { MediaEntity } from '../models/media.model';
-import { User } from '../../../../../user/domain/entities/user';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, Logger } from '@nestjs/common';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
-import { IParamsRepositoryRegisterMedia } from './types/register-media.interface';
-import { IParamsRepositoryModifyMedia } from './types/modify-media.interface';
-import { IParamsRepositorySearchMedia } from './types/search-media.interface';
+import { IMediaGatewayRegisterMediaParams } from 'src/modules/apps/media/domain/repositories/media/methods/register-media.interface';
+import { Media } from 'src/modules/apps/media/domain/entities/media';
+import { MediaDatabaseModel } from '../models/media.model';
+import { IMediaGatewayGetMediaParams } from 'src/modules/apps/media/domain/repositories/media/methods/get-media.interface';
+import { IMediaGatewaySearchMediasParams } from 'src/modules/apps/media/domain/repositories/media/methods/search-media.interface';
+import { IMediaGatewayModifyMediaParams } from 'src/modules/apps/media/domain/repositories/media/methods/modify-media.interface';
+import { IMediaGatewayIncrementMediaViewsParams } from 'src/modules/apps/media/domain/repositories/media/methods/increment-media-views.interface';
+import { IMediaGatewayDeleteMediaParams } from 'src/modules/apps/media/domain/repositories/media/methods/delete-media.interface';
+import { IMediaGateway } from 'src/modules/apps/media/domain/repositories/media/media-gateway.interface';
 
 @Injectable()
-export class MediaRepository {
+export class MediaDatabaseRepositoryGateway implements IMediaGateway {
   constructor(
-    @InjectRepository(MediaEntity, SINGLE_DB)
-    private repository: Repository<MediaEntity>,
+    @InjectRepository(MediaDatabaseModel, SINGLE_DB)
+    private repository: Repository<MediaDatabaseModel>,
   ) {}
 
   async registerMedia(
-    media: IParamsRepositoryRegisterMedia,
-  ): Promise<MediaEntity> {
-    const registerOperation = this.repository.create(media);
+    params: IMediaGatewayRegisterMediaParams,
+  ): Promise<Media> {
+    const { contentBase64, description, durationSeconds, title, type, user } =
+      params;
+
+    const registerOperation = this.repository.create({
+      contentBase64,
+      description,
+      durationSeconds,
+      title,
+      type,
+      user,
+    });
     const mediaRegistered = await this.repository.save(registerOperation);
     return mediaRegistered;
   }
 
-  async getMediaById(uuid: string): Promise<MediaEntity> {
-    const mediaFound = await this.repository.findOne(uuid, {
+  async getMedia(params: IMediaGatewayGetMediaParams): Promise<Media> {
+    const { id } = params;
+
+    const mediaFound = await this.repository.findOne(id, {
       relations: ['user'],
     });
 
@@ -39,51 +55,9 @@ export class MediaRepository {
     return mediaFound;
   }
 
-  async incrementMediaViewsById(uuid: string): Promise<void> {
-    const updateResult = await this.repository.increment(
-      { id: uuid },
-      'views',
-      1,
-    );
-
-    const isOperationSuccessful = updateResult.affected > 0;
-    if (!isOperationSuccessful) {
-      throw new CustomException('MediaNotFound');
-    }
-
-    return;
-  }
-
-  async deleteMediaById(uuid: string, user: User): Promise<void> {
-    const deleteResult = await this.repository.delete({ id: uuid, user }); // using user as criteria to allow only the owner
-
-    const isOperationSuccessful = deleteResult.affected > 0;
-    if (!isOperationSuccessful) {
-      throw new CustomException('MediaNotFound');
-    }
-
-    return;
-  }
-
-  async modifyMediaById(
-    id: string,
-    user: User,
-    media: IParamsRepositoryModifyMedia,
-  ): Promise<void> {
-    const criteria = { id, user };
-    const updateResult = await this.repository.update(criteria, media);
-
-    const isOperationSuccessful = updateResult.affected > 0;
-    if (!isOperationSuccessful) {
-      throw new CustomException('MediaNotFound');
-    }
-
-    return;
-  }
-
-  async searchMedia(
-    searchFilters: IParamsRepositorySearchMedia,
-  ): Promise<MediaEntity[]> {
+  async searchMedias(
+    params: IMediaGatewaySearchMediasParams,
+  ): Promise<MediaDatabaseModel[]> {
     const {
       available,
       createdAt,
@@ -95,7 +69,7 @@ export class MediaRepository {
       username,
       take,
       skip,
-    } = searchFilters;
+    } = params;
 
     const query = this.repository.createQueryBuilder('media');
 
@@ -159,5 +133,63 @@ export class MediaRepository {
     const searchResult = await query.getMany();
 
     return searchResult;
+  }
+
+  async modifyMedia(params: IMediaGatewayModifyMediaParams): Promise<void> {
+    const { data, indexes } = params;
+    const {
+      available,
+      contentBase64,
+      description,
+      durationSeconds,
+      title,
+      type,
+    } = data;
+    const { id, user } = indexes;
+
+    const criteria = { id, user };
+    const updateResult = await this.repository.update(criteria, {
+      available,
+      contentBase64,
+      description,
+      durationSeconds,
+      title,
+      type,
+    });
+
+    const isOperationSuccessful = updateResult.affected > 0;
+    if (!isOperationSuccessful) {
+      throw new CustomException('MediaNotFound');
+    }
+
+    return;
+  }
+
+  async incrementMediaViews(
+    params: IMediaGatewayIncrementMediaViewsParams,
+  ): Promise<void> {
+    const { id } = params;
+
+    const updateResult = await this.repository.increment({ id }, 'views', 1);
+
+    const isOperationSuccessful = updateResult.affected > 0;
+    if (!isOperationSuccessful) {
+      throw new CustomException('MediaNotFound');
+    }
+
+    return;
+  }
+
+  async deleteMedia(params: IMediaGatewayDeleteMediaParams): Promise<void> {
+    const { id, user } = params;
+
+    const deleteResult = await this.repository.delete({ id, user }); // using user as criteria to allow only the owner
+
+    const isOperationSuccessful = deleteResult.affected > 0;
+    if (!isOperationSuccessful) {
+      throw new CustomException('MediaNotFound');
+    }
+
+    return;
   }
 }

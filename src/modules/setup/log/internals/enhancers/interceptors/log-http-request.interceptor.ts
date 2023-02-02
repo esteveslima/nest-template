@@ -62,7 +62,6 @@ export class LogHttpRequestInterceptor implements NestInterceptor {
     const { lookupExtraProperties } = this.loggerInterceptorOptions;
     lookupExtraProperties?.forEach((extraPropertyName) => {
       extraProperties[extraPropertyName] = req?.[extraPropertyName];
-      console.log(extraPropertyName, req[extraPropertyName]);
     });
 
     const graphqlDetails = graphQLInfo && {

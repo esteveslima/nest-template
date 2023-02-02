@@ -1,23 +1,52 @@
 // Responsible for containing business logic, decoupled for graphql resolvers
 
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { MediaRepository } from '../adapters/gateways/databases/repositories/media.repository';
-import { RegisterMediaArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/register-media.args';
-import { UpdateMediaArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-media.args';
-import { SearchMediaArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/search-media.args';
-import { Media } from '../domain/media.interface';
-import { User } from '../../user/domain/entities/user';
+import { Injectable } from '@nestjs/common';
+import { IMediaGraphqlService } from './interfaces/services/media-graphql/media-graphql.interface';
+import {
+  IMediaGraphqlServiceRegisterMediaParams,
+  IMediaGraphqlServiceRegisterMediaResult,
+} from './interfaces/services/media-graphql/methods/register-media.interface';
+import {
+  IMediaGraphqlServiceGetMediaParams,
+  IMediaGraphqlServiceGetMediaResult,
+} from './interfaces/services/media-graphql/methods/get-media.interface';
+import {
+  IMediaGraphqlServiceSearchMediasParams,
+  IMediaGraphqlServiceSearchMediasResult,
+} from './interfaces/services/media-graphql/methods/search-medias.interface';
+import {
+  IMediaGraphqlServiceModifyMediaParams,
+  IMediaGraphqlServiceModifyMediaResult,
+} from './interfaces/services/media-graphql/methods/modify-media.interface';
+import {
+  IMediaGraphqlServiceDeleteMediaParams,
+  IMediaGraphqlServiceDeleteMediaResult,
+} from './interfaces/services/media-graphql/methods/delete-media.interface';
+import { IMediaEventPublisherGateway } from './interfaces/ports/media-event-publisher/media-event-publisher-gateway.interface';
+import { IMediaGateway } from '../domain/repositories/media/media-gateway.interface';
 
 @Injectable()
-export class MediaGraphqlService {
+export class MediaGraphqlService implements IMediaGraphqlService {
   // Get services and repositories from DI
-  constructor(private mediaRepository: MediaRepository) {}
+  constructor(
+    private mediaGateway: IMediaGateway,
+    private mediaEventPublisherGateway: IMediaEventPublisherGateway,
+  ) {}
 
   // Define methods containing business logic
 
-  async registerMedia(media: RegisterMediaArgsDTO, user: User): Promise<Media> {
-    const mediaCreated = await this.mediaRepository.registerMedia({
-      ...media,
+  async registerMedia(
+    params: IMediaGraphqlServiceRegisterMediaParams,
+  ): Promise<IMediaGraphqlServiceRegisterMediaResult> {
+    const { contentBase64, description, durationSeconds, title, type, user } =
+      params;
+
+    const mediaCreated = await this.mediaGateway.registerMedia({
+      contentBase64,
+      description,
+      durationSeconds,
+      title,
+      type,
       user,
     });
 
@@ -36,8 +65,16 @@ export class MediaGraphqlService {
     };
   }
 
-  async getMediaById(mediaUuid: string): Promise<Media> {
-    const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
+  async getMedia(
+    params: IMediaGraphqlServiceGetMediaParams,
+  ): Promise<IMediaGraphqlServiceGetMediaResult> {
+    const { id } = params;
+
+    const mediaFound = await this.mediaGateway.getMedia({ id });
+
+    await this.mediaEventPublisherGateway.publishMediaViewed({
+      id,
+    });
 
     return {
       available: mediaFound.available,
@@ -54,30 +91,37 @@ export class MediaGraphqlService {
     };
   }
 
-  async modifyMediaById(
-    mediaUuid: string,
-    user: User,
-    modifyMedia: UpdateMediaArgsDTO,
-  ): Promise<void> {
-    await this.mediaRepository.modifyMediaById(mediaUuid, user, modifyMedia);
+  async searchMedias(
+    params: IMediaGraphqlServiceSearchMediasParams,
+  ): Promise<IMediaGraphqlServiceSearchMediasResult> {
+    const {
+      available,
+      createdAt,
+      description,
+      durationSeconds,
+      skip,
+      take,
+      title,
+      type,
+      username,
+      views,
+    } = params;
 
-    return;
-  }
+    const createdAtDate = createdAt ? new Date(createdAt) : undefined;
 
-  async deleteMediaById(mediaUuid: string, user: User): Promise<void> {
-    await this.mediaRepository.deleteMediaById(mediaUuid, user);
-
-    return;
-  }
-
-  async searchMedia(searchMediaFilters: SearchMediaArgsDTO): Promise<Media[]> {
     const searchFilters = {
-      ...searchMediaFilters,
-      createdAt: searchMediaFilters.createdAt
-        ? new Date(searchMediaFilters.createdAt)
-        : undefined,
+      available,
+      description,
+      durationSeconds,
+      skip,
+      take,
+      title,
+      type,
+      username,
+      views,
+      createdAt: createdAtDate,
     };
-    const searchResult = await this.mediaRepository.searchMedia(searchFilters);
+    const searchResult = await this.mediaGateway.searchMedias(searchFilters);
 
     return searchResult.map((media) => ({
       available: media.available,
@@ -92,5 +136,44 @@ export class MediaGraphqlService {
       user: media.user, // removing the relation field in attempt to avoid circular nested objects
       views: media.views,
     }));
+  }
+
+  async modifyMedia(
+    params: IMediaGraphqlServiceModifyMediaParams,
+  ): Promise<IMediaGraphqlServiceModifyMediaResult> {
+    const { data, indexes } = params;
+    const { id, user } = indexes;
+    const {
+      available,
+      contentBase64,
+      description,
+      durationSeconds,
+      title,
+      type,
+    } = data;
+
+    await this.mediaGateway.modifyMedia({
+      indexes: { id, user },
+      data: {
+        available,
+        contentBase64,
+        description,
+        durationSeconds,
+        title,
+        type,
+      },
+    });
+
+    return;
+  }
+
+  async deleteMedia(
+    params: IMediaGraphqlServiceDeleteMediaParams,
+  ): Promise<IMediaGraphqlServiceDeleteMediaResult> {
+    const { id, user } = params;
+
+    await this.mediaGateway.deleteMedia({ id, user });
+
+    return;
   }
 }

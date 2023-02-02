@@ -15,9 +15,9 @@ import {
   IUserRestServiceRegisterUserResult,
 } from './methods/register-user.interface';
 import {
-  IUserRestServiceSearchUserParams,
-  IUserRestServiceSearchUserResult,
-} from './methods/search-user.interface';
+  IUserRestServiceSearchUsersParams,
+  IUserRestServiceSearchUsersResult,
+} from './methods/search-users.interface';
 
 export abstract class IUserRestService {
   registerUser: (
@@ -27,9 +27,9 @@ export abstract class IUserRestService {
     params: IUserRestServiceGetUserParams,
   ) => Promise<IUserRestServiceGetUserResult>;
 
-  searchUser: (
-    params: IUserRestServiceSearchUserParams,
-  ) => Promise<IUserRestServiceSearchUserResult>;
+  searchUsers: (
+    params: IUserRestServiceSearchUsersParams,
+  ) => Promise<IUserRestServiceSearchUsersResult>;
 
   modifyUser: (
     params: IUserRestServiceModifyUserParams,

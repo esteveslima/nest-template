@@ -15,7 +15,7 @@ import { UserDatabaseModel } from '../models/user.model';
 import { User } from 'src/modules/apps/user/domain/entities/user';
 import { IUserGateway } from 'src/modules/apps/user/domain/repositories/user/user-gateway.interface';
 import { IUserGatewayRegisterUserParams } from 'src/modules/apps/user/domain/repositories/user/methods/register-user.interface';
-import { IUserGatewaySearchUserParams } from 'src/modules/apps/user/domain/repositories/user/methods/search-user.interface';
+import { IUserGatewaySearchUsersParams } from 'src/modules/apps/user/domain/repositories/user/methods/search-users.interface';
 import { IUserGatewayModifyUserParams } from 'src/modules/apps/user/domain/repositories/user/methods/modify-user.interface';
 import { IUserGatewayDeleteUserParams } from 'src/modules/apps/user/domain/repositories/user/methods/delete-user.interface';
 import { IUserGatewayGetUserParams } from 'src/modules/apps/user/domain/repositories/user/methods/get-user.interface';
@@ -55,9 +55,9 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
   }
 
   async getUser(params: IUserGatewayGetUserParams): Promise<User> {
-    const { id: uuid } = params;
+    const { id } = params;
 
-    const userFound = await this.repository.findOne(uuid, {
+    const userFound = await this.repository.findOne(id, {
       loadRelationIds: true,
     });
 
@@ -68,7 +68,7 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
     return userFound;
   }
 
-  async searchUser(params: IUserGatewaySearchUserParams): Promise<User[]> {
+  async searchUsers(params: IUserGatewaySearchUsersParams): Promise<User[]> {
     const { email, username } = params;
 
     const query = await this.repository.createQueryBuilder('user');
@@ -92,12 +92,12 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
 
   async modifyUser(params: IUserGatewayModifyUserParams): Promise<void> {
     const { data, indexes } = params;
-    const { id: uuid } = indexes;
+    const { id } = indexes;
     const { age, email, gender, password, username } = data;
 
     let updateResult: UpdateResult;
     try {
-      updateResult = await this.repository.update(uuid, {
+      updateResult = await this.repository.update(id, {
         age,
         email,
         gender,
@@ -123,9 +123,9 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
   }
 
   async deleteUser(params: IUserGatewayDeleteUserParams): Promise<void> {
-    const { id: uuid } = params;
+    const { id } = params;
 
-    const deleteResult = await this.repository.delete(uuid);
+    const deleteResult = await this.repository.delete(id);
 
     const isOperationSuccessful = deleteResult.affected > 0;
     if (!isOperationSuccessful) {

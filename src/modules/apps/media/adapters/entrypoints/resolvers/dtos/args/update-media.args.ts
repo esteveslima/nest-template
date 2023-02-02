@@ -4,19 +4,26 @@
 
 import { ArgsType, Field, ID, PartialType, PickType } from '@nestjs/graphql';
 import { IsUUID } from 'class-validator';
-import { MediaGraphqlValidationArgs } from '../base/media-graphql-validation.args';
+import { IMediaGraphqlServiceModifyMediaParams } from 'src/modules/apps/media/application/interfaces/services/media-graphql/methods/modify-media.interface';
+import { MediaBaseArgs } from './base/media-base.args';
+
+type IUpdateMedia = IMediaGraphqlServiceModifyMediaParams['data'] &
+  Pick<IMediaGraphqlServiceModifyMediaParams['indexes'], 'id'>;
 
 @ArgsType()
-export class UpdateMediaArgsDTO extends PartialType(
-  PickType(MediaGraphqlValidationArgs, [
-    'title',
-    'type',
-    'description',
-    'durationSeconds',
-    'contentBase64',
-    'available',
-  ] as const),
-) {
+export class UpdateMediaArgsDTO
+  extends PartialType(
+    PickType(MediaBaseArgs, [
+      'title',
+      'type',
+      'description',
+      'durationSeconds',
+      'contentBase64',
+      'available',
+    ] as const),
+  )
+  implements IUpdateMedia
+{
   @Field(() => ID)
   @IsUUID()
   id: string;

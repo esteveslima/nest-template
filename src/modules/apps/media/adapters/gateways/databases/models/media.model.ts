@@ -9,10 +9,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'; // typeORM tools https://orkhan.gitbook.io/typeorm/docs/embedded-entities
-import { enumMediaType, Media } from '../../../../domain/media.interface';
+import { enumMediaType, Media } from '../../../../domain/entities/media';
 
 @Entity()
-export class MediaEntity implements Media {
+export class MediaDatabaseModel implements Media {
   // Auto generated fields
 
   @PrimaryGeneratedColumn('uuid')

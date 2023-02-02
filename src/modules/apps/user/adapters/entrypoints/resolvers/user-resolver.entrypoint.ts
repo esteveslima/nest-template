@@ -5,7 +5,6 @@ import {
   ConflictException,
   InternalServerErrorException,
   NotFoundException,
-  ParseUUIDPipe,
 } from '@nestjs/common';
 import {
   Args,
@@ -19,13 +18,13 @@ import { UserGraphqlService } from '../../../application/user-graphql.service';
 import { RegisterUserArgsDTO } from './dtos/args/register-user.args';
 import { UserGraphqlType } from './dtos/types/user-graphql.type';
 import { MediaGraphqlService } from '../../../../media/application/media-graphql.service';
-import { MediaType } from '../../../../media/adapters/entrypoints/resolvers/dtos/types/media.type';
+import { MediaGraphqlType } from '../../../../media/adapters/entrypoints/resolvers/dtos/types/media-graphql.type';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
-import { MediaEntity } from '../../../../media/adapters/gateways/databases/models/media.model';
+import { MediaDatabaseModel } from '../../../../media/adapters/gateways/databases/models/media.model';
 import { GetGraphqlAuthData } from '../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-auth-data.decorator';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
-import { GetAuthData } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-data.decorator';
-import { SearchMediaArgsDTO } from '../../../../media/adapters/entrypoints/resolvers/dtos/args/search-media.args';
+import { GetAuthUser } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user.decorator';
+import { SearchMediasArgsDTO } from '../../../../media/adapters/entrypoints/resolvers/dtos/args/search-media.args';
 import { SearchUserArgsDTO } from './dtos/args/search-user.args';
 import { UpdateUserArgsDTO } from './dtos/args/update-user.args';
 import { UpdateCurrentUserArgsDTO } from './dtos/args/update-current-user.args';
@@ -61,7 +60,7 @@ export class UserResolverEntrypoint {
     @Args() args: SearchUserArgsDTO,
   ): Promise<UserGraphqlType[]> {
     try {
-      return await this.userGraphqlService.searchUser(args);
+      return await this.userGraphqlService.searchUsers(args);
     } catch (e) {
       throw CustomException.mapHttpException(e, {
         UserNotFound: (customException) =>
@@ -105,12 +104,12 @@ export class UserResolverEntrypoint {
   @Mutation(() => Boolean, { name: 'updateCurrentUser' })
   @Auth('ADMIN', 'USER')
   async updateCurrentUser(
-    @GetAuthData() authData: User,
+    @GetAuthUser() authUser: User,
     @Args() args: UpdateCurrentUserArgsDTO,
   ): Promise<boolean> {
     try {
       await this.userGraphqlService.modifyUser({
-        indexes: { id: authData.id },
+        indexes: { id: authUser.id },
         data: args,
       });
 
@@ -142,22 +141,24 @@ export class UserResolverEntrypoint {
     }
   }
 
-  @ResolveField('medias', () => [MediaType], { nullable: 'itemsAndList' })
-  async getMedias(
+  @ResolveField('medias', () => [MediaGraphqlType], {
+    nullable: 'itemsAndList',
+  })
+  async resolveMedias(
     @Parent() user: UserGraphqlType,
-    @Args() searchMediaFilters: SearchMediaArgsDTO,
-  ): Promise<MediaType[]> {
-    if (searchMediaFilters.username) {
+    @Args() args: SearchMediasArgsDTO,
+  ): Promise<MediaGraphqlType[]> {
+    if (args.username) {
       throw new BadRequestException(
         'Cannot query another user from nested user object',
       );
     }
 
     const { username } = user;
-    let medias: MediaEntity[];
+    let medias: MediaDatabaseModel[];
     try {
-      medias = await this.mediaGraphqlService.searchMedia({
-        ...searchMediaFilters,
+      medias = await this.mediaGraphqlService.searchMedias({
+        ...args,
         username,
       });
     } catch (e) {

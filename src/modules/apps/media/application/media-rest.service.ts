@@ -1,34 +1,52 @@
 // Responsible for containing business logic
 
 import { Injectable } from '@nestjs/common';
-import { User } from '../../user/domain/entities/user';
-import { MediaPubsubPublisherService } from '../adapters/gateways/publishers/media-pubsub-publisher.service';
-import { PatchMediaReqDTO } from '../adapters/entrypoints/controllers/dtos/req/patch-media-req.dto';
-import { RegisterMediaReqDTO } from '../adapters/entrypoints/controllers/dtos/req/register-media-req.dto';
-import { SearchMediaReqDTO } from '../adapters/entrypoints/controllers/dtos/req/search-media-req.dto';
-import { UpdateMediaReqDTO } from '../adapters/entrypoints/controllers/dtos/req/update-media-req.dto';
-import { GetMediaResDTO } from '../adapters/entrypoints/controllers/dtos/res/get-media-res.dto';
-import { RegisterMediaResDTO } from '../adapters/entrypoints/controllers/dtos/res/register-media-res.dto';
-import { SearchMediaResDTO } from '../adapters/entrypoints/controllers/dtos/res/search-media-res.dto';
-import { MediaRepository } from '../adapters/gateways/databases/repositories/media.repository';
+import { IMediaGateway } from '../domain/repositories/media/media-gateway.interface';
+import { IMediaEventPublisherGateway } from './interfaces/ports/media-event-publisher/media-event-publisher-gateway.interface';
+import { IMediaRestService } from './interfaces/services/media-rest/media-rest.interface';
+import {
+  IMediaRestServiceDeleteMediaParams,
+  IMediaRestServiceDeleteMediaResult,
+} from './interfaces/services/media-rest/methods/delete-media.interface';
+import {
+  IMediaRestServiceGetMediaParams,
+  IMediaRestServiceGetMediaResult,
+} from './interfaces/services/media-rest/methods/get-media.interface';
+import {
+  IMediaRestServiceModifyMediaParams,
+  IMediaRestServiceModifyMediaResult,
+} from './interfaces/services/media-rest/methods/modify-media.interface';
+import {
+  IMediaRestServiceRegisterMediaParams,
+  IMediaRestServiceRegisterMediaResult,
+} from './interfaces/services/media-rest/methods/register-media.interface';
+import {
+  IMediaRestServiceSearchMediasParams,
+  IMediaRestServiceSearchMediasResult,
+} from './interfaces/services/media-rest/methods/search-medias.interface';
 
 @Injectable()
-export class MediaRestService {
+export class MediaRestService implements IMediaRestService {
   // Get services and repositories from DI
   constructor(
-    private mediaRepository: MediaRepository,
-
-    private mediaPubsubPublisherService: MediaPubsubPublisherService,
+    private mediaGateway: IMediaGateway,
+    private mediaEventPublisherGateway: IMediaEventPublisherGateway,
   ) {}
 
   // Define methods containing business logic
 
   async registerMedia(
-    media: RegisterMediaReqDTO,
-    user: User,
-  ): Promise<RegisterMediaResDTO> {
-    const mediaCreated = await this.mediaRepository.registerMedia({
-      ...media,
+    params: IMediaRestServiceRegisterMediaParams,
+  ): Promise<IMediaRestServiceRegisterMediaResult> {
+    const { contentBase64, description, durationSeconds, title, type, user } =
+      params;
+
+    const mediaCreated = await this.mediaGateway.registerMedia({
+      contentBase64,
+      description,
+      durationSeconds,
+      title,
+      type,
       user,
     });
 
@@ -42,11 +60,15 @@ export class MediaRestService {
     };
   }
 
-  async getMediaById(mediaUuid: string): Promise<GetMediaResDTO> {
-    const mediaFound = await this.mediaRepository.getMediaById(mediaUuid);
+  async getMedia(
+    params: IMediaRestServiceGetMediaParams,
+  ): Promise<IMediaRestServiceGetMediaResult> {
+    const { id } = params;
 
-    await this.mediaPubsubPublisherService.publishMediaViewed({
-      uuid: mediaUuid,
+    const mediaFound = await this.mediaGateway.getMedia({ id });
+
+    await this.mediaEventPublisherGateway.publishMediaViewed({
+      id,
     });
 
     return {
@@ -62,37 +84,40 @@ export class MediaRestService {
     };
   }
 
-  async deleteMediaById(mediaUuid: string, user: User): Promise<void> {
-    await this.mediaRepository.deleteMediaById(mediaUuid, user);
+  async searchMedias(
+    params: IMediaRestServiceSearchMediasParams,
+  ): Promise<IMediaRestServiceSearchMediasResult> {
+    const {
+      available,
+      createdAt,
+      description,
+      durationSeconds,
+      skip,
+      take,
+      title,
+      type,
+      username,
+      views,
+    } = params;
 
-    return;
-  }
-
-  async modifyMediaById(
-    mediaUuid: string,
-    user: User,
-    modifyMedia: UpdateMediaReqDTO | PatchMediaReqDTO,
-  ): Promise<void> {
-    await this.mediaRepository.modifyMediaById(mediaUuid, user, modifyMedia);
-
-    return;
-  }
-
-  async searchMedia(
-    searchMediaFilters: SearchMediaReqDTO,
-  ): Promise<SearchMediaResDTO[]> {
-    const createdAtDate = searchMediaFilters.createdAt
-      ? new Date(searchMediaFilters.createdAt)
-      : undefined;
-
+    const createdAtDate = createdAt ? new Date(createdAt) : undefined;
     const searchFilters = {
-      ...searchMediaFilters,
+      available,
+      description,
+      durationSeconds,
+      skip,
+      take,
+      title,
+      type,
+      username,
+      views,
       createdAt: createdAtDate,
     };
-    const searchResult = await this.mediaRepository.searchMedia(searchFilters);
 
-    const result = searchResult.map(
-      (media): SearchMediaResDTO => ({
+    const searchResult = await this.mediaGateway.searchMedias(searchFilters);
+
+    const result = searchResult.map<IMediaRestServiceSearchMediasResult[0]>(
+      (media) => ({
         available: media.available,
         createdAt: media.createdAt,
         description: media.description,
@@ -101,11 +126,49 @@ export class MediaRestService {
         title: media.title,
         type: media.type,
         views: media.views,
-
         username: media.user.username,
       }),
     );
 
     return result;
+  }
+
+  async modifyMedia(
+    params: IMediaRestServiceModifyMediaParams,
+  ): Promise<IMediaRestServiceModifyMediaResult> {
+    const { data, indexes } = params;
+    const { id, user } = indexes;
+    const {
+      available,
+      contentBase64,
+      description,
+      durationSeconds,
+      title,
+      type,
+    } = data;
+
+    await this.mediaGateway.modifyMedia({
+      indexes: { id, user },
+      data: {
+        available,
+        contentBase64,
+        description,
+        durationSeconds,
+        title,
+        type,
+      },
+    });
+
+    return;
+  }
+
+  async deleteMedia(
+    params: IMediaRestServiceDeleteMediaParams,
+  ): Promise<IMediaRestServiceDeleteMediaResult> {
+    const { id, user } = params;
+
+    await this.mediaGateway.deleteMedia({ id, user });
+
+    return;
   }
 }

@@ -23,10 +23,10 @@ import {
 import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorator';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
-import { GetAuthData } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-data.decorator';
+import { GetAuthUser } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user.decorator';
 import { UserRestService } from '../../../application/user-rest.service';
 import { RegisterUserReqDTO } from './dtos/req/register-user-req.dto';
-import { SearchUserReqDTO } from './dtos/req/search-user-req.dto';
+import { SearchUsersReqDTO } from './dtos/req/search-users-req.dto';
 import {
   UpdateUserReqBodyDTO,
   UpdateUserReqParamsDTO,
@@ -35,7 +35,7 @@ import { User } from '../../../domain/entities/user';
 import { GetUserReqDTO } from './dtos/req/get-user-req.dto';
 import { DeleteUserReqDTO } from './dtos/req/delete-user-req.dto';
 import { RegisterUserResDTO } from './dtos/res/register-user-res.dto';
-import { SearchUserResDTO } from './dtos/res/search-user-res.dto';
+import { SearchUsersResDTO } from './dtos/res/search-users-res.dto';
 import { GetUserResDTO } from './dtos/res/get-user-res.dto';
 
 @Controller('/rest/user')
@@ -62,11 +62,11 @@ export class UserControllerEntrypoint {
 
   @Get()
   @SwaggerDoc({ tag: '/user', description: '' })
-  async searchUser(
-    @Query() params: SearchUserReqDTO,
-  ): Promise<SearchUserResDTO[]> {
+  async searchUsers(
+    @Query() params: SearchUsersReqDTO,
+  ): Promise<SearchUsersResDTO[]> {
     try {
-      return await this.userService.searchUser(params);
+      return await this.userService.searchUsers(params);
     } catch (e) {
       throw CustomException.mapHttpException(e, {
         UserNotFound: (customException) =>
@@ -78,7 +78,7 @@ export class UserControllerEntrypoint {
   @Get('/current')
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
-  async getCurrentUser(@GetAuthData() authUser: User): Promise<GetUserResDTO> {
+  async getCurrentUser(@GetAuthUser() authUser: User): Promise<GetUserResDTO> {
     try {
       return await this.userService.getUser({ id: authUser.id });
     } catch (e) {
@@ -96,7 +96,7 @@ export class UserControllerEntrypoint {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async updateCurrentUser(
-    @GetAuthData() authUser: User,
+    @GetAuthUser() authUser: User,
     @Body() body: UpdateUserReqBodyDTO,
   ): Promise<void> {
     try {
@@ -121,7 +121,7 @@ export class UserControllerEntrypoint {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async patchCurrentUser(
-    @GetAuthData() authUser: User,
+    @GetAuthUser() authUser: User,
     @Body() body: PatchUserReqBodyDTO,
   ): Promise<void> {
     try {
@@ -174,7 +174,7 @@ export class UserControllerEntrypoint {
   @HttpCode(204)
   @Auth('ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
-  async updateUserById(
+  async updateUser(
     @Param() params: UpdateUserReqParamsDTO,
     @Body() body: UpdateUserReqBodyDTO,
   ): Promise<void> {
@@ -194,7 +194,7 @@ export class UserControllerEntrypoint {
   @HttpCode(204)
   @Auth('ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
-  async patchUserById(
+  async patchUser(
     @Param() params: PatchUserReqParamsDTO,
     @Body() body: PatchUserReqBodyDTO,
   ): Promise<void> {

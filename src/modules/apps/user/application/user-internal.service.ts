@@ -2,13 +2,20 @@
 
 import { Injectable } from '@nestjs/common';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
-import { SearchUserReqDTO } from '../adapters/entrypoints/controllers/dtos/req/search-user-req.dto';
 import { IHashGateway } from './interfaces/ports/hash/hash-gateway.interface';
-import { User } from '../domain/entities/user';
 import { IUserGateway } from '../domain/repositories/user/user-gateway.interface';
+import { IUserInternalService } from './interfaces/services/user-internal/user-internal.interface';
+import {
+  IUserInternalServiceSearchUserParams,
+  IUserInternalServiceSearchUserResult,
+} from './interfaces/services/user-internal/methods/search-user.interface';
+import {
+  IUserInternalServiceVerifyUserPasswordParams,
+  IUserInternalServiceVerifyUserPasswordResult,
+} from './interfaces/services/user-internal/methods/verify-user-password.interface';
 
 @Injectable()
-export class UserInternalService {
+export class UserInternalService implements IUserInternalService {
   // Get services and repositories from DI
   constructor(
     private userGateway: IUserGateway,
@@ -17,12 +24,17 @@ export class UserInternalService {
 
   // Define methods containing business logic
 
-  async searchUser(searchUserFilters: SearchUserReqDTO): Promise<User> {
-    if (Object.keys(searchUserFilters).length <= 0) {
+  async searchUser(
+    params: IUserInternalServiceSearchUserParams,
+  ): Promise<IUserInternalServiceSearchUserResult> {
+    const { email, username } = params;
+
+    const hasSearchParams = !!username || !!email;
+    if (!hasSearchParams) {
       throw new CustomException('UserSearchInvalidFilters');
     }
 
-    const usersFound = await this.userGateway.searchUser(searchUserFilters);
+    const usersFound = await this.userGateway.searchUsers({ email, username });
     const userFound = usersFound[0];
     if (!userFound) throw new CustomException('UserNotFound');
 
@@ -30,12 +42,14 @@ export class UserInternalService {
   }
 
   async verifyUserPassword(
-    username: string,
-    password: string,
-  ): Promise<boolean> {
-    if (!username || !password) return false;
+    params: IUserInternalServiceVerifyUserPasswordParams,
+  ): Promise<IUserInternalServiceVerifyUserPasswordResult> {
+    const { username, password } = params;
 
-    const usersFound = await this.userGateway.searchUser({ username });
+    const hasParameters = !!username && !!password;
+    if (!hasParameters) return false;
+
+    const usersFound = await this.userGateway.searchUsers({ username });
     const userFound = usersFound[0];
     if (!userFound) return false;
 

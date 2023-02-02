@@ -6,7 +6,7 @@ import {
   Int,
   registerEnumType,
 } from '@nestjs/graphql';
-import { MediaType } from 'src/modules/apps/media/adapters/entrypoints/resolvers/dtos/types/media.type';
+import { MediaGraphqlType } from 'src/modules/apps/media/adapters/entrypoints/resolvers/dtos/types/media-graphql.type';
 import {
   enumGenderType,
   enumRole,
@@ -34,8 +34,8 @@ export class UserBaseArgsDTO extends UserValidatorDTO implements User {
 
   // Relational fields
 
-  @Field(() => [MediaType], { nullable: true })
-  medias: MediaType[];
+  @Field(() => [MediaGraphqlType], { nullable: true })
+  medias: MediaGraphqlType[];
 
   // Editable fields
 

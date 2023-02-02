@@ -12,7 +12,7 @@ import {
   Length,
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { Media } from '../../../../../../../media/domain/media.interface';
+import { Media } from '../../../../../../../media/domain/entities/media';
 import {
   enumGenderType,
   enumRole,

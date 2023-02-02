@@ -4,15 +4,28 @@
 import { PartialType, PickType } from '@nestjs/swagger';
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { MediaRestValidationDTO } from '../base/media-rest-validation.dto';
+import { IMediaRestServiceModifyMediaParams } from 'src/modules/apps/media/application/interfaces/services/media-rest/methods/modify-media.interface';
+import { MediaValidatorDTO } from './base/media-validator.dto';
 
-export class PatchMediaReqDTO extends PartialType(
-  PickType(MediaRestValidationDTO, [
-    'title',
-    'type',
-    'description',
-    'durationSeconds',
-    'contentBase64',
-    'available',
-  ] as const),
-) {}
+type IPatchMediaIndexes = Pick<
+  IMediaRestServiceModifyMediaParams['indexes'],
+  'id'
+>;
+type IPatchMediaData = IMediaRestServiceModifyMediaParams['data'];
+
+export class PatchMediaReqParamsDTO
+  extends PickType(MediaValidatorDTO, ['id'] as const)
+  implements IPatchMediaIndexes {}
+
+export class PatchMediaReqBodyDTO
+  extends PartialType(
+    PickType(MediaValidatorDTO, [
+      'title',
+      'type',
+      'description',
+      'durationSeconds',
+      'contentBase64',
+      'available',
+    ] as const),
+  )
+  implements IPatchMediaData {}

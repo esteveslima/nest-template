@@ -25,10 +25,10 @@ export class AuthGraphqlService {
   ): Promise<ILoginAuthGraphqlResult> {
     const { password, username } = params;
 
-    const isAuthenticated = await this.userInternalService.verifyUserPassword(
+    const isAuthenticated = await this.userInternalService.verifyUserPassword({
       username,
       password,
-    );
+    });
 
     if (!isAuthenticated) throw new CustomException('AuthUnhauthorized');
 

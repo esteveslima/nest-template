@@ -3,15 +3,18 @@
 
 import { PickType } from '@nestjs/swagger'; // mapped-types
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
+import { IUserRestServiceGetUserResult } from 'src/modules/apps/user/application/interfaces/services/user-rest/methods/get-user.interface';
 import { User } from 'src/modules/apps/user/domain/entities/user';
 
-export class GetUserResDTO extends PickType(User, [
-  'id',
-  'createdAt',
-  'medias',
-  'username',
-  'email',
-  'role',
-  'gender',
-  'age',
-] as const) {}
+export class GetUserResDTO
+  extends PickType(User, [
+    'id',
+    'createdAt',
+    'medias',
+    'username',
+    'email',
+    'role',
+    'gender',
+    'age',
+  ] as const)
+  implements IUserRestServiceGetUserResult {}

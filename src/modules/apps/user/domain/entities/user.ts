@@ -1,6 +1,6 @@
 // Interface describing entity properties
 
-import { Media } from '../../../media/domain/media.interface';
+import { Media } from '../../../media/domain/entities/media';
 //TODO: move types/tests/etc... closer to source codes, following the colocation principle(maybe isolating with single colocated folder)
 export enum enumGenderType {
   MALE = 'MALE',

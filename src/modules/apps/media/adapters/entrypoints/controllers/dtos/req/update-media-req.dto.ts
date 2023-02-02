@@ -4,12 +4,26 @@
 import { PickType } from '@nestjs/swagger'; // mapped-types
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import {} from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { MediaRestValidationDTO } from '../base/media-rest-validation.dto';
+import { IMediaRestServiceModifyMediaParams } from 'src/modules/apps/media/application/interfaces/services/media-rest/methods/modify-media.interface';
+import { MediaValidatorDTO } from './base/media-validator.dto';
 
-export class UpdateMediaReqDTO extends PickType(MediaRestValidationDTO, [
-  'title',
-  'type',
-  'description',
-  'durationSeconds',
-  'contentBase64',
-] as const) {}
+type IUpdateMediaIndexes = Pick<
+  IMediaRestServiceModifyMediaParams['indexes'],
+  'id'
+>;
+type IUpdateMediaData = Required<IMediaRestServiceModifyMediaParams['data']>;
+
+export class UpdateMediaReqParamsDTO
+  extends PickType(MediaValidatorDTO, ['id'] as const)
+  implements IUpdateMediaIndexes {}
+
+export class UpdateMediaReqBodyDTO
+  extends PickType(MediaValidatorDTO, [
+    'title',
+    'type',
+    'description',
+    'durationSeconds',
+    'contentBase64',
+    'available',
+  ] as const)
+  implements IUpdateMediaData {}

@@ -15,9 +15,9 @@ import {
   IUserGraphqlServiceRegisterUserResult,
 } from './methods/register-user.interface';
 import {
-  IUserGraphqlServiceSearchUserParams,
-  IUserGraphqlServiceSearchUserResult,
-} from './methods/search-user.interface';
+  IUserGraphqlServiceSearchUsersParams,
+  IUserGraphqlServiceSearchUsersResult,
+} from './methods/search-users.interface';
 
 export abstract class IUserGraphqlService {
   registerUser: (
@@ -27,9 +27,9 @@ export abstract class IUserGraphqlService {
     params: IUserGraphqlServiceGetUserParams,
   ) => Promise<IUserGraphqlServiceGetUserResult>;
 
-  searchUser: (
-    params: IUserGraphqlServiceSearchUserParams,
-  ) => Promise<IUserGraphqlServiceSearchUserResult>;
+  searchUsers: (
+    params: IUserGraphqlServiceSearchUsersParams,
+  ) => Promise<IUserGraphqlServiceSearchUsersResult>;
 
   modifyUser: (
     params: IUserGraphqlServiceModifyUserParams,

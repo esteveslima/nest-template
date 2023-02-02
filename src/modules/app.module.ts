@@ -3,7 +3,7 @@
 import { Module } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
-import { MediaEntity } from './apps/media/adapters/gateways/databases/models/media.model';
+import { MediaDatabaseModel } from './apps/media/adapters/gateways/databases/models/media.model';
 import { MediaModule } from './apps/media/media.module';
 import { UserDatabaseModel } from './apps/user/adapters/gateways/databases/models/user.model';
 import { UserModule } from './apps/user/user.module';

@@ -21,9 +21,9 @@ import {
   IUserRestServiceRegisterUserResult,
 } from './interfaces/services/user-rest/methods/register-user.interface';
 import {
-  IUserRestServiceSearchUserParams,
-  IUserRestServiceSearchUserResult,
-} from './interfaces/services/user-rest/methods/search-user.interface';
+  IUserRestServiceSearchUsersParams,
+  IUserRestServiceSearchUsersResult,
+} from './interfaces/services/user-rest/methods/search-users.interface';
 import { IUserRestService } from './interfaces/services/user-rest/user-rest.interface';
 
 @Injectable()
@@ -71,9 +71,9 @@ export class UserRestService implements IUserRestService {
   async getUser(
     params: IUserRestServiceGetUserParams,
   ): Promise<IUserRestServiceGetUserResult> {
-    const { id: uuid } = params;
+    const { id } = params;
 
-    const userFound = await this.userGateway.getUser({ id: uuid });
+    const userFound = await this.userGateway.getUser({ id });
 
     return {
       age: userFound.age,
@@ -87,9 +87,9 @@ export class UserRestService implements IUserRestService {
     };
   }
 
-  async searchUser(
-    params: IUserRestServiceSearchUserParams,
-  ): Promise<IUserRestServiceSearchUserResult> {
+  async searchUsers(
+    params: IUserRestServiceSearchUsersParams,
+  ): Promise<IUserRestServiceSearchUsersResult> {
     const searchUserFilters = params;
     if (Object.keys(searchUserFilters).length <= 0) {
       throw new CustomException('UserSearchInvalidFilters');
@@ -97,19 +97,21 @@ export class UserRestService implements IUserRestService {
 
     const { email, username } = searchUserFilters;
 
-    const usersFound = await this.userGateway.searchUser({ email, username });
+    const usersFound = await this.userGateway.searchUsers({ email, username });
 
     if (usersFound.length <= 0) {
       throw new CustomException('UserNotFound');
     }
 
-    return usersFound.map((user) => ({
+    const formattedUsersFound = usersFound.map((user) => ({
       email: user.email,
       id: user.id,
       medias: user.medias,
       role: user.role,
       username: user.username,
     }));
+
+    return formattedUsersFound;
   }
 
   async modifyUser(
@@ -139,9 +141,9 @@ export class UserRestService implements IUserRestService {
   async deleteUser(
     params: IUserRestServiceDeleteUserParams,
   ): Promise<IUserRestServiceDeleteUserResult> {
-    const { id: uuid } = params;
+    const { id } = params;
 
-    await this.userGateway.deleteUser({ id: uuid });
+    await this.userGateway.deleteUser({ id });
 
     return;
   }

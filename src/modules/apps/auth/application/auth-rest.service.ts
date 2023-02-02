@@ -23,10 +23,10 @@ export class AuthRestService {
   async login(params: ILoginAuthRestParams): Promise<ILoginAuthRestResult> {
     const { password, username } = params;
 
-    const isAuthenticated = await this.userInternalService.verifyUserPassword(
+    const isAuthenticated = await this.userInternalService.verifyUserPassword({
       username,
       password,
-    );
+    });
 
     if (!isAuthenticated) throw new CustomException('AuthUnhauthorized');
 

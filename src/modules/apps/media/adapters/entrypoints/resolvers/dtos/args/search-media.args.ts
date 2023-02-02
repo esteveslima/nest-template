@@ -11,19 +11,23 @@ import {
   PickType,
 } from '@nestjs/graphql';
 import { IsOptional, Max, Min } from 'class-validator';
-import { MediaGraphqlValidationArgs } from '../base/media-graphql-validation.args';
+import { IMediaGraphqlServiceSearchMediasParams } from 'src/modules/apps/media/application/interfaces/services/media-graphql/methods/search-medias.interface';
+import { MediaBaseArgs } from './base/media-base.args';
 
 @ArgsType()
-export class SearchMediaArgsDTO extends PartialType(
-  PickType(MediaGraphqlValidationArgs, [
-    'title',
-    'type',
-    'description',
-    'durationSeconds',
-    'views',
-    'available',
-  ] as const),
-) {
+export class SearchMediasArgsDTO
+  extends PartialType(
+    PickType(MediaBaseArgs, [
+      'title',
+      'type',
+      'description',
+      'durationSeconds',
+      'views',
+      'available',
+    ] as const),
+  )
+  implements IMediaGraphqlServiceSearchMediasParams
+{
   @Field(() => Float, { nullable: true })
   @IsOptional() // cannot be from @nest/swagger
   createdAt?: number; // Input modified to accept timestamps

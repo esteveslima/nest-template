@@ -9,7 +9,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm'; // typeORM tools https://orkhan.gitbook.io/typeorm/docs/embedded-entities
-import { MediaEntity } from '../../../../../media/adapters/gateways/databases/models/media.model';
+import { MediaDatabaseModel } from '../../../../../media/adapters/gateways/databases/models/media.model';
 import {
   enumGenderType,
   enumRole,
@@ -31,8 +31,8 @@ export class UserDatabaseModel implements User {
 
   // Relational fields
 
-  @OneToMany(() => MediaEntity, (media) => media.user, { eager: false })
-  medias: MediaEntity[];
+  @OneToMany(() => MediaDatabaseModel, (media) => media.user, { eager: false })
+  medias: MediaDatabaseModel[];
 
   // Editable fields
 

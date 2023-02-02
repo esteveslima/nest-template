@@ -1,3 +1,3 @@
-import { PUBSUB_PUBLISH_EVENTS_MEDIA } from '../../../gateways/publishers/events/constants';
+import { MEDIA_PUBLISH_EVENTS } from '../../../gateways/publishers/events/constants';
 
-export const PUBSUB_SUBSCRIBE_EVENTS_MEDIA = PUBSUB_PUBLISH_EVENTS_MEDIA;
+export const MEDIA_SUBSCRIBE_EVENTS = MEDIA_PUBLISH_EVENTS;

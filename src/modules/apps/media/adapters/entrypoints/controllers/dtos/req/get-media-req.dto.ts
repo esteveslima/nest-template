@@ -11,8 +11,9 @@ import {
   Max,
   Min,
 } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { MediaRestValidationDTO } from '../base/media-rest-validation.dto';
+import { IMediaRestServiceGetMediaParams } from 'src/modules/apps/media/application/interfaces/services/media-rest/methods/get-media.interface';
+import { MediaValidatorDTO } from './base/media-validator.dto';
 
-export class GetMediaReqDTO extends PartialType(
-  PickType(MediaRestValidationDTO, ['id'] as const),
-) {}
+export class GetMediaReqDTO
+  extends PickType(MediaValidatorDTO, ['id'] as const)
+  implements IMediaRestServiceGetMediaParams {}

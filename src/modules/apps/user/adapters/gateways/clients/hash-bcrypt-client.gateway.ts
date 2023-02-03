@@ -14,7 +14,7 @@ import {
 // concrete implementation of the application hash dependency
 
 @Injectable()
-export class HashClientGateway implements IHashGateway {
+export class HashBcryptClientGateway implements IHashGateway {
   constructor(
     @Inject(BCRYPT_PROVIDER)
     private bcrypt: BcryptProviderType,

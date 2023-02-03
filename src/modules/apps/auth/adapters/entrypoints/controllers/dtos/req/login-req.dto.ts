@@ -3,9 +3,9 @@
 
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import { IsNotEmpty, IsString, Length } from 'class-validator'; // validation tools https://github.com/typestack/class-validator
-import { ILoginAuthRestParams } from 'src/modules/apps/auth/application/types/auth-rest-service/login.interface';
+import { IAuthRestServiceLoginParams } from 'src/modules/apps/auth/application/interfaces/services/auth-rest/methods/login.interface';
 
-export class LoginReqDTO implements ILoginAuthRestParams {
+export class LoginReqDTO implements IAuthRestServiceLoginParams {
   @IsNotEmpty()
   @IsString()
   @Length(5, 80)

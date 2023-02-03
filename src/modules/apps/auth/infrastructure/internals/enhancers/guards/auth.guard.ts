@@ -10,17 +10,18 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
+import { TokenJwtGateway } from 'src/modules/apps/auth/adapters/gateways/clients/token-jwt.gateway';
+import { ITokenGateway } from 'src/modules/apps/auth/application/interfaces/ports/token/token-gateway.interface';
+import { AuthTokenPayload } from 'src/modules/apps/auth/application/interfaces/types/auth-token-payload.interface';
 import { getRequestObject } from 'src/modules/apps/auth/infrastructure/internals/enhancers/utils/get-request-object';
-import { TokenService } from 'src/modules/apps/auth/adapters/gateways/clients/token.service';
-import { AuthTokenPayload } from 'src/modules/apps/auth/domain/auth-token-payload';
 
 // Extend the guard configured with and provided by passport
 @Injectable()
 export class AuthGuardJwt implements CanActivate {
   constructor(
     private reflector: Reflector,
-    @Inject(TokenService)
-    private tokenService: TokenService,
+    @Inject(TokenJwtGateway)
+    private tokenGateway: ITokenGateway<AuthTokenPayload>,
   ) {}
 
   async canActivate(context: ExecutionContext) {
@@ -55,8 +56,10 @@ export class AuthGuardJwt implements CanActivate {
     }
 
     try {
-      const payload = await this.tokenService.decodeToken(jwtToken);
-      return payload as AuthTokenPayload;
+      const tokenPayload = await this.tokenGateway.decodeToken({
+        token: jwtToken,
+      });
+      return tokenPayload;
     } catch (e) {
       Logger.error(e);
       throw new UnauthorizedException('Auth token invalid');

@@ -2,7 +2,7 @@
 
 import { applyDecorators } from '@nestjs/common';
 import { Field } from '@nestjs/graphql';
-import { AuthTokenPayload } from 'src/modules/apps/auth/domain/auth-token-payload';
+import { AuthTokenPayload } from 'src/modules/apps/auth/application/interfaces/types/auth-token-payload.interface';
 import { graphqlAuthFieldMiddleware } from '../../../enhancers/middlewares/graphql-auth-field.middleware';
 import { GraphqlAllowFieldRoles } from './graphql-allow-field-roles.decorator';
 

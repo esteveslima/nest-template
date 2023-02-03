@@ -1,13 +1,11 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { MediaModule } from '../media/media.module';
 import { UserResolverEntrypoint } from './adapters/entrypoints/resolvers/user-resolver.entrypoint';
 import { UserControllerEntrypoint } from './adapters/entrypoints/controllers/user-controller.entrypoint';
 import { UserGraphqlService } from './application/user-graphql.service';
-import { HashClientGateway } from './adapters/gateways/clients/hash-client.gateway';
+import { HashBcryptClientGateway } from './adapters/gateways/clients/hash-bcrypt-client.gateway';
 import { UserDatabaseRepositoryGateway } from './adapters/gateways/databases/repositories/user-repository.gateway';
-import { SINGLE_DB } from 'src/modules/setup/db/constants';
 import { BcryptCustomProvider } from 'src/common/internals/providers/packages/bcrypt.provider';
 import { UserRestService } from './application/user-rest.service';
 import { UserInternalService } from './application/user-internal.service';
@@ -48,7 +46,7 @@ import { DBModule } from 'src/modules/setup/db/db.module';
     },
     {
       provide: IHashGateway,
-      useClass: HashClientGateway,
+      useClass: HashBcryptClientGateway,
     },
   ],
   exports: [UserRestService, UserGraphqlService, UserInternalService],

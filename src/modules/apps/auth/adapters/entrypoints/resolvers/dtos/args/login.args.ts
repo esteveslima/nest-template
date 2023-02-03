@@ -1,9 +1,9 @@
 import { ArgsType, Field, PickType } from '@nestjs/graphql';
 import { IsNotEmpty, IsString, Length } from 'class-validator';
-import { ILoginAuthGraphqlParams } from 'src/modules/apps/auth/application/types/auth-graphql-service/login.interface';
+import { IAuthGraphqlServiceLoginParams } from 'src/modules/apps/auth/application/interfaces/services/auth-graphql/methods/login.interface';
 
 @ArgsType()
-export class LoginArgsDTO implements ILoginAuthGraphqlParams {
+export class LoginArgsDTO implements IAuthGraphqlServiceLoginParams {
   @Field(() => String)
   @IsNotEmpty()
   @IsString()

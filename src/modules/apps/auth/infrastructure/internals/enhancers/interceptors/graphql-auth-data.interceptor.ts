@@ -11,15 +11,16 @@ import {
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { TokenService } from 'src/modules/apps/auth/adapters/gateways/clients/token.service';
-import { AuthTokenPayload } from 'src/modules/apps/auth/domain/auth-token-payload';
-import { IRequestResolvedAuth } from '../utils/resolved-request.interface';
+import { TokenJwtGateway } from 'src/modules/apps/auth/adapters/gateways/clients/token-jwt.gateway';
+import { ITokenGateway } from 'src/modules/apps/auth/application/interfaces/ports/token/token-gateway.interface';
+import { AuthTokenPayload } from 'src/modules/apps/auth/application/interfaces/types/auth-token-payload.interface';
+import { IRequestResolvedAuth } from '../utils/types/resolved-request.interface';
 
 @Injectable()
 export class GraphqlAuthDataInterceptor implements NestInterceptor {
   constructor(
-    @Inject(TokenService)
-    private tokenService: TokenService,
+    @Inject(TokenJwtGateway)
+    private tokenGateway: ITokenGateway<AuthTokenPayload>,
   ) {}
 
   async intercept(
@@ -47,8 +48,10 @@ export class GraphqlAuthDataInterceptor implements NestInterceptor {
     if (!jwtToken) return undefined;
 
     try {
-      const payload = await this.tokenService.decodeToken(jwtToken);
-      return payload as AuthTokenPayload;
+      const tokenPayload = await this.tokenGateway.decodeToken({
+        token: jwtToken,
+      });
+      return tokenPayload;
     } catch (err) {
       return undefined;
     }

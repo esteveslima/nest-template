@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { FieldMiddleware, MiddlewareContext, NextFn } from '@nestjs/graphql';
 import { IncomingMessage } from 'http';
-import { AuthTokenPayload } from 'src/modules/apps/auth/domain/auth-token-payload';
-import { IRequestResolvedAuth } from '../utils/resolved-request.interface';
+import { AuthTokenPayload } from 'src/modules/apps/auth/application/interfaces/types/auth-token-payload.interface';
+import { IRequestResolvedAuth } from '../utils/types/resolved-request.interface';
 
 export const graphqlAuthFieldMiddleware: FieldMiddleware = async (
   ctx: MiddlewareContext,

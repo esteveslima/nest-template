@@ -3,20 +3,31 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
-
-interface ITokenOptions {
-  expiresIn: number; // seconds
-}
+import {
+  ITokenGatewayDecodeTokenParams,
+  ITokenGatewayDecodeTokenResult,
+} from '../../../application/interfaces/ports/token/methods/decode-token.interface';
+import {
+  ITokenGatewayGenerateTokenParams,
+  ITokenGatewayGenerateTokenResult,
+} from '../../../application/interfaces/ports/token/methods/generate-token.interface';
+import { ITokenGateway } from '../../../application/interfaces/ports/token/token-gateway.interface';
 
 @Injectable()
-export class TokenService {
+export class TokenJwtGateway<T extends object = Record<string, unknown>>
+  implements ITokenGateway<T>
+{
   // Get services and repositories from DI
   constructor(private jwtService: JwtService) {}
 
   // Define methods containing business logic
 
-  async decodeToken(token: string): Promise<Record<string, any>> {
-    let decodedTokenPayload: Record<string, any>;
+  async decodeToken(
+    params: ITokenGatewayDecodeTokenParams,
+  ): Promise<ITokenGatewayDecodeTokenResult<T>> {
+    const { token } = params;
+
+    let decodedTokenPayload: T;
     try {
       decodedTokenPayload = this.jwtService.verify(token);
     } catch (e: any) {
@@ -43,11 +54,12 @@ export class TokenService {
   }
 
   async generateToken(
-    tokenPayload: Record<string, any>,
-    options?: ITokenOptions,
-  ): Promise<string> {
+    params: ITokenGatewayGenerateTokenParams<T>,
+  ): Promise<ITokenGatewayGenerateTokenResult> {
+    const { tokenPayload, options } = params;
+
     const token = this.jwtService.sign(tokenPayload, options);
 
-    return token;
+    return { token };
   }
 }

@@ -6,7 +6,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { AuthGraphqlService } from '../../../application/auth-graphql.service';
 import { LoginArgsDTO } from './dtos/args/login.args';
 @Resolver()
-export class AuthResolver {
+export class AuthResolverEntrypoint {
   // Get services and modules from DI
   constructor(private authGraphqlService: AuthGraphqlService) {}
 

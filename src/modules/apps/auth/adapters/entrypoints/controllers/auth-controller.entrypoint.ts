@@ -9,7 +9,7 @@ import { LoginReqDTO } from './dtos/req/login-req.dto';
 import { LoginResDTO } from './dtos/res/login-res.dto';
 
 @Controller('/rest/auth')
-export class AuthController {
+export class AuthControllerEntrypoint {
   // Get services and modules from DI
   constructor(private authRestService: AuthRestService) {}
 

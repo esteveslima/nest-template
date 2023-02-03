@@ -3,7 +3,7 @@
 import { ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
-import { IRequestResolvedAuth } from './resolved-request.interface';
+import { IRequestResolvedAuth } from './types/resolved-request.interface';
 
 enum enumExecutionContexts {
   HTTP = 'http',

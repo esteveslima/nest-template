@@ -77,16 +77,17 @@ async function bootstrap() {
   }
 
   // Setup cors for all subdomains from specific client domain
-  const allowedDomain = 'localhost';
+  const allowedDomains = process.env.ALLOWED_DOMAINS.split(',');
   app.enableCors({
-    origin: [
-      new RegExp(
-        '^https?:\\/\\/(.*).?[ALLOWED_DOMAIN](:\\d{4})?$'.replace(
-          '[ALLOWED_DOMAIN]',
-          allowedDomain,
+    origin: allowedDomains.map(
+      (allowedDomain) =>
+        new RegExp(
+          '^https?:\\/\\/(.*).?[ALLOWED_DOMAIN](:\\d{4})?$'.replace(
+            '[ALLOWED_DOMAIN]',
+            allowedDomain,
+          ),
         ),
-      ),
-    ],
+    ),
     methods: ['HEAD', 'OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

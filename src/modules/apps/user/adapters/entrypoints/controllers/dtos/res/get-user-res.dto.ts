@@ -4,10 +4,10 @@
 import { PickType } from '@nestjs/swagger'; // mapped-types
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import { IUserRestServiceGetUserResult } from 'src/modules/apps/user/application/interfaces/services/user-rest/methods/get-user.interface';
-import { User } from 'src/modules/apps/user/domain/entities/user';
+import { UserValidatorDTO } from '../req/base/user-validator.dto';
 
 export class GetUserResDTO
-  extends PickType(User, [
+  extends PickType(UserValidatorDTO, [
     'id',
     'createdAt',
     'medias',

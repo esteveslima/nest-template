@@ -56,7 +56,7 @@ export class UserResolverEntrypoint {
   }
 
   @Query(() => [UserGraphqlType], { name: 'users' })
-  async searchUser(
+  async searchUsers(
     @Args() args: SearchUserArgsDTO,
   ): Promise<UserGraphqlType[]> {
     try {

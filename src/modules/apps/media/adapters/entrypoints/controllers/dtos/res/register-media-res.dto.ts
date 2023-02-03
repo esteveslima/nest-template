@@ -2,9 +2,9 @@
 // May be often used as a simple interface to allow swagger build documentation
 
 import { PickType } from '@nestjs/swagger'; // mapped-types
-import { Media } from 'src/modules/apps/media/domain/entities/media';
+import { MediaValidatorDTO } from '../req/base/media-validator.dto';
 
-export class RegisterMediaResDTO extends PickType(Media, [
+export class RegisterMediaResDTO extends PickType(MediaValidatorDTO, [
   'id',
   'title',
   'type',

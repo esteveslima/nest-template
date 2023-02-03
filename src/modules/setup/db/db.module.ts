@@ -4,8 +4,6 @@ import { IClassConstructor } from 'src/common/types/class-constructor.interface'
 import * as _ from 'lodash';
 import { SINGLE_DB } from './constants';
 
-// TODO: databases connections are providers(?)
-//TODO: refactor to connect only per feature and not in general, maybe splitting in different databases and connections(?) -> requires changing the project to microservices structure(?)
 @Module({})
 export class DBModule {
   static registeredEntities: IClassConstructor[] = [];
@@ -31,7 +29,7 @@ export class DBModule {
             database: process.env.DB_NAME,
             autoLoadEntities: true,
             // logging: true,
-            synchronize: process.env.NODE_ENV !== 'prod', //TODO: danger in prod(remove and standardize migrations)
+            synchronize: process.env.NODE_ENV === 'prod', //TODO: danger in prod(remove and standardize migrations)
           }),
         }),
 

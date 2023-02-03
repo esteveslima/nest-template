@@ -15,7 +15,6 @@ import { ITokenGateway } from 'src/modules/apps/auth/application/interfaces/port
 import { AuthTokenPayload } from 'src/modules/apps/auth/application/interfaces/types/auth-token-payload.interface';
 import { getRequestObject } from 'src/modules/apps/auth/infrastructure/internals/enhancers/utils/get-request-object';
 
-// Extend the guard configured with and provided by passport
 @Injectable()
 export class AuthGuardJwt implements CanActivate {
   constructor(

@@ -44,7 +44,8 @@ export class MediaDatabaseRepositoryGateway implements IMediaGateway {
   async getMedia(params: IMediaGatewayGetMediaParams): Promise<Media> {
     const { id } = params;
 
-    const mediaFound = await this.repository.findOne(id, {
+    const mediaFound = await this.repository.findOne({
+      where: { id },
       relations: ['user'],
     });
 

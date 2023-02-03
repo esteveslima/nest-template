@@ -57,7 +57,8 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
   async getUser(params: IUserGatewayGetUserParams): Promise<User> {
     const { id } = params;
 
-    const userFound = await this.repository.findOne(id, {
+    const userFound = await this.repository.findOne({
+      where: { id },
       loadRelationIds: true,
     });
 

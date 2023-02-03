@@ -4,10 +4,10 @@
 import { PickType } from '@nestjs/swagger'; // mapped-types
 import {} from 'class-transformer'; // transformation tools https://github.com/typestack/class-transformer
 import { IMediaRestServiceGetMediaResult } from 'src/modules/apps/media/application/interfaces/services/media-rest/methods/get-media.interface';
-import { Media } from 'src/modules/apps/media/domain/entities/media';
+import { MediaValidatorDTO } from '../req/base/media-validator.dto';
 
 export class GetMediaResDTO
-  extends PickType(Media, [
+  extends PickType(MediaValidatorDTO, [
     'createdAt',
     'title',
     'type',

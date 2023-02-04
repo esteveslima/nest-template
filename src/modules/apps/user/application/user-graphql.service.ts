@@ -1,13 +1,7 @@
 // Responsible for containing business logic(decoupled for graphql resolvers)
 
 import { Injectable } from '@nestjs/common';
-import { RegisterUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/register-user.args';
-import { CustomException } from 'src/common/exceptions/custom-exception';
-import { UpdateCurrentUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-current-user.args';
-import { UpdateUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-user.args';
-import { SearchUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/search-user.args';
 import { IHashGateway } from './interfaces/ports/hash/hash-gateway.interface';
-import { User } from '../domain/entities/user';
 import { IUserGateway } from '../domain/repositories/user/user-gateway.interface';
 import { IUserGraphqlService } from './interfaces/services/user-graphql/user-graphql.interface';
 import {
@@ -30,7 +24,7 @@ import {
   IUserGraphqlServiceDeleteUserParams,
   IUserGraphqlServiceDeleteUserResult,
 } from './interfaces/services/user-graphql/methods/delete-user.interface';
-import { ApplicationExceptions } from 'src/common/exceptions/application-exceptions';
+import { UserNotFoundException } from 'src/common/exceptions/application/user/user-not-found.exception';
 
 @Injectable()
 export class UserGraphqlService implements IUserGraphqlService {
@@ -139,7 +133,7 @@ export class UserGraphqlService implements IUserGraphqlService {
 
     const foundUser = usersFound.length > 0;
     if (!foundUser) {
-      throw new CustomException<ApplicationExceptions>('UserNotFound');
+      throw new UserNotFoundException(params);
     }
 
     return usersFound.map((user) => ({

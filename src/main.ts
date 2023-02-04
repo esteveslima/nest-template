@@ -1,15 +1,23 @@
 import { AppModule } from './modules/app.module';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger } from 'nestjs-pino';
+import { Logger as PinoLogger } from 'nestjs-pino';
 import { AllExceptionsFilter } from './common/internals/enhancers/filters/all-exceptions.filter';
-import { devToolsBasicAuthMiddleware } from './common/internals/enhancers/middlewares/dev-tools-basic-auth.middleware';
+import { devToolsBasicAuthMiddleware } from './common/config/middlewares/dev-tools-basic-auth.middleware';
 import { ExpressAdapter } from '@bull-board/express';
 import { createBullBoard } from '@bull-board/api';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { Queue } from 'bull';
 import { getQueueToken } from '@nestjs/bull';
+import { configSwagger } from './common/config/config-swagger';
+import { configBullBoard } from './common/config/config-bull-board';
+import { QueueModule } from './modules/setup/queue/queue.module';
+import { configCors } from './common/config/config-cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -17,7 +25,7 @@ async function bootstrap() {
   });
 
   // Config logger
-  app.useLogger(app.get<Logger>(Logger));
+  app.useLogger(app.get<PinoLogger>(PinoLogger));
   app.flushLogs();
 
   // Config exceptions filter
@@ -28,71 +36,40 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }), // Add built-in validation pipe to purge incoming request data globally
   );
-  app.setGlobalPrefix('/api', { exclude: ['/'] }); // Add base prefix for routes
+  const applicationRoutesPrefix = '/api';
+  app.setGlobalPrefix(applicationRoutesPrefix, { exclude: ['/'] }); // Add base prefix for routes
+
+  // Setup cors for all subdomains from specific client domain
+  const allowedDomains = process.env.ALLOWED_DOMAINS.split(',');
+  configCors(app, allowedDomains);
+  Logger.log(`Configured CORS domains: ${allowedDomains}`);
 
   // Setup developer web tools for non production environments
   const isDevelopmentEnvironment =
     process.env.NODE_ENV && !process.env.NODE_ENV.includes('prod');
   if (isDevelopmentEnvironment) {
-    const webToolsRoutes = {
-      swaggerRoute: '/swagger',
-      bullBoardRoute: '/bull-board',
-      graphqlPlaygroundRoute: '/api/graphql',
-    };
+    const toolsRoutes = {
+      swagger: `/swagger`,
+      bullBoard: `/bull-board`,
+      graphqlPlayground: `${applicationRoutesPrefix}/graphql`,
+    } as const;
 
     // Apply basic auth middleware for the web tools(must be set before the tools)
-    Object.values(webToolsRoutes).forEach((route) => {
+    Object.keys(toolsRoutes).forEach((routeName) => {
+      const route = toolsRoutes[routeName as keyof typeof toolsRoutes];
       app.use(route, devToolsBasicAuthMiddleware);
+      Logger.log(`Protected tool ${routeName} route: ${route}`);
     });
 
-    // Setup swagger
-    const swaggerDocumentConfig = new DocumentBuilder()
-      .setTitle('media-collection')
-      .setVersion('0.0.0')
-      .setDescription('Practice template project on Nest.js')
-      .addBearerAuth({ type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' })
-      .build();
-    const swaggerDocument = SwaggerModule.createDocument(
-      app,
-      swaggerDocumentConfig,
+    configSwagger(app, toolsRoutes.swagger);
+
+    const queueNames = QueueModule.registeredQueuesConfig.map(
+      (queueConfig) => queueConfig.name,
     );
-    SwaggerModule.setup(webToolsRoutes.swaggerRoute, app, swaggerDocument, {
-      swaggerOptions: { defaultModelsExpandDepth: 0 },
-    });
-
-    // // Setup Bull board
-    // const serverAdapter = new ExpressAdapter();
-    // const queueNames = QueueModule.registeredQueuesConfig.map(
-    //   (queueConfig) => queueConfig.name,
-    // );
-    // createBullBoard({
-    //   queues: queueNames.map(
-    //     (queueName) =>
-    //       new BullAdapter(app.get<Queue>(getQueueToken(queueName))),
-    //   ),
-    //   serverAdapter,
-    // });
-    // serverAdapter.setBasePath(webToolsRoutes.bullBoardRoute);
-    // app.use(webToolsRoutes.bullBoardRoute, serverAdapter.getRouter());
+    configBullBoard(app, toolsRoutes.bullBoard, queueNames);
   }
 
-  // Setup cors for all subdomains from specific client domain
-  const allowedDomains = process.env.ALLOWED_DOMAINS.split(',');
-  app.enableCors({
-    origin: allowedDomains.map(
-      (allowedDomain) =>
-        new RegExp(
-          '^https?:\\/\\/(.*).?[ALLOWED_DOMAIN](:\\d{4})?$'.replace(
-            '[ALLOWED_DOMAIN]',
-            allowedDomain,
-          ),
-        ),
-    ),
-    methods: ['HEAD', 'OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  });
-
+  Logger.log(`Application port: ${process.env.PORT}`);
   await app.listen(process.env.PORT);
 }
 bootstrap();

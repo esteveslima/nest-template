@@ -8,6 +8,6 @@ import { AllowRoles } from './allow-roles.decorator';
 export function Auth(...roles: AuthTokenPayload['role'][]) {
   return applyDecorators(
     AllowRoles(...roles), // Decorator ot mark allowed roles for route
-    UseGuards(AuthGuardJwt), // Guards with to protect routes from unhauthorized access
+    UseGuards(AuthGuardJwt), // Guards with to protect routes from unauthorized access
   );
 }

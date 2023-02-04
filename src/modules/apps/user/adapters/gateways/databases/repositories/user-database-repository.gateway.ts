@@ -3,7 +3,6 @@
 
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CustomException } from 'src/common/exceptions/custom-exception';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
 import {
   DeleteResult,
@@ -19,7 +18,9 @@ import { IUserGatewaySearchUsersParams } from 'src/modules/apps/user/domain/repo
 import { IUserGatewayModifyUserParams } from 'src/modules/apps/user/domain/repositories/user/methods/modify-user.interface';
 import { IUserGatewayDeleteUserParams } from 'src/modules/apps/user/domain/repositories/user/methods/delete-user.interface';
 import { IUserGatewayGetUserParams } from 'src/modules/apps/user/domain/repositories/user/methods/get-user.interface';
-import { ApplicationExceptions } from 'src/common/exceptions/application-exceptions';
+import { UserAlreadyExistsException } from 'src/common/exceptions/application/user/user-already-exists.exception';
+import { UserNotFoundException } from 'src/common/exceptions/application/user/user-not-found.exception';
+import { UserUpdateFailException } from 'src/common/exceptions/application/user/user-update-fail.exception';
 
 //TODO: interface for whole classes composing the interfaces for it's methods(which have isolated interfaces), use colocation
 @Injectable()
@@ -48,7 +49,10 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
       Logger.error(e);
       if (e instanceof QueryFailedError) {
         if (e.driverError.code === '23505') {
-          throw new CustomException<ApplicationExceptions>('UserAlreadyExists');
+          throw new UserAlreadyExistsException(
+            { email, username },
+            { email, username },
+          );
         }
       }
       throw e;
@@ -64,7 +68,7 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
     });
 
     if (!userFound) {
-      throw new CustomException<ApplicationExceptions>('UserNotFound');
+      throw new UserNotFoundException(params);
     }
 
     return userFound;
@@ -109,7 +113,7 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
       Logger.error(e);
       if (e instanceof QueryFailedError) {
         if (e.driverError.code === '22P02') {
-          throw new CustomException<ApplicationExceptions>('UserUpdateFail');
+          throw new UserUpdateFailException(params);
         }
       }
       throw e;
@@ -117,7 +121,7 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
 
     const isOperationSuccessful = updateResult.affected > 0;
     if (!isOperationSuccessful) {
-      throw new CustomException<ApplicationExceptions>('UserNotFound');
+      throw new UserNotFoundException(indexes);
     }
 
     return;
@@ -130,7 +134,7 @@ export class UserDatabaseRepositoryGateway implements IUserGateway {
 
     const isOperationSuccessful = deleteResult.affected > 0;
     if (!isOperationSuccessful) {
-      throw new CustomException<ApplicationExceptions>('UserNotFound');
+      throw new UserNotFoundException(params);
     }
   }
 }

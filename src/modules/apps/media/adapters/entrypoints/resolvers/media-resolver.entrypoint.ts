@@ -27,9 +27,8 @@ import { UpdateMediaArgsDTO } from './dtos/args/update-media.args';
 import { User } from 'src/modules/apps/user/domain/entities/user';
 import { GetMediaArgsDTO } from './dtos/args/get-media.args';
 import { DeleteMediaArgsDTO } from './dtos/args/delete-media.args';
-import { CustomExceptionMapper } from 'src/common/exceptions/custom-exception-mapper';
-import { ApplicationExceptions } from 'src/common/exceptions/application-exceptions';
-import { AllExceptions } from 'src/common/types/all-exceptions.interface';
+import { Exception } from 'src/common/exceptions/exception';
+import { Exceptions } from 'src/common/exceptions/exceptions';
 
 @Resolver(() => MediaGraphqlType)
 @GetGraphqlAuthData() // required for auth field middleware
@@ -48,11 +47,11 @@ export class MediaResolverEntrypoint {
     try {
       return await this.mediaGraphqlService.getMedia(args);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          MediaNotFound: (customException) =>
+          MediaNotFoundException: (e) =>
             new NotFoundException('Media not found'),
         },
       });
@@ -66,7 +65,7 @@ export class MediaResolverEntrypoint {
     try {
       return await this.mediaGraphqlService.searchMedias(args);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {},
@@ -86,7 +85,7 @@ export class MediaResolverEntrypoint {
         user: authUser,
       });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {},
@@ -109,11 +108,11 @@ export class MediaResolverEntrypoint {
 
       return true;
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          MediaNotFound: (customException) =>
+          MediaNotFoundException: (e) =>
             new NotFoundException('Media not found'),
         },
       });
@@ -131,11 +130,11 @@ export class MediaResolverEntrypoint {
 
       return true;
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          MediaNotFound: (customException) =>
+          MediaNotFoundException: (e) =>
             new NotFoundException('Media not found'),
         },
       });
@@ -153,12 +152,11 @@ export class MediaResolverEntrypoint {
     try {
       user = await this.userGraphqlService.getUser({ id: userId });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
-            new NotFoundException('User not found'),
+          UserNotFoundException: (e) => new NotFoundException('User not found'),
         },
       });
     }

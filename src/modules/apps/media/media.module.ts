@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 
 import { MediaControllerEntrypoint } from './adapters/entrypoints/controllers/media-controller.entrypoint';
-import { MediaDatabaseRepositoryGateway } from './adapters/gateways/databases/repositories/media.repository';
+import { MediaDatabaseRepositoryGateway } from './adapters/gateways/databases/repositories/media-database.repository';
 import { MediaResolverEntrypoint } from './adapters/entrypoints/resolvers/media-resolver.entrypoint';
 import { UserModule } from '../user/user.module';
 import { MediaGraphqlService } from './application/media-graphql.service';

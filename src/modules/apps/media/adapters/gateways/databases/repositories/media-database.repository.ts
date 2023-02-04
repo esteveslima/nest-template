@@ -5,7 +5,6 @@ import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, Logger } from '@nestjs/common';
 import { SINGLE_DB } from 'src/modules/setup/db/constants';
-import { CustomException } from 'src/common/exceptions/custom-exception';
 import { IMediaGatewayRegisterMediaParams } from 'src/modules/apps/media/domain/repositories/media/methods/register-media.interface';
 import { Media } from 'src/modules/apps/media/domain/entities/media';
 import { MediaDatabaseModel } from '../models/media.model';
@@ -15,7 +14,7 @@ import { IMediaGatewayModifyMediaParams } from 'src/modules/apps/media/domain/re
 import { IMediaGatewayIncrementMediaViewsParams } from 'src/modules/apps/media/domain/repositories/media/methods/increment-media-views.interface';
 import { IMediaGatewayDeleteMediaParams } from 'src/modules/apps/media/domain/repositories/media/methods/delete-media.interface';
 import { IMediaGateway } from 'src/modules/apps/media/domain/repositories/media/media-gateway.interface';
-import { ApplicationExceptions } from 'src/common/exceptions/application-exceptions';
+import { MediaNotFoundException } from 'src/common/exceptions/application/media/media-not-found.exception';
 
 @Injectable()
 export class MediaDatabaseRepositoryGateway implements IMediaGateway {
@@ -51,7 +50,7 @@ export class MediaDatabaseRepositoryGateway implements IMediaGateway {
     });
 
     if (!mediaFound) {
-      throw new CustomException<ApplicationExceptions>('MediaNotFound');
+      throw new MediaNotFoundException(params);
     }
 
     return mediaFound;
@@ -161,7 +160,7 @@ export class MediaDatabaseRepositoryGateway implements IMediaGateway {
 
     const isOperationSuccessful = updateResult.affected > 0;
     if (!isOperationSuccessful) {
-      throw new CustomException<ApplicationExceptions>('MediaNotFound');
+      throw new MediaNotFoundException(indexes);
     }
 
     return;
@@ -176,7 +175,7 @@ export class MediaDatabaseRepositoryGateway implements IMediaGateway {
 
     const isOperationSuccessful = updateResult.affected > 0;
     if (!isOperationSuccessful) {
-      throw new CustomException<ApplicationExceptions>('MediaNotFound');
+      throw new MediaNotFoundException(params);
     }
 
     return;
@@ -189,7 +188,7 @@ export class MediaDatabaseRepositoryGateway implements IMediaGateway {
 
     const isOperationSuccessful = deleteResult.affected > 0;
     if (!isOperationSuccessful) {
-      throw new CustomException<ApplicationExceptions>('MediaNotFound');
+      throw new MediaNotFoundException(params);
     }
 
     return;

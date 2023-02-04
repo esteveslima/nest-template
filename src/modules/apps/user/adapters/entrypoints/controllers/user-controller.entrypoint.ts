@@ -37,8 +37,9 @@ import { DeleteUserReqDTO } from './dtos/req/delete-user-req.dto';
 import { RegisterUserResDTO } from './dtos/res/register-user-res.dto';
 import { SearchUsersResDTO } from './dtos/res/search-users-res.dto';
 import { GetUserResDTO } from './dtos/res/get-user-res.dto';
-import { CustomExceptionMapper } from 'src/common/exceptions/custom-exception-mapper';
-import { AllExceptions } from 'src/common/types/all-exceptions.interface';
+import { Exception } from 'src/common/exceptions/exception';
+import { Exceptions } from 'src/common/exceptions/exceptions';
+import { UserAlreadyExistsException } from 'src/common/exceptions/application/user/user-already-exists.exception';
 
 @Controller('/rest/user')
 export class UserControllerEntrypoint {
@@ -55,12 +56,14 @@ export class UserControllerEntrypoint {
     try {
       return await this.userService.registerUser(body);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserAlreadyExists: (customException) =>
-            new ConflictException('User already exists'),
+          UserAlreadyExistsException: (e: UserAlreadyExistsException) =>
+            new ConflictException(
+              `Username ${e.payload?.username} or email ${e.payload?.email} already exists`,
+            ),
         },
       });
     }
@@ -74,12 +77,11 @@ export class UserControllerEntrypoint {
     try {
       return await this.userService.searchUsers(params);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
-            new NotFoundException('User not found'),
+          UserNotFoundException: (e) => new NotFoundException('User not found'),
         },
       });
     }
@@ -92,11 +94,11 @@ export class UserControllerEntrypoint {
     try {
       return await this.userService.getUser({ id: authUser.id });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
+          UserNotFoundException: (e) =>
             new InternalServerErrorException(
               'An error ocurred on getting the current user data',
             ),
@@ -119,15 +121,15 @@ export class UserControllerEntrypoint {
         data: body,
       });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
+          UserNotFoundException: (e) =>
             new InternalServerErrorException(
               'An error ocurred on getting the current user data',
             ),
-          UserUpdateFail: (customException) =>
+          UserUpdateFailException: (e) =>
             new BadRequestException('Update data not accepted'),
         },
       });
@@ -148,15 +150,15 @@ export class UserControllerEntrypoint {
         data: body,
       });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
+          UserNotFoundException: (e) =>
             new InternalServerErrorException(
               'An error ocurred on getting the current user data',
             ),
-          UserUpdateFail: (customException) =>
+          UserUpdateFailException: (e) =>
             new BadRequestException('Update data not accepted'),
         },
       });
@@ -170,12 +172,11 @@ export class UserControllerEntrypoint {
     try {
       return await this.userService.getUser(params);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
-            new NotFoundException('User not found'),
+          UserNotFoundException: (e) => new NotFoundException('User not found'),
         },
       });
     }
@@ -189,12 +190,11 @@ export class UserControllerEntrypoint {
     try {
       return await this.userService.deleteUser(params);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
-            new NotFoundException('User not found'),
+          UserNotFoundException: (e) => new NotFoundException('User not found'),
         },
       });
     }
@@ -211,13 +211,12 @@ export class UserControllerEntrypoint {
     try {
       return await this.userService.modifyUser({ indexes: params, data: body });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
-            new NotFoundException('User not found'),
-          UserUpdateFail: (customException) =>
+          UserNotFoundException: (e) => new NotFoundException('User not found'),
+          UserUpdateFailException: (e) =>
             new BadRequestException('Update data not accepted'),
         },
       });
@@ -235,13 +234,12 @@ export class UserControllerEntrypoint {
     try {
       return await this.userService.modifyUser({ indexes: params, data: body });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
-            new NotFoundException('User not found'),
-          UserUpdateFail: (customException) =>
+          UserNotFoundException: (e) => new NotFoundException('User not found'),
+          UserUpdateFailException: (e) =>
             new BadRequestException('Update data not accepted'),
         },
       });

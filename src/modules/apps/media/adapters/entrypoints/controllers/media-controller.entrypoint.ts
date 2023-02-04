@@ -35,8 +35,8 @@ import {
   PatchMediaReqBodyDTO,
   PatchMediaReqParamsDTO,
 } from './dtos/req/patch-media-req.dto';
-import { CustomExceptionMapper } from 'src/common/exceptions/custom-exception-mapper';
-import { AllExceptions } from 'src/common/types/all-exceptions.interface';
+import { Exception } from 'src/common/exceptions/exception';
+import { Exceptions } from 'src/common/exceptions/exceptions';
 
 @Controller('/rest/media')
 export class MediaControllerEntrypoint {
@@ -51,11 +51,11 @@ export class MediaControllerEntrypoint {
     try {
       return await this.mediaService.getMedia(params);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          MediaNotFound: (customException) =>
+          MediaNotFoundException: (e) =>
             new NotFoundException('Media not found'),
         },
       });
@@ -70,7 +70,7 @@ export class MediaControllerEntrypoint {
     try {
       return await this.mediaService.searchMedias(params);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {},
@@ -88,7 +88,7 @@ export class MediaControllerEntrypoint {
     try {
       return await this.mediaService.registerMedia({ ...body, user: authUser });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {},
@@ -107,11 +107,11 @@ export class MediaControllerEntrypoint {
     try {
       return await this.mediaService.deleteMedia({ ...params, user: authUser });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          MediaNotFound: (customException) =>
+          MediaNotFoundException: (e) =>
             new NotFoundException('Media not found'),
         },
       });
@@ -133,11 +133,11 @@ export class MediaControllerEntrypoint {
         data: body,
       });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          MediaNotFound: (customException) =>
+          MediaNotFoundException: (e) =>
             new NotFoundException('Media not found'),
         },
       });
@@ -159,11 +159,11 @@ export class MediaControllerEntrypoint {
         data: body,
       });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          MediaNotFound: (customException) =>
+          MediaNotFoundException: (e) =>
             new NotFoundException('Media not found'),
         },
       });

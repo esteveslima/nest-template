@@ -13,8 +13,8 @@ import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorato
 import { AuthRestService } from '../../../application/auth-rest.service';
 import { LoginReqDTO } from './dtos/req/login-req.dto';
 import { LoginResDTO } from './dtos/res/login-res.dto';
-import { CustomExceptionMapper } from 'src/common/exceptions/custom-exception-mapper';
-import { AllExceptions } from 'src/common/types/all-exceptions.interface';
+import { Exception } from 'src/common/exceptions/exception';
+import { Exceptions } from 'src/common/exceptions/exceptions';
 
 @Controller('/rest/auth')
 export class AuthControllerEntrypoint {
@@ -29,11 +29,11 @@ export class AuthControllerEntrypoint {
     try {
       return await this.authRestService.login(params);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          AuthUnhauthorized: (customException) =>
+          AuthUnauthorizedException: (e) =>
             new UnauthorizedException('Invalid credentials'),
         },
       });

@@ -1,7 +1,6 @@
 // Responsible for containing business logic
 
 import { Injectable } from '@nestjs/common';
-import { CustomException } from 'src/common/exceptions/custom-exception';
 import { AuthTokenPayload } from './interfaces/types/auth-token-payload.interface';
 import { IAuthRestService } from './interfaces/services/auth-rest/auth-rest.interface';
 import {
@@ -10,7 +9,7 @@ import {
 } from './interfaces/services/auth-rest/methods/login.interface';
 import { ITokenGateway } from './interfaces/ports/token/token-gateway.interface';
 import { UserInternalService } from '../../user/application/user-internal.service';
-import { ApplicationExceptions } from 'src/common/exceptions/application-exceptions';
+import { AuthUnauthorizedException } from 'src/common/exceptions/application/auth/auth-unauthorized.exception';
 
 @Injectable()
 export class AuthRestService implements IAuthRestService {
@@ -33,7 +32,7 @@ export class AuthRestService implements IAuthRestService {
     });
 
     if (!isAuthenticated) {
-      throw new CustomException<ApplicationExceptions>('AuthUnhauthorized');
+      throw new AuthUnauthorizedException(params);
     }
 
     const user = await this.userInternalService.searchUser({ username });

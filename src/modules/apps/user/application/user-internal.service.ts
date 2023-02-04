@@ -1,7 +1,6 @@
 // Helper methods decoupled to be used only internally and not exposed to users
 
 import { Injectable } from '@nestjs/common';
-import { CustomException } from 'src/common/exceptions/custom-exception';
 import { IHashGateway } from './interfaces/ports/hash/hash-gateway.interface';
 import { IUserGateway } from '../domain/repositories/user/user-gateway.interface';
 import { IUserInternalService } from './interfaces/services/user-internal/user-internal.interface';
@@ -13,7 +12,8 @@ import {
   IUserInternalServiceVerifyUserPasswordParams,
   IUserInternalServiceVerifyUserPasswordResult,
 } from './interfaces/services/user-internal/methods/verify-user-password.interface';
-import { ApplicationExceptions } from 'src/common/exceptions/application-exceptions';
+import { UserSearchInvalidFiltersException } from 'src/common/exceptions/application/user/user-search-invalid-filters.exception';
+import { UserNotFoundException } from 'src/common/exceptions/application/user/user-not-found.exception';
 
 @Injectable()
 export class UserInternalService implements IUserInternalService {
@@ -32,15 +32,12 @@ export class UserInternalService implements IUserInternalService {
 
     const hasSearchParams = !!username || !!email;
     if (!hasSearchParams) {
-      throw new CustomException<ApplicationExceptions>(
-        'UserSearchInvalidFilters',
-      );
+      throw new UserSearchInvalidFiltersException(params);
     }
 
     const usersFound = await this.userGateway.searchUsers({ email, username });
     const userFound = usersFound[0];
-    if (!userFound)
-      throw new CustomException<ApplicationExceptions>('UserNotFound');
+    if (!userFound) throw new UserNotFoundException(params);
 
     return userFound;
   }

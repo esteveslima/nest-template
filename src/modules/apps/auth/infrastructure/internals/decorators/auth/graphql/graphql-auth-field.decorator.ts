@@ -11,7 +11,7 @@ export function GraphqlAuthField(...roles: AuthTokenPayload['role'][]) {
     GraphqlAllowFieldRoles(...roles), // Decorator ot mark allowed roles for graphql model field
     Field({
       middleware: [graphqlAuthFieldMiddleware], // Apply the auth field middleware
-      nullable: true, // "Private" fields must be nullable to allow not returning data on unhauthorized access(errors are returned in separate objects)
+      nullable: true, // "Private" fields must be nullable to allow not returning data on unauthorized access(errors are returned in separate objects)
     }),
   );
 }

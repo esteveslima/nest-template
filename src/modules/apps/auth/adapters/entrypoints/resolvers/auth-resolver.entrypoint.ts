@@ -8,8 +8,9 @@ import {
 } from '@nestjs/common';
 import { AuthGraphqlService } from '../../../application/auth-graphql.service';
 import { LoginArgsDTO } from './dtos/args/login.args';
-import { CustomExceptionMapper } from 'src/common/exceptions/custom-exception-mapper';
-import { AllExceptions } from 'src/common/types/all-exceptions.interface';
+import { Exception } from 'src/common/exceptions/exception';
+import { Exceptions } from 'src/common/exceptions/exceptions';
+
 @Resolver()
 export class AuthResolverEntrypoint {
   // Get services and modules from DI
@@ -22,11 +23,11 @@ export class AuthResolverEntrypoint {
     try {
       return await this.authGraphqlService.login(args);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          AuthUnhauthorized: (customException) =>
+          AuthUnauthorizedException: (e) =>
             new UnauthorizedException('Invalid credentials'),
         },
       });

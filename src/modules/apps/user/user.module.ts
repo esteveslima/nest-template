@@ -5,7 +5,7 @@ import { UserResolverEntrypoint } from './adapters/entrypoints/resolvers/user-re
 import { UserControllerEntrypoint } from './adapters/entrypoints/controllers/user-controller.entrypoint';
 import { UserGraphqlService } from './application/user-graphql.service';
 import { HashBcryptClientGateway } from './adapters/gateways/clients/hash-bcrypt-client.gateway';
-import { UserDatabaseRepositoryGateway } from './adapters/gateways/databases/repositories/user-repository.gateway';
+import { UserDatabaseRepositoryGateway } from './adapters/gateways/databases/repositories/user-database-repository.gateway';
 import { BcryptCustomProvider } from 'src/common/internals/providers/packages/bcrypt.provider';
 import { UserRestService } from './application/user-rest.service';
 import { UserInternalService } from './application/user-internal.service';

@@ -31,8 +31,8 @@ import { UpdateCurrentUserArgsDTO } from './dtos/args/update-current-user.args';
 import { User } from '../../../domain/entities/user';
 import { GetUserArgsDTO } from './dtos/args/get-user.args';
 import { DeleteUserArgsDTO } from './dtos/args/delete-user.args';
-import { CustomExceptionMapper } from 'src/common/exceptions/custom-exception-mapper';
-import { AllExceptions } from 'src/common/types/all-exceptions.interface';
+import { Exception } from 'src/common/exceptions/exception';
+import { Exceptions } from 'src/common/exceptions/exceptions';
 
 @Resolver(() => UserGraphqlType)
 @GetGraphqlAuthData() // required for auth field middleware
@@ -50,12 +50,11 @@ export class UserResolverEntrypoint {
     try {
       return await this.userGraphqlService.getUser(args);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
-            new NotFoundException('User not found'),
+          UserNotFoundException: (e) => new NotFoundException('User not found'),
         },
       });
     }
@@ -68,12 +67,11 @@ export class UserResolverEntrypoint {
     try {
       return await this.userGraphqlService.searchUsers(args);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
-            new NotFoundException('User not found'),
+          UserNotFoundException: (e) => new NotFoundException('User not found'),
         },
       });
     }
@@ -86,11 +84,11 @@ export class UserResolverEntrypoint {
     try {
       return await this.userGraphqlService.registerUser(args);
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserAlreadyExists: (customException) =>
+          UserAlreadyExistsException: (e) =>
             new ConflictException('User already exists'),
         },
       });
@@ -106,13 +104,12 @@ export class UserResolverEntrypoint {
 
       return true;
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
-            new NotFoundException('User not found'),
-          UserUpdateFail: (customException) =>
+          UserNotFoundException: (e) => new NotFoundException('User not found'),
+          UserUpdateFailException: (e) =>
             new BadRequestException('Update data not accepted'),
         },
       });
@@ -133,15 +130,15 @@ export class UserResolverEntrypoint {
 
       return true;
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
+          UserNotFoundException: (e) =>
             new InternalServerErrorException(
               'An error ocurred on getting the current user data',
             ),
-          UserUpdateFail: (customException) =>
+          UserUpdateFailException: (e) =>
             new BadRequestException('Update data not accepted'),
         },
       });
@@ -156,12 +153,11 @@ export class UserResolverEntrypoint {
 
       return true;
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {
-          UserNotFound: (customException) =>
-            new NotFoundException('User not found'),
+          UserNotFoundException: (e) => new NotFoundException('User not found'),
         },
       });
     }
@@ -188,7 +184,7 @@ export class UserResolverEntrypoint {
         username,
       });
     } catch (exception) {
-      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+      throw Exception.mapExceptions<Exceptions, HttpException>({
         exception,
         defaultError: new InternalServerErrorException(),
         errorMap: {},

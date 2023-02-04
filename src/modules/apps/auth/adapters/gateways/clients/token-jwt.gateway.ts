@@ -2,7 +2,8 @@
 
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
+import { AdapterExceptions } from 'src/common/exceptions/adapter-exceptions';
+import { CustomException } from 'src/common/exceptions/custom-exception';
 import {
   ITokenGatewayDecodeTokenParams,
   ITokenGatewayDecodeTokenResult,
@@ -35,19 +36,26 @@ export class TokenJwtGateway<T extends object = Record<string, unknown>>
       const isJwtExpired = e.name === 'TokenExpiredError';
       if (isJwtExpired) {
         const payload = this.jwtService.decode(token);
-        throw new CustomException('TokenExpired', { token, payload });
+        throw new CustomException<AdapterExceptions>('TokenExpired', {
+          token,
+          payload,
+        });
       }
       const isJwtMalformed =
         e.name === 'JsonWebTokenError' || e.name === 'SyntaxError';
       if (isJwtMalformed) {
-        throw new CustomException('TokenMalformed', { token });
+        throw new CustomException<AdapterExceptions>('TokenMalformed', {
+          token,
+        });
       }
       throw e;
     }
 
     const isJwtPayloadInvalid = typeof decodedTokenPayload !== 'object';
     if (isJwtPayloadInvalid) {
-      throw new CustomException('TokenPayloadInvalid', { token });
+      throw new CustomException<AdapterExceptions>('TokenPayloadInvalid', {
+        token,
+      });
     }
 
     return decodedTokenPayload;

@@ -216,7 +216,7 @@
 										"method": "DELETE",
 										"header": [],
 										"url": {
-											"raw": "{{HOST}}/api/rest/media/:uuid",
+											"raw": "{{HOST}}/api/rest/media/:id",
 											"host": [
 												"{{HOST}}"
 											],
@@ -224,11 +224,11 @@
 												"api",
 												"rest",
 												"media",
-												":uuid"
+												":id"
 											],
 											"variable": [
 												{
-													"key": "uuid",
+													"key": "id",
 													"value": "{{$guid}}"
 												}
 											]
@@ -288,7 +288,7 @@
 											]
 										},
 										"url": {
-											"raw": "{{HOST}}/api/rest/media/:uuid",
+											"raw": "{{HOST}}/api/rest/media/:id",
 											"host": [
 												"{{HOST}}"
 											],
@@ -296,11 +296,11 @@
 												"api",
 												"rest",
 												"media",
-												":uuid"
+												":id"
 											],
 											"variable": [
 												{
-													"key": "uuid",
+													"key": "id",
 													"value": "{{$guid}}"
 												}
 											]
@@ -365,7 +365,7 @@
 											]
 										},
 										"url": {
-											"raw": "{{HOST}}/api/rest/media/:uuid",
+											"raw": "{{HOST}}/api/rest/media/:id",
 											"host": [
 												"{{HOST}}"
 											],
@@ -373,11 +373,11 @@
 												"api",
 												"rest",
 												"media",
-												":uuid"
+												":id"
 											],
 											"variable": [
 												{
-													"key": "uuid",
+													"key": "id",
 													"value": "{{$guid}}"
 												}
 											]
@@ -423,7 +423,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{HOST}}/api/rest/media/:uuid",
+									"raw": "{{HOST}}/api/rest/media/:id",
 									"host": [
 										"{{HOST}}"
 									],
@@ -431,11 +431,11 @@
 										"api",
 										"rest",
 										"media",
-										":uuid"
+										":id"
 									],
 									"variable": [
 										{
-											"key": "uuid",
+											"key": "id",
 											"value": "{{$guid}}"
 										}
 									]
@@ -560,7 +560,7 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{HOST}}/api/rest/user/:uuid",
+													"raw": "{{HOST}}/api/rest/user/:id",
 													"host": [
 														"{{HOST}}"
 													],
@@ -568,11 +568,11 @@
 														"api",
 														"rest",
 														"user",
-														":uuid"
+														":id"
 													],
 													"variable": [
 														{
-															"key": "uuid",
+															"key": "id",
 															"value": "{{$randomUUID}}"
 														}
 													]
@@ -597,7 +597,7 @@
 												"method": "DELETE",
 												"header": [],
 												"url": {
-													"raw": "{{HOST}}/api/rest/user/:uuid",
+													"raw": "{{HOST}}/api/rest/user/:id",
 													"host": [
 														"{{HOST}}"
 													],
@@ -605,11 +605,11 @@
 														"api",
 														"rest",
 														"user",
-														":uuid"
+														":id"
 													],
 													"variable": [
 														{
-															"key": "uuid",
+															"key": "id",
 															"value": "{{$randomUUID}}"
 														}
 													]
@@ -666,7 +666,7 @@
 													]
 												},
 												"url": {
-													"raw": "{{HOST}}/api/rest/user/:uuid",
+													"raw": "{{HOST}}/api/rest/user/:id",
 													"host": [
 														"{{HOST}}"
 													],
@@ -674,11 +674,11 @@
 														"api",
 														"rest",
 														"user",
-														":uuid"
+														":id"
 													],
 													"variable": [
 														{
-															"key": "uuid",
+															"key": "id",
 															"value": "{{$randomUUID}}"
 														}
 													]
@@ -735,7 +735,7 @@
 													]
 												},
 												"url": {
-													"raw": "{{HOST}}/api/rest/user/:uuid",
+													"raw": "{{HOST}}/api/rest/user/:id",
 													"host": [
 														"{{HOST}}"
 													],
@@ -743,11 +743,11 @@
 														"api",
 														"rest",
 														"user",
-														":uuid"
+														":id"
 													],
 													"variable": [
 														{
-															"key": "uuid",
+															"key": "id",
 															"value": "{{$randomUUID}}"
 														}
 													]

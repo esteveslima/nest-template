@@ -3,6 +3,7 @@
 import {
   BadRequestException,
   ConflictException,
+  HttpException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -19,7 +20,6 @@ import { RegisterUserArgsDTO } from './dtos/args/register-user.args';
 import { UserGraphqlType } from './dtos/types/user-graphql.type';
 import { MediaGraphqlService } from '../../../../media/application/media-graphql.service';
 import { MediaGraphqlType } from '../../../../media/adapters/entrypoints/resolvers/dtos/types/media-graphql.type';
-import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { MediaDatabaseModel } from '../../../../media/adapters/gateways/databases/models/media.model';
 import { GetGraphqlAuthData } from '../../../../auth/infrastructure/internals/decorators/auth/graphql/graphql-auth-data.decorator';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
@@ -31,6 +31,8 @@ import { UpdateCurrentUserArgsDTO } from './dtos/args/update-current-user.args';
 import { User } from '../../../domain/entities/user';
 import { GetUserArgsDTO } from './dtos/args/get-user.args';
 import { DeleteUserArgsDTO } from './dtos/args/delete-user.args';
+import { CustomExceptionMapper } from 'src/common/exceptions/custom-exception-mapper';
+import { AllExceptions } from 'src/common/types/all-exceptions.interface';
 
 @Resolver(() => UserGraphqlType)
 @GetGraphqlAuthData() // required for auth field middleware
@@ -47,10 +49,14 @@ export class UserResolverEntrypoint {
   async getUser(@Args() args: GetUserArgsDTO): Promise<UserGraphqlType> {
     try {
       return await this.userGraphqlService.getUser(args);
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new NotFoundException('User not found'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new NotFoundException('User not found'),
+        },
       });
     }
   }
@@ -61,10 +67,14 @@ export class UserResolverEntrypoint {
   ): Promise<UserGraphqlType[]> {
     try {
       return await this.userGraphqlService.searchUsers(args);
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new NotFoundException('User not found'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new NotFoundException('User not found'),
+        },
       });
     }
   }
@@ -75,10 +85,14 @@ export class UserResolverEntrypoint {
   ): Promise<UserGraphqlType> {
     try {
       return await this.userGraphqlService.registerUser(args);
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserAlreadyExists: (customException) =>
-          new ConflictException('User already exists'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserAlreadyExists: (customException) =>
+            new ConflictException('User already exists'),
+        },
       });
     }
   }
@@ -91,12 +105,16 @@ export class UserResolverEntrypoint {
       await this.userGraphqlService.modifyUser({ data, indexes: { id } });
 
       return true;
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new NotFoundException('User not found'),
-        UserUpdateFail: (customException) =>
-          new BadRequestException('Update data not accepted'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new NotFoundException('User not found'),
+          UserUpdateFail: (customException) =>
+            new BadRequestException('Update data not accepted'),
+        },
       });
     }
   }
@@ -114,14 +132,18 @@ export class UserResolverEntrypoint {
       });
 
       return true;
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new InternalServerErrorException(
-            'An error ocurred on getting the current user data',
-          ),
-        UserUpdateFail: (customException) =>
-          new BadRequestException('Update data not accepted'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new InternalServerErrorException(
+              'An error ocurred on getting the current user data',
+            ),
+          UserUpdateFail: (customException) =>
+            new BadRequestException('Update data not accepted'),
+        },
       });
     }
   }
@@ -133,10 +155,14 @@ export class UserResolverEntrypoint {
       await this.userGraphqlService.deleteUser(args);
 
       return true;
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new NotFoundException('User not found'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new NotFoundException('User not found'),
+        },
       });
     }
   }
@@ -161,8 +187,12 @@ export class UserResolverEntrypoint {
         ...args,
         username,
       });
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {});
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {},
+      });
     }
 
     const normalizedMedias = medias.map((media) => {

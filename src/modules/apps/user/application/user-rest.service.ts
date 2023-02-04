@@ -1,7 +1,8 @@
 // Responsible for containing business logic(decoupled for rest controllers)
 
 import { Injectable } from '@nestjs/common';
-import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
+import { ApplicationExceptions } from 'src/common/exceptions/application-exceptions';
+import { CustomException } from 'src/common/exceptions/custom-exception';
 import { IUserGateway } from '../domain/repositories/user/user-gateway.interface';
 import { IHashGateway } from './interfaces/ports/hash/hash-gateway.interface';
 import {
@@ -92,7 +93,9 @@ export class UserRestService implements IUserRestService {
   ): Promise<IUserRestServiceSearchUsersResult> {
     const searchUserFilters = params;
     if (Object.keys(searchUserFilters).length <= 0) {
-      throw new CustomException('UserSearchInvalidFilters');
+      throw new CustomException<ApplicationExceptions>(
+        'UserSearchInvalidFilters',
+      );
     }
 
     const { email, username } = searchUserFilters;
@@ -101,7 +104,7 @@ export class UserRestService implements IUserRestService {
 
     const foundUser = usersFound.length > 0;
     if (!foundUser) {
-      throw new CustomException('UserNotFound');
+      throw new CustomException<ApplicationExceptions>('UserNotFound');
     }
 
     const formattedUsersFound = usersFound.map((user) => ({

@@ -6,9 +6,10 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  InternalServerErrorException,
   NotFoundException,
   Param,
-  ParseUUIDPipe,
   Patch,
   Post,
   Put,
@@ -16,7 +17,6 @@ import {
 } from '@nestjs/common';
 import { SearchMediasReqDTO } from './dtos/req/search-medias-req.dto';
 import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorator';
-import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
 import { GetAuthUser } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user.decorator';
 import { MediaRestService } from '../../../application/media-rest.service';
@@ -35,6 +35,8 @@ import {
   PatchMediaReqBodyDTO,
   PatchMediaReqParamsDTO,
 } from './dtos/req/patch-media-req.dto';
+import { CustomExceptionMapper } from 'src/common/exceptions/custom-exception-mapper';
+import { AllExceptions } from 'src/common/types/all-exceptions.interface';
 
 @Controller('/rest/media')
 export class MediaControllerEntrypoint {
@@ -43,15 +45,19 @@ export class MediaControllerEntrypoint {
 
   // Define and map routes to services
 
-  @Get('/:uuid')
+  @Get('/:id')
   @SwaggerDoc({ tag: '/media', description: '' })
   async getMedia(@Param() params: GetMediaReqDTO): Promise<GetMediaResDTO> {
     try {
       return await this.mediaService.getMedia(params);
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        MediaNotFound: (customException) =>
-          new NotFoundException('Media not found'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          MediaNotFound: (customException) =>
+            new NotFoundException('Media not found'),
+        },
       });
     }
   }
@@ -63,8 +69,12 @@ export class MediaControllerEntrypoint {
   ): Promise<SearchMediasResDTO[]> {
     try {
       return await this.mediaService.searchMedias(params);
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {});
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {},
+      });
     }
   }
 
@@ -77,12 +87,16 @@ export class MediaControllerEntrypoint {
   ): Promise<RegisterMediaResDTO> {
     try {
       return await this.mediaService.registerMedia({ ...body, user: authUser });
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {});
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {},
+      });
     }
   }
 
-  @Delete('/:uuid')
+  @Delete('/:id')
   @HttpCode(204)
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
@@ -92,15 +106,19 @@ export class MediaControllerEntrypoint {
   ): Promise<void> {
     try {
       return await this.mediaService.deleteMedia({ ...params, user: authUser });
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        MediaNotFound: (customException) =>
-          new NotFoundException('Media not found'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          MediaNotFound: (customException) =>
+            new NotFoundException('Media not found'),
+        },
       });
     }
   }
 
-  @Put('/:uuid')
+  @Put('/:id')
   @HttpCode(204)
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
@@ -114,15 +132,19 @@ export class MediaControllerEntrypoint {
         indexes: { ...params, user: authUser },
         data: body,
       });
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        MediaNotFound: (customException) =>
-          new NotFoundException('Media not found'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          MediaNotFound: (customException) =>
+            new NotFoundException('Media not found'),
+        },
       });
     }
   }
 
-  @Patch('/:uuid')
+  @Patch('/:id')
   @HttpCode(204)
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
@@ -136,10 +158,14 @@ export class MediaControllerEntrypoint {
         indexes: { ...params, user: authUser },
         data: body,
       });
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        MediaNotFound: (customException) =>
-          new NotFoundException('Media not found'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          MediaNotFound: (customException) =>
+            new NotFoundException('Media not found'),
+        },
       });
     }
   }

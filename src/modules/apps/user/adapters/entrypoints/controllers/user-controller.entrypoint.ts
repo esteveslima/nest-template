@@ -8,6 +8,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
   InternalServerErrorException,
   NotFoundException,
   Param,
@@ -21,7 +22,6 @@ import {
   PatchUserReqParamsDTO,
 } from './dtos/req/patch-user-req.dto';
 import { SwaggerDoc } from 'src/common/internals/decorators/swagger-doc.decorator';
-import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
 import { Auth } from '../../../../auth/infrastructure/internals/decorators/auth/auth.decorator';
 import { GetAuthUser } from '../../../../auth/infrastructure/internals/decorators/auth/get-auth-user.decorator';
 import { UserRestService } from '../../../application/user-rest.service';
@@ -37,6 +37,8 @@ import { DeleteUserReqDTO } from './dtos/req/delete-user-req.dto';
 import { RegisterUserResDTO } from './dtos/res/register-user-res.dto';
 import { SearchUsersResDTO } from './dtos/res/search-users-res.dto';
 import { GetUserResDTO } from './dtos/res/get-user-res.dto';
+import { CustomExceptionMapper } from 'src/common/exceptions/custom-exception-mapper';
+import { AllExceptions } from 'src/common/types/all-exceptions.interface';
 
 @Controller('/rest/user')
 export class UserControllerEntrypoint {
@@ -52,10 +54,14 @@ export class UserControllerEntrypoint {
   ): Promise<RegisterUserResDTO> {
     try {
       return await this.userService.registerUser(body);
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserAlreadyExists: (customException) =>
-          new ConflictException('User already exists'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserAlreadyExists: (customException) =>
+            new ConflictException('User already exists'),
+        },
       });
     }
   }
@@ -67,10 +73,14 @@ export class UserControllerEntrypoint {
   ): Promise<SearchUsersResDTO[]> {
     try {
       return await this.userService.searchUsers(params);
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new NotFoundException('User not found'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new NotFoundException('User not found'),
+        },
       });
     }
   }
@@ -81,12 +91,16 @@ export class UserControllerEntrypoint {
   async getCurrentUser(@GetAuthUser() authUser: User): Promise<GetUserResDTO> {
     try {
       return await this.userService.getUser({ id: authUser.id });
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new InternalServerErrorException(
-            'An error ocurred on getting the current user data',
-          ),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new InternalServerErrorException(
+              'An error ocurred on getting the current user data',
+            ),
+        },
       });
     }
   }
@@ -104,14 +118,18 @@ export class UserControllerEntrypoint {
         indexes: { id: authUser.id },
         data: body,
       });
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new InternalServerErrorException(
-            'An error ocurred on getting the current user data',
-          ),
-        UserUpdateFail: (customException) =>
-          new BadRequestException('Update data not accepted'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new InternalServerErrorException(
+              'An error ocurred on getting the current user data',
+            ),
+          UserUpdateFail: (customException) =>
+            new BadRequestException('Update data not accepted'),
+        },
       });
     }
   }
@@ -129,48 +147,60 @@ export class UserControllerEntrypoint {
         indexes: { id: authUser.id },
         data: body,
       });
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new InternalServerErrorException(
-            'An error ocurred on getting the current user data',
-          ),
-        UserUpdateFail: (customException) =>
-          new BadRequestException('Update data not accepted'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new InternalServerErrorException(
+              'An error ocurred on getting the current user data',
+            ),
+          UserUpdateFail: (customException) =>
+            new BadRequestException('Update data not accepted'),
+        },
       });
     }
   }
 
-  @Get('/:uuid')
+  @Get('/:id')
   @Auth('ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async getUser(@Param() params: GetUserReqDTO): Promise<GetUserResDTO> {
     try {
       return await this.userService.getUser(params);
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new NotFoundException('User not found'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new NotFoundException('User not found'),
+        },
       });
     }
   }
 
-  @Delete('/:uuid')
+  @Delete('/:id')
   @HttpCode(204)
   @Auth('ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async deleteUser(@Param() params: DeleteUserReqDTO): Promise<void> {
     try {
       return await this.userService.deleteUser(params);
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new NotFoundException('User not found'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new NotFoundException('User not found'),
+        },
       });
     }
   }
 
-  @Put('/:uuid')
+  @Put('/:id')
   @HttpCode(204)
   @Auth('ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
@@ -180,17 +210,21 @@ export class UserControllerEntrypoint {
   ): Promise<void> {
     try {
       return await this.userService.modifyUser({ indexes: params, data: body });
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new NotFoundException('User not found'),
-        UserUpdateFail: (customException) =>
-          new BadRequestException('Update data not accepted'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new NotFoundException('User not found'),
+          UserUpdateFail: (customException) =>
+            new BadRequestException('Update data not accepted'),
+        },
       });
     }
   }
 
-  @Patch('/:uuid')
+  @Patch('/:id')
   @HttpCode(204)
   @Auth('ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
@@ -200,12 +234,16 @@ export class UserControllerEntrypoint {
   ): Promise<void> {
     try {
       return await this.userService.modifyUser({ indexes: params, data: body });
-    } catch (e) {
-      throw CustomException.mapHttpException(e, {
-        UserNotFound: (customException) =>
-          new NotFoundException('User not found'),
-        UserUpdateFail: (customException) =>
-          new BadRequestException('Update data not accepted'),
+    } catch (exception) {
+      throw CustomExceptionMapper.mapError<AllExceptions, HttpException>({
+        exception,
+        defaultError: new InternalServerErrorException(),
+        errorMap: {
+          UserNotFound: (customException) =>
+            new NotFoundException('User not found'),
+          UserUpdateFail: (customException) =>
+            new BadRequestException('Update data not accepted'),
+        },
       });
     }
   }

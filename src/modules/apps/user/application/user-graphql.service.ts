@@ -2,7 +2,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { RegisterUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/register-user.args';
-import { CustomException } from 'src/common/internals/enhancers/filters/exceptions/custom-exception';
+import { CustomException } from 'src/common/exceptions/custom-exception';
 import { UpdateCurrentUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-current-user.args';
 import { UpdateUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/update-user.args';
 import { SearchUserArgsDTO } from '../adapters/entrypoints/resolvers/dtos/args/search-user.args';
@@ -30,6 +30,7 @@ import {
   IUserGraphqlServiceDeleteUserParams,
   IUserGraphqlServiceDeleteUserResult,
 } from './interfaces/services/user-graphql/methods/delete-user.interface';
+import { ApplicationExceptions } from 'src/common/exceptions/application-exceptions';
 
 @Injectable()
 export class UserGraphqlService implements IUserGraphqlService {
@@ -138,7 +139,7 @@ export class UserGraphqlService implements IUserGraphqlService {
 
     const foundUser = usersFound.length > 0;
     if (!foundUser) {
-      throw new CustomException('UserNotFound');
+      throw new CustomException<ApplicationExceptions>('UserNotFound');
     }
 
     return usersFound.map((user) => ({

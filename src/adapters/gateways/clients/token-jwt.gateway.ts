@@ -5,6 +5,7 @@ import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { TokenExpiredException } from 'src/application/exceptions/ports/token/token-expired.exception';
 import { TokenMalformedException } from 'src/application/exceptions/ports/token/token-malformed.exception';
 import { TokenPayloadInvalidException } from 'src/application/exceptions/ports/token/token-payload-invalid.exception';
+import { ILogGateway } from 'src/application/interfaces/ports/log/log-gateway.interface';
 import {
   ITokenGatewayDecodeTokenParams,
   ITokenGatewayDecodeTokenResult,
@@ -15,12 +16,17 @@ import {
 } from '../../../application/interfaces/ports/token/methods/generate-token.interface';
 import { ITokenGateway } from '../../../application/interfaces/ports/token/token-gateway.interface';
 
+// concrete implementation of the application token dependency
+
 @Injectable()
 export class TokenJwtGateway<T extends object = Record<string, unknown>>
   implements ITokenGateway<T>
 {
   // Get services and repositories from DI
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private logGateway: ILogGateway,
+  ) {}
 
   // Define methods containing business logic
 
@@ -33,7 +39,7 @@ export class TokenJwtGateway<T extends object = Record<string, unknown>>
     try {
       decodedTokenPayload = this.jwtService.verify(token);
     } catch (e: any) {
-      Logger.error(e);
+      this.logGateway.error(e);
       const isJwtExpired = e.name === 'TokenExpiredError';
       if (isJwtExpired) {
         const payload = this.jwtService.decode(token);

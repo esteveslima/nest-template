@@ -11,6 +11,7 @@ import { MediaResolverEntrypoint } from 'src/adapters/entrypoints/resolvers/medi
 import { UserResolverEntrypoint } from 'src/adapters/entrypoints/resolvers/user-resolver.entrypoint';
 import { MediaEventSubscriberEntrypoint } from 'src/adapters/entrypoints/subscribers/media-event-subscriber.entrypoint';
 import { HashBcryptClientGateway } from 'src/adapters/gateways/clients/hash-bcrypt-client.gateway';
+import { LogPinoGateway } from 'src/adapters/gateways/clients/log-pino.gateway';
 import { TokenJwtGateway } from 'src/adapters/gateways/clients/token-jwt.gateway';
 import { MediaDatabaseModel } from 'src/adapters/gateways/databases/models/media.model';
 import { UserDatabaseModel } from 'src/adapters/gateways/databases/models/user.model';
@@ -18,6 +19,7 @@ import { MediaDatabaseRepositoryGateway } from 'src/adapters/gateways/databases/
 import { UserDatabaseRepositoryGateway } from 'src/adapters/gateways/databases/repositories/user-database-repository.gateway';
 import { MediaEventEmmiterPublisherGateway } from 'src/adapters/gateways/publishers/media-event-emmiter-publisher.service';
 import { IHashGateway } from 'src/application/interfaces/ports/hash/hash-gateway.interface';
+import { ILogGateway } from 'src/application/interfaces/ports/log/log-gateway.interface';
 import { IMediaEventPublisherGateway } from 'src/application/interfaces/ports/media-event-publisher/media-event-publisher-gateway.interface';
 import { ITokenGateway } from 'src/application/interfaces/ports/token/token-gateway.interface';
 import { AuthGraphqlService } from 'src/application/services/auth/auth-graphql.service';
@@ -89,6 +91,10 @@ import { LogModule } from './log/log.module';
     MediaHandlerService,
 
     // Gateways
+    {
+      provide: ILogGateway,
+      useClass: LogPinoGateway,
+    },
     TokenJwtGateway, // required by nestjs to be used on manual injections in enhancers
     {
       provide: ITokenGateway,

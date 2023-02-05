@@ -1,6 +1,3 @@
-// Interceptor to log all data from incoming requests and outgoing responses(beware to check if this this data shouldn't be logged)
-// Won't include guards/middlewares, check the architectural order for enhancers: https://stackoverflow.com/questions/54863655/whats-the-difference-between-interceptor-vs-middleware-vs-filter-in-nest-js
-
 import {
   Injectable,
   NestInterceptor,
@@ -10,120 +7,140 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-
+import { IResolvedInterceptorError } from './types/resolved-log-interceptor-error.interface';
+import { ILogPayload } from '../../../types/log-payload.interface';
+import { ILogInterceptorRequestObject } from './types/log-interceptor-request-object.interface';
+import {
+  ILogPayloadHttpParams,
+  ILogPayloadHttpResult,
+} from '../../../types/http/log-payload-http.interface';
+import { IMinimalLogger } from '../../../types/minimal-logger.interface';
+import * as _ from 'lodash';
 import { getRequestObject } from '../utils/get-request-object';
 import { getGraphqlInfo } from '../utils/get graphql-info';
-import { IHttpLogPayload } from './types/http/http-log-payload.interface';
-import { IHttpRequestLogPayload } from './types/http/http-request-log-payload.interface';
-import { IHttpResponseLogPayload } from './types/http/http-response-log-payload.interface';
-import { IResolvedLogInterceptorError } from './types/resolved-log-interceptor-error.interface';
 
 interface ILoggerInterceptorOptions {
-  excludedRoutes?: string[];
-  lookupRequestExtraProperties?: string[];
+  logger?: IMinimalLogger;
+  excludedRoutes?: { method: string; path: string }[];
+  lookupExtraProperties?: string[];
 }
 
 @Injectable()
 export class LogHttpRequestInterceptor implements NestInterceptor {
-  private readonly options?: ILoggerInterceptorOptions = {
-    excludedRoutes: ['/'],
+  private loggerInterceptorOptions: ILoggerInterceptorOptions = {
+    excludedRoutes: [],
+    logger: Logger,
+    lookupExtraProperties: [],
   };
 
-  constructor(loggerInterceptorOptions?: ILoggerInterceptorOptions) {
-    // Override default options from custom parameters provided
-    Object.keys({ ...loggerInterceptorOptions }).forEach((customOptionKey) => {
-      const optionKey = customOptionKey as keyof ILoggerInterceptorOptions;
-      const optionValue = loggerInterceptorOptions[optionKey];
-      if (!!optionValue) {
-        this.options[optionKey] = optionValue;
-      }
-    });
+  constructor(configOptions: ILoggerInterceptorOptions = {}) {
+    this.loggerInterceptorOptions = _.merge(
+      this.loggerInterceptorOptions,
+      configOptions,
+    );
   }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    // Runs BEFORE the route handler
-
-    const req = getRequestObject(context);
+    const req = getRequestObject<ILogInterceptorRequestObject>(context);
     const graphQLInfo = getGraphqlInfo(context);
 
-    // Build request log object
-    const requestLogPayload: IHttpRequestLogPayload = {
-      http: {
-        method: req?.method?.toUpperCase(),
-        path: `${req?.baseUrl}${req?.route?.path || ''}`,
-        payload: {
-          headers: req?.headers,
-          params: req?.params,
-          query: req?.query,
-          body: req?.body,
-        },
-      },
-      graphQLInfo: graphQLInfo && {
-        path: {
-          typename: graphQLInfo?.path?.typename?.toUpperCase(),
-          key: graphQLInfo?.path?.key,
-        },
-        fieldNodes: graphQLInfo?.fieldNodes?.map((fieldNode) => ({
-          arguments: fieldNode?.arguments?.map((argument) => ({
-            name: { value: argument?.name?.value },
-            value: { value: argument?.value?.value },
-          })),
-        })),
-      },
-    };
+    const method = req?.method?.toUpperCase();
+    const path = `${req?.baseUrl}${req?.route?.path || ''}`;
 
-    // Lookup for extra properties on the request object to append into the log payload
-    const { lookupRequestExtraProperties } = this.options;
-    lookupRequestExtraProperties?.forEach((extraPropertyName) => {
-      requestLogPayload[extraPropertyName] = req[extraPropertyName];
-    });
-
-    // Do not log excluded routes
-    const { excludedRoutes } = this.options;
-    if (excludedRoutes.includes(requestLogPayload.http.path)) {
+    // Check if the route was excluded from logs
+    const { excludedRoutes } = this.loggerInterceptorOptions;
+    const isExcludedRoute = excludedRoutes.some(
+      (excludedRoute) =>
+        excludedRoute.method === method && excludedRoute.path === path,
+    );
+    if (isExcludedRoute) {
       return next.handle();
     }
 
-    // Saves timestamp before executing handler
-    const startTimestamp = Date.now();
+    // Lookup for extra properties on the request object to append into the log payload
+    const extraProperties: Record<string, unknown> = {};
+    const { lookupExtraProperties } = this.loggerInterceptorOptions;
+    lookupExtraProperties?.forEach((extraPropertyName) => {
+      extraProperties[extraPropertyName] = req?.[extraPropertyName];
+    });
+
+    const graphqlDetails = graphQLInfo && {
+      path: {
+        typename: graphQLInfo?.path?.typename?.toUpperCase(),
+        key: graphQLInfo?.path?.key,
+      },
+      fieldNodes: graphQLInfo?.fieldNodes?.map((fieldNode) => ({
+        arguments: fieldNode?.arguments?.map((argument) => ({
+          name: { value: argument?.name?.value },
+          value: { value: argument?.value?.value },
+        })),
+      })),
+    };
+
+    const params: ILogPayloadHttpParams = {
+      headers: req?.headers,
+      pathParams: req?.params,
+      queryParams: req?.query,
+      body: req?.body,
+    };
+
+    const operation = `${method} ${path}`;
+
+    const startTime = Date.now();
+
+    //  //  //  //  //
 
     return next.handle().pipe(
-      // Runs AFTER the route handler
       tap({
-        next: (result: any) => {
-          const responseLogPayload: IHttpResponseLogPayload = {
-            statusCode: req.res.statusCode,
+        next: (interceptedResult: any) => {
+          const result: ILogPayloadHttpResult = {
+            statusCode: req?.res.statusCode,
+            result: interceptedResult,
+          };
+
+          const executionTime = Date.now() - startTime;
+          const httpLogPayload: ILogPayload = {
+            context: 'controller',
+            operation,
+            params,
             result,
-          };
-
-          const httpLogPayload: IHttpLogPayload = {
-            request: requestLogPayload,
-            response: responseLogPayload,
             details: {
-              startTimestamp: startTimestamp,
-              executionTime: Date.now() - startTimestamp,
+              startTime,
+              executionTime,
+              graphqlDetails,
+              ...extraProperties,
             },
           };
 
-          Logger.log(httpLogPayload);
+          const { logger } = this.loggerInterceptorOptions;
+          logger.log(httpLogPayload);
         },
-        error: (error: IResolvedLogInterceptorError) => {
-          const responseLogPayload: IHttpResponseLogPayload = {
-            statusCode: error?.status || 500,
-            result: error?.response || error?.stack || error.toString(),
+        error: (interceptedError: IResolvedInterceptorError) => {
+          const result: ILogPayloadHttpResult = {
+            statusCode: interceptedError?.status || 500,
+            result:
+              interceptedError?.response ||
+              interceptedError?.stack ||
+              interceptedError.toString(),
           };
 
-          const httpLogPayload: IHttpLogPayload = {
-            request: requestLogPayload,
-            response: responseLogPayload,
+          const executionTime = Date.now() - startTime;
+          const httpLogPayload: ILogPayload = {
+            context: 'controller',
+            operation,
+            params,
+            result,
             details: {
-              startTimestamp: startTimestamp,
-              executionTime: Date.now() - startTimestamp,
-              errorStack: error?.stack,
+              startTime,
+              executionTime,
+              errorStack: interceptedError?.stack,
+              graphqlDetails,
+              ...extraProperties,
             },
           };
 
-          Logger.error(httpLogPayload);
+          const { logger } = this.loggerInterceptorOptions;
+          logger.error(httpLogPayload);
         },
       }),
     );

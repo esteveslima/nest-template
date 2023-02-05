@@ -1,17 +1,18 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { MediaModule } from '../media/media.module';
-import { UserResolver } from './user.resolver';
-import { UserController } from './user.controller';
-import { UserEntity } from './models/user.entity';
-import { UserRestService } from './services/domain/user-rest.service';
-import { UserGraphqlService } from './services/domain/user-graphql.service';
-import { HashService } from './services/adapters/clients/hash.service';
-import { UserInternalService } from './services/domain/user-internal.service';
-import { UserRepository } from './services/adapters/database/repositories/user.repository';
-import { SINGLE_DB } from 'src/modules/setup/db/constants';
+import { UserResolverEntrypoint } from './adapters/entrypoints/resolvers/user-resolver.entrypoint';
+import { UserControllerEntrypoint } from './adapters/entrypoints/controllers/user-controller.entrypoint';
+import { UserGraphqlService } from './application/user-graphql.service';
+import { HashBcryptClientGateway } from './adapters/gateways/clients/hash-bcrypt-client.gateway';
+import { UserDatabaseRepositoryGateway } from './adapters/gateways/databases/repositories/user-database-repository.gateway';
 import { BcryptCustomProvider } from 'src/common/internals/providers/packages/bcrypt.provider';
+import { UserRestService } from './application/user-rest.service';
+import { UserInternalService } from './application/user-internal.service';
+import { IHashGateway } from './application/interfaces/ports/hash/hash-gateway.interface';
+import { UserDatabaseModel } from './adapters/gateways/databases/models/user.model';
+import { IUserGateway } from './domain/repositories/user/user-gateway.interface';
+import { DBModule } from 'src/modules/setup/db/db.module';
 
 @Module({
   imports: [
@@ -19,12 +20,12 @@ import { BcryptCustomProvider } from 'src/common/internals/providers/packages/bc
     forwardRef(() => AuthModule), // resolving modules circular dependency(referencing the least deppendant modules)
 
     // Import ORM Entities Repositories for DI and select connection by name
-    TypeOrmModule.forFeature([UserEntity], SINGLE_DB),
+    DBModule.setup([UserDatabaseModel]),
 
     // Other feature modules dependencies
     forwardRef(() => MediaModule), // resolving modules circular dependency(referencing the least deppendant modules)
   ],
-  controllers: [UserController],
+  controllers: [UserControllerEntrypoint],
   providers: [
     // Custom providers
     BcryptCustomProvider,
@@ -32,12 +33,21 @@ import { BcryptCustomProvider } from 'src/common/internals/providers/packages/bc
     // Exposable services
     UserRestService,
     UserGraphqlService,
-    UserResolver,
+    UserInternalService,
+
+    // Non-controllers entry-points
+    UserResolverEntrypoint,
 
     // Internal services
-    UserRepository,
-    HashService,
-    UserInternalService,
+    // manually ensuring clean architecture dependency rule
+    {
+      provide: IUserGateway,
+      useClass: UserDatabaseRepositoryGateway,
+    },
+    {
+      provide: IHashGateway,
+      useClass: HashBcryptClientGateway,
+    },
   ],
   exports: [UserRestService, UserGraphqlService, UserInternalService],
 })

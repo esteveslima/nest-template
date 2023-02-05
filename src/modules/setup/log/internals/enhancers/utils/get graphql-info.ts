@@ -1,16 +1,16 @@
 import { ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { IGraphQLRequestInfo } from '../interceptors/types/graphql-request-info.interface';
+import { ILogPayloadGraphQLInfo } from '../../../types/graphql/log-payload-graphql-info.interface';
 
 export const getGraphqlInfo = (
   context: ExecutionContext,
-): IGraphQLRequestInfo => {
+): ILogPayloadGraphQLInfo => {
   if ((context.getType() as string) !== 'graphql') {
     return undefined;
   }
 
   const gqlContext = GqlExecutionContext.create(context);
-  const graphQLInfo = gqlContext.getInfo<IGraphQLRequestInfo>();
+  const graphQLInfo = gqlContext.getInfo<ILogPayloadGraphQLInfo>();
 
   return graphQLInfo;
 };

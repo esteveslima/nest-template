@@ -3,7 +3,7 @@
 
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Media } from 'src/domain/entities/media';
 import { MediaDatabaseModel } from '../models/media.model';
 import { IMediaGateway } from 'src/domain/repositories/media/media-gateway.interface';
@@ -15,6 +15,9 @@ import { IMediaGatewaySearchMediasParams } from 'src/domain/repositories/media/m
 import { IMediaGatewayModifyMediaParams } from 'src/domain/repositories/media/methods/modify-media.interface';
 import { IMediaGatewayIncrementMediaViewsParams } from 'src/domain/repositories/media/methods/increment-media-views.interface';
 import { IMediaGatewayDeleteMediaParams } from 'src/domain/repositories/media/methods/delete-media.interface';
+
+// concrete implementation of the application database dependency
+// ideally this layer should also deppend on interfaces, but currently ignoring the dependency rule on this layer towards a more pragmatic approach
 
 @Injectable()
 export class MediaDatabaseRepositoryGateway implements IMediaGateway {

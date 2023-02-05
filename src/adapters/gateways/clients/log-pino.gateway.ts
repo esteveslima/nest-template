@@ -1,4 +1,5 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { ILogGateway } from 'src/application/interfaces/ports/log/log-gateway.interface';
 import {
   ILogGatewayErrorParams,
@@ -10,17 +11,17 @@ import {
 } from 'src/application/interfaces/ports/log/methods/log.interface';
 
 // concrete implementation of the application log dependency
+// ideally this layer should also deppend on interfaces, but currently ignoring the dependency rule on this layer towards a more pragmatic approach
 
 @Injectable()
 export class LogPinoGateway implements ILogGateway {
-  private readonly logger = new Logger();
-
-  constructor() {
-    //
-  }
+  constructor(
+    @InjectPinoLogger('Logger')
+    private readonly logger: PinoLogger,
+  ) {}
 
   async log(params: ILogGatewayLogParams): Promise<ILogGatewayLogResult> {
-    this.logger.log(params);
+    this.logger.info(params);
   }
 
   async error(params: ILogGatewayErrorParams): Promise<ILogGatewayErrorResult> {

@@ -95,7 +95,6 @@ import { LogModule } from './log/log.module';
       provide: ILogGateway,
       useClass: LogPinoGateway,
     },
-    TokenJwtGateway, // required by nestjs to be used on manual injections in enhancers
     {
       provide: ITokenGateway,
       useClass: TokenJwtGateway,
@@ -116,6 +115,9 @@ import { LogModule } from './log/log.module';
       provide: IMediaEventPublisherGateway,
       useClass: MediaEventEmmiterPublisherGateway,
     },
+    // required by nestjs to be used on manual injections in enhancers
+    TokenJwtGateway,
+    LogPinoGateway,
 
     // Custom Providers
     BcryptCustomProvider,

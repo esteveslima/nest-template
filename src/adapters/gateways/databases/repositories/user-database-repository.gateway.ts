@@ -1,7 +1,7 @@
 // Responsible for data access logic in the database
 // TypeORM Repository API: https://typeorm.io/#/repository-api
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeleteResult,
@@ -22,7 +22,9 @@ import { UserAlreadyExistsException } from 'src/domain/exceptions/user/user-alre
 import { UserNotFoundException } from 'src/domain/exceptions/user/user-not-found.exception';
 import { UserUpdateFailException } from 'src/domain/exceptions/user/user-update-fail.exception';
 
-//TODO: interface for whole classes composing the interfaces for it's methods(which have isolated interfaces), use colocation
+// concrete implementation of the application database dependency
+// ideally this layer should also deppend on interfaces, but currently ignoring the dependency rule on this layer towards a more pragmatic approach
+
 @Injectable()
 export class UserDatabaseRepositoryGateway implements IUserGateway {
   constructor(

@@ -1,6 +1,6 @@
 // Helper methods decoupled to be used only internally and not exposed to users
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { TokenExpiredException } from 'src/application/exceptions/ports/token/token-expired.exception';
 import { TokenMalformedException } from 'src/application/exceptions/ports/token/token-malformed.exception';
@@ -17,6 +17,7 @@ import {
 import { ITokenGateway } from '../../../application/interfaces/ports/token/token-gateway.interface';
 
 // concrete implementation of the application token dependency
+// ideally this layer should also deppend on interfaces, but currently ignoring the dependency rule on this layer towards a more pragmatic approach
 
 @Injectable()
 export class TokenJwtGateway<T extends object = Record<string, unknown>>
@@ -38,15 +39,17 @@ export class TokenJwtGateway<T extends object = Record<string, unknown>>
     let decodedTokenPayload: T;
     try {
       decodedTokenPayload = this.jwtService.verify(token);
-    } catch (e: any) {
-      this.logGateway.error(e);
-      const isJwtExpired = e.name === 'TokenExpiredError';
+    } catch (e) {
+      const error = e as Error;
+      this.logGateway.error(error);
+
+      const isJwtExpired = error.name === 'TokenExpiredError';
       if (isJwtExpired) {
         const payload = this.jwtService.decode(token);
         throw new TokenExpiredException({ token, payload });
       }
       const isJwtMalformed =
-        e.name === 'JsonWebTokenError' || e.name === 'SyntaxError';
+        error.name === 'JsonWebTokenError' || error.name === 'SyntaxError';
       if (isJwtMalformed) {
         throw new TokenMalformedException({ token });
       }

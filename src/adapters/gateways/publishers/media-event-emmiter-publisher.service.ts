@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { IMediaEventPublisherGateway } from 'src/application/interfaces/ports/media-event-publisher/media-event-publisher-gateway.interface';
 import {
@@ -6,6 +6,9 @@ import {
   IMediaEventPublisherGatewayPublishMediaViewedResult,
 } from 'src/application/interfaces/ports/media-event-publisher/methods/publish-media-viewed.interface';
 import { MEDIA_PUBLISH_EVENTS } from './events/constants';
+
+// concrete implementation of the application event publisher dependency
+// ideally this layer should also deppend on interfaces, but currently ignoring the dependency rule on this layer towards a more pragmatic approach
 
 @Injectable()
 export class MediaEventEmmiterPublisherGateway

@@ -5,12 +5,13 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
+import { LogPinoGateway } from 'src/adapters/gateways/clients/log-pino.gateway';
 import { TokenJwtGateway } from 'src/adapters/gateways/clients/token-jwt.gateway';
+import { ILogGateway } from 'src/application/interfaces/ports/log/log-gateway.interface';
 import { ITokenGateway } from 'src/application/interfaces/ports/token/token-gateway.interface';
 import { AuthTokenPayload } from 'src/application/interfaces/types/auth/auth-token-payload.interface';
 import { getRequestObject } from '../../utils/get-request-object';
@@ -21,6 +22,8 @@ export class AuthGuardJwt implements CanActivate {
     private reflector: Reflector,
     @Inject(TokenJwtGateway)
     private tokenGateway: ITokenGateway<AuthTokenPayload>,
+    @Inject(LogPinoGateway)
+    private logGateway: ILogGateway,
   ) {}
 
   async canActivate(context: ExecutionContext) {
@@ -60,7 +63,7 @@ export class AuthGuardJwt implements CanActivate {
       });
       return tokenPayload;
     } catch (e) {
-      Logger.error(e);
+      this.logGateway.error(e);
       throw new UnauthorizedException('Auth token invalid');
     }
   }

@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IHashGateway } from 'src/application/interfaces/ports/hash/hash-gateway.interface';
 import {
   IHashGatewayCompareHashParams,
@@ -12,6 +12,7 @@ import { BCRYPT_PROVIDER } from 'src/infrastructure/internals/providers/constant
 import { BcryptProviderType } from 'src/infrastructure/internals/providers/packages/bcrypt.provider';
 
 // concrete implementation of the application hash dependency
+// ideally this layer should also deppend on interfaces, but currently ignoring the dependency rule on this layer towards a more pragmatic approach
 
 @Injectable()
 export class HashBcryptClientGateway implements IHashGateway {

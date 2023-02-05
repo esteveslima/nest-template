@@ -5,15 +5,9 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger as PinoLogger } from 'nestjs-pino';
 import { AllExceptionsFilter } from './common/internals/enhancers/filters/all-exceptions.filter';
 import { devToolsBasicAuthMiddleware } from './common/config/middlewares/dev-tools-basic-auth.middleware';
-import { ExpressAdapter } from '@bull-board/express';
-import { createBullBoard } from '@bull-board/api';
-import { BullAdapter } from '@bull-board/api/bullAdapter';
-import { Queue } from 'bull';
-import { getQueueToken } from '@nestjs/bull';
 import { configSwagger } from './common/config/config-swagger';
 import { configBullBoard } from './common/config/config-bull-board';
 import { QueueModule } from './modules/setup/queue/queue.module';

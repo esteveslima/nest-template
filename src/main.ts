@@ -1,4 +1,3 @@
-import { AppModule } from './modules/app.module';
 import {
   ClassSerializerInterceptor,
   Logger,
@@ -6,12 +5,13 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { Logger as PinoLogger } from 'nestjs-pino';
-import { AllExceptionsFilter } from './common/internals/enhancers/filters/all-exceptions.filter';
-import { devToolsBasicAuthMiddleware } from './common/config/middlewares/dev-tools-basic-auth.middleware';
-import { configSwagger } from './common/config/config-swagger';
-import { configBullBoard } from './common/config/config-bull-board';
-import { QueueModule } from './modules/setup/queue/queue.module';
-import { configCors } from './common/config/config-cors';
+import { configBullBoard } from './infrastructure/config/config-bull-board';
+import { configCors } from './infrastructure/config/config-cors';
+import { configSwagger } from './infrastructure/config/config-swagger';
+import { devToolsBasicAuthMiddleware } from './infrastructure/config/dev-tools-basic-auth-middleware';
+import { AppModule } from './infrastructure/config/modules/app.module';
+import { QueueModule } from './infrastructure/config/modules/queue/queue.module';
+import { AllExceptionsFilter } from './infrastructure/internals/enhancers/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

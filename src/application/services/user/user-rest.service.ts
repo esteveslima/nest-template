@@ -29,7 +29,7 @@ import { IUserGateway } from 'src/domain/repositories/user/user-gateway.interfac
 
 @Injectable()
 export class UserRestService implements IUserRestService {
-  // TODO: split methods in multiple files(?)(this way it can remain a generic name 'UserRestService' and only define the methods imported from other files): https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
+  // TODO: refactor into usecase format with one method per class(?)
 
   // Get services and repositories from DI
   constructor(

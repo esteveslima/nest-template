@@ -49,6 +49,7 @@ export class UserControllerEntrypoint {
 
   // Define and map routes to services
 
+  //TODO: create presenters for different response formats(?)
   @Post()
   @SwaggerDoc({ tag: '/user', description: '' })
   async registerUser(

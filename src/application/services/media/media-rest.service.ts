@@ -51,7 +51,6 @@ export class MediaRestService implements IMediaRestService {
     });
 
     return {
-      //TODO: create decoupled presenters
       description: mediaCreated.description,
       durationSeconds: mediaCreated.durationSeconds,
       id: mediaCreated.id,

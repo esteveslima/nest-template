@@ -42,25 +42,25 @@ async function bootstrap() {
   const isDevelopmentEnvironment =
     process.env.NODE_ENV && !process.env.NODE_ENV.includes('prod');
   if (isDevelopmentEnvironment) {
-    const toolsRoutes = {
+    const webToolsRoutes = {
       swagger: `/swagger`,
       bullBoard: `/bull-board`,
       graphqlPlayground: `${applicationRoutesPrefix}/graphql`,
     } as const;
 
     // Apply basic auth middleware for the web tools(must be set before the tools)
-    Object.keys(toolsRoutes).forEach((routeName) => {
-      const route = toolsRoutes[routeName as keyof typeof toolsRoutes];
+    Object.keys(webToolsRoutes).forEach((routeName) => {
+      const route = webToolsRoutes[routeName as keyof typeof webToolsRoutes];
       app.use(route, devToolsBasicAuthMiddleware);
       Logger.log(`Protected tool ${routeName} route: ${route}`);
     });
 
-    configSwagger(app, toolsRoutes.swagger);
+    configSwagger(app, webToolsRoutes.swagger);
 
     const queueNames = QueueModule.registeredQueuesConfig.map(
       (queueConfig) => queueConfig.name,
     );
-    configBullBoard(app, toolsRoutes.bullBoard, queueNames);
+    configBullBoard(app, webToolsRoutes.bullBoard, queueNames);
   }
 
   Logger.log(`Application port: ${process.env.PORT}`);

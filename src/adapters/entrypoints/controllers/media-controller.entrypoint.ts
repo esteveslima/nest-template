@@ -22,21 +22,21 @@ import { User } from 'src/domain/entities/user';
 import { Auth } from 'src/infrastructure/internals/decorators/auth/auth.decorator';
 import { GetAuthUser } from 'src/infrastructure/internals/decorators/auth/get-auth-user.decorator';
 import { SwaggerDoc } from 'src/infrastructure/internals/decorators/swagger-doc.decorator';
-import { DeleteMediaReqDTO } from './dtos/req/media/delete-media-req.dto';
-import { GetMediaReqDTO } from './dtos/req/media/get-media-req.dto';
+import { DeleteMediaRestRequestDTO } from './dtos/request/media/delete-media-rest-request.dto';
+import { GetMediaRestRequestDTO } from './dtos/request/media/get-media-rest-request.dto';
 import {
-  PatchMediaReqBodyDTO,
-  PatchMediaReqParamsDTO,
-} from './dtos/req/media/patch-media-req.dto';
-import { RegisterMediaReqBodyDTO } from './dtos/req/media/register-media-req.dto';
-import { SearchMediasReqDTO } from './dtos/req/media/search-medias-req.dto';
+  PatchMediaRestRequestBodyDTO,
+  PatchMediaRestRequestParamsDTO,
+} from './dtos/request/media/patch-media-rest-request.dto';
+import { RegisterMediaRestRequestDTO } from './dtos/request/media/register-media-rest-request.dto';
+import { SearchMediasRestRequestDTO } from './dtos/request/media/search-medias-rest-request.dto';
 import {
-  UpdateMediaReqBodyDTO,
-  UpdateMediaReqParamsDTO,
-} from './dtos/req/media/update-media-req.dto';
-import { GetMediaResDTO } from './dtos/res/media/get-media-res.dto';
-import { RegisterMediaResDTO } from './dtos/res/media/register-media-res.dto';
-import { SearchMediasResDTO } from './dtos/res/media/search-medias-res.dto';
+  UpdateMediaRestRequestBodyDTO,
+  UpdateMediaRestRequestParamsDTO,
+} from './dtos/request/media/update-media-rest-request.dto';
+import { GetMediaRestResponseDTO } from './dtos/response/media/get-media-rest-response.dto';
+import { RegisterMediaRestResponseDTO } from './dtos/response/media/register-media-rest-response.dto';
+import { SearchMediasRestResponseDTO } from './dtos/response/media/search-medias-rest-response.dto';
 @Controller('/rest/media')
 export class MediaControllerEntrypoint {
   // Get services and modules from DI
@@ -46,7 +46,9 @@ export class MediaControllerEntrypoint {
 
   @Get('/:id')
   @SwaggerDoc({ tag: '/media', description: '' })
-  async getMedia(@Param() params: GetMediaReqDTO): Promise<GetMediaResDTO> {
+  async getMedia(
+    @Param() params: GetMediaRestRequestDTO,
+  ): Promise<GetMediaRestResponseDTO> {
     try {
       return await this.mediaService.getMedia(params);
     } catch (exception) {
@@ -64,8 +66,8 @@ export class MediaControllerEntrypoint {
   @Get()
   @SwaggerDoc({ tag: '/media', description: '' })
   async searchMedias(
-    @Query() params: SearchMediasReqDTO,
-  ): Promise<SearchMediasResDTO[]> {
+    @Query() params: SearchMediasRestRequestDTO,
+  ): Promise<SearchMediasRestResponseDTO[]> {
     try {
       return await this.mediaService.searchMedias(params);
     } catch (exception) {
@@ -81,9 +83,9 @@ export class MediaControllerEntrypoint {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async registerMedia(
-    @Body() body: RegisterMediaReqBodyDTO,
+    @Body() body: RegisterMediaRestRequestDTO,
     @GetAuthUser() authUser: User,
-  ): Promise<RegisterMediaResDTO> {
+  ): Promise<RegisterMediaRestResponseDTO> {
     try {
       return await this.mediaService.registerMedia({ ...body, user: authUser });
     } catch (exception) {
@@ -100,7 +102,7 @@ export class MediaControllerEntrypoint {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async deleteMedia(
-    @Param() params: DeleteMediaReqDTO,
+    @Param() params: DeleteMediaRestRequestDTO,
     @GetAuthUser() authUser: User,
   ): Promise<void> {
     try {
@@ -122,8 +124,8 @@ export class MediaControllerEntrypoint {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async updateMedia(
-    @Param() params: UpdateMediaReqParamsDTO,
-    @Body() body: UpdateMediaReqBodyDTO,
+    @Param() params: UpdateMediaRestRequestParamsDTO,
+    @Body() body: UpdateMediaRestRequestBodyDTO,
     @GetAuthUser() authUser: User,
   ): Promise<void> {
     try {
@@ -148,8 +150,8 @@ export class MediaControllerEntrypoint {
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/media', description: '', authEnabled: true })
   async patchMedia(
-    @Param() params: PatchMediaReqParamsDTO,
-    @Body() body: PatchMediaReqBodyDTO,
+    @Param() params: PatchMediaRestRequestParamsDTO,
+    @Body() body: PatchMediaRestRequestBodyDTO,
     @GetAuthUser() authUser: User,
   ): Promise<void> {
     try {

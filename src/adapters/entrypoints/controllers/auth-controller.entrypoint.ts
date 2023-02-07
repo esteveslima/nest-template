@@ -8,8 +8,8 @@ import {
   Post,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthLoginReqDTO } from './dtos/req/auth/auth-login-req.dto';
-import { AuthLoginResDTO } from './dtos/res/auth/auth-login-res.dto';
+import { AuthLoginRestRequestDTO } from './dtos/request/auth/auth-login-rest-request.dto';
+import { AuthLoginRestResponseDTO } from './dtos/response/auth/auth-login-rest-response.dto';
 import { Exception } from 'src/domain/entities/exception';
 import { ExceptionsIndex } from 'src/adapters/exceptions/exceptions-index';
 import { AuthRestService } from 'src/application/services/auth/auth-rest.service';
@@ -24,7 +24,9 @@ export class AuthControllerEntrypoint {
 
   @Post('/login')
   @SwaggerDoc({ tag: '/auth', description: '' })
-  async authLogin(@Body() params: AuthLoginReqDTO): Promise<AuthLoginResDTO> {
+  async authLogin(
+    @Body() params: AuthLoginRestRequestDTO,
+  ): Promise<AuthLoginRestResponseDTO> {
     try {
       return await this.authRestService.authLogin(params);
     } catch (exception) {

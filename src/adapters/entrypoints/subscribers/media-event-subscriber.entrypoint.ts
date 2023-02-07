@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { MediaHandlerService } from '../../../application/services/media/media-handler.service';
-import { MediaViewedPayloadDTO } from './dtos/payload/media/media-viewed-payload.dto';
+import { MediaViewedEventPayloadDTO } from './dtos/payload/media/media-viewed-event-payload.dto';
 import { MEDIA_SUBSCRIBE_EVENTS } from './events/constants';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class MediaEventSubscriberEntrypoint {
     async: true,
   })
   async subscriberEventMediaViewed(
-    params: MediaViewedPayloadDTO,
+    params: MediaViewedEventPayloadDTO,
   ): Promise<void> {
     const { id } = params;
 

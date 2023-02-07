@@ -11,8 +11,8 @@ import { MediaResolverEntrypoint } from 'src/adapters/entrypoints/resolvers/medi
 import { UserResolverEntrypoint } from 'src/adapters/entrypoints/resolvers/user-resolver.entrypoint';
 import { MediaEventSubscriberEntrypoint } from 'src/adapters/entrypoints/subscribers/media-event-subscriber.entrypoint';
 import { HashBcryptClientGateway } from 'src/adapters/gateways/clients/hash-bcrypt-client.gateway';
-import { LogPinoGateway } from 'src/adapters/gateways/clients/log-pino.gateway';
-import { TokenJwtGateway } from 'src/adapters/gateways/clients/token-jwt.gateway';
+import { LogPinoClientGateway } from 'src/adapters/gateways/clients/log-pino-client.gateway';
+import { TokenJwtClientGateway } from 'src/adapters/gateways/clients/token-jwt-client.gateway';
 import { MediaDatabaseModel } from 'src/adapters/gateways/databases/models/media.model';
 import { UserDatabaseModel } from 'src/adapters/gateways/databases/models/user.model';
 import { MediaDatabaseRepositoryGateway } from 'src/adapters/gateways/databases/repositories/media-database-repository.gateway';
@@ -93,11 +93,11 @@ import { LogModule } from './log/log.module';
     // Gateways
     {
       provide: ILogGateway,
-      useClass: LogPinoGateway,
+      useClass: LogPinoClientGateway,
     },
     {
       provide: ITokenGateway,
-      useClass: TokenJwtGateway,
+      useClass: TokenJwtClientGateway,
     },
     {
       provide: IUserGateway,
@@ -116,8 +116,8 @@ import { LogModule } from './log/log.module';
       useClass: MediaEventEmmiterPublisherGateway,
     },
     // required by nestjs to be used on manual injections in enhancers
-    TokenJwtGateway,
-    LogPinoGateway,
+    TokenJwtClientGateway,
+    LogPinoClientGateway,
 
     // Custom Providers
     BcryptCustomProvider,

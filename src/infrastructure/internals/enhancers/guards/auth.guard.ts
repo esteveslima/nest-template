@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { LogPinoGateway } from 'src/adapters/gateways/clients/log-pino.gateway';
-import { TokenJwtGateway } from 'src/adapters/gateways/clients/token-jwt.gateway';
+import { LogPinoClientGateway } from 'src/adapters/gateways/clients/log-pino-client.gateway';
+import { TokenJwtClientGateway } from 'src/adapters/gateways/clients/token-jwt-client.gateway';
 import { ILogGateway } from 'src/application/interfaces/ports/log/log-gateway.interface';
 import { ITokenGateway } from 'src/application/interfaces/ports/token/token-gateway.interface';
 import { AuthTokenPayload } from 'src/application/interfaces/types/auth/auth-token-payload.interface';
@@ -20,9 +20,9 @@ import { getRequestObject } from '../../utils/get-request-object';
 export class AuthGuardJwt implements CanActivate {
   constructor(
     private reflector: Reflector,
-    @Inject(TokenJwtGateway)
+    @Inject(TokenJwtClientGateway)
     private tokenGateway: ITokenGateway<AuthTokenPayload>,
-    @Inject(LogPinoGateway)
+    @Inject(LogPinoClientGateway)
     private logGateway: ILogGateway,
   ) {}
 

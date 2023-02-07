@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGraphqlService } from '../../../application/services/auth/auth-graphql.service';
-import { AuthLoginArgsDTO } from './dtos/args/auth/auth-login.args';
+import { AuthLoginGraphqlArgsDTO } from './dtos/args/auth/auth-login-graphql-args.dto';
 import { Exception } from 'src/domain/entities/exception';
 import { ExceptionsIndex } from 'src/adapters/exceptions/exceptions-index';
 
@@ -19,7 +19,7 @@ export class AuthResolverEntrypoint {
   // Define resolvers for graphql operations
 
   @Query(() => String, { name: 'login' })
-  async authLogin(@Args() args: AuthLoginArgsDTO): Promise<string> {
+  async authLogin(@Args() args: AuthLoginGraphqlArgsDTO): Promise<string> {
     try {
       return await this.authGraphqlService.authLogin(args);
     } catch (exception) {

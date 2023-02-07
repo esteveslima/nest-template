@@ -1,13 +1,13 @@
 // import { BadRequestException, NotFoundException } from '@nestjs/common';
 // import { Test } from '@nestjs/testing';
-// import { PatchUserReqDTO } from '../../../../../modules/user/dto/rest/req/patch-user-req.dto';
+// import { PatchUserRestRequestDTO } from '../../../../../modules/user/dto/rest/req/patch-user-req.dto';
 
-// import { RegisterUserReqDTO } from '../../../../../modules/user/dto/rest/req/register-user-req.dto';
-// import { SearchUserReqDTO } from '../../../../../modules/user/dto/rest/req/search-user-req.dto';
-// import { UpdateUserReqDTO } from '../../../../../modules/user/dto/rest/req/update-user-req.dto';
-// import { GetUserResDTO } from '../../../../../modules/user/dto/res/get-user-res.dto';
-// import { RegisterUserResDTO } from '../../../../../modules/user/dto/res/register-user-res.dto';
-// import { SearchUserResDTO } from '../../../../../modules/user/dto/res/search-user-res.dto';
+// import { RegisterUserRestRequestDTO } from '../../../../../modules/user/dto/rest/req/register-user-req.dto';
+// import { SearchUserRestRequestDTO } from '../../../../../modules/user/dto/rest/req/search-user-req.dto';
+// import { UpdateUserRestRequestDTO } from '../../../../../modules/user/dto/rest/req/update-user-req.dto';
+// import { GetUserRestResponseDTO } from '../../../../../modules/user/dto/res/get-user-res.dto';
+// import { RegisterUserRestResponseDTO } from '../../../../../modules/user/dto/res/register-user-res.dto';
+// import { SearchUserRestResponseDTO } from '../../../../../modules/user/dto/res/search-user-res.dto';
 // import {
 //   enumGenderType,
 //   enumRole,
@@ -41,7 +41,7 @@
 // };
 
 // const userGatewayMockSuccess = {
-//   registerUser: jest.fn((params: RegisterUserReqDTO) =>
+//   registerUser: jest.fn((params: RegisterUserRestRequestDTO) =>
 //     Promise.resolve({ ...userEntityMock, ...params }),
 //   ),
 //   getUser: jest.fn(() => Promise.resolve(userEntityMock)),
@@ -83,7 +83,7 @@
 //   describe('registerUser', () => {
 //     it('calls userGateway.registerUser with hashed password', async () => {
 //       userGatewayMock.registerUser = userGatewayMockSuccess.registerUser;
-//       const userMock: RegisterUserReqDTO = {
+//       const userMock: RegisterUserRestRequestDTO = {
 //         username: 'username',
 //         password: 'password',
 //         email: 'email',
@@ -94,7 +94,7 @@
 
 //       await userService.registerUser(userMock);
 
-//       const userGatewayMockCallParams: RegisterUserReqDTO =
+//       const userGatewayMockCallParams: RegisterUserRestRequestDTO =
 //         userGatewayMock.registerUser.mock.calls[0][0];
 
 //       expect(userGatewayMock.registerUser).toBeCalled();
@@ -104,7 +104,7 @@
 
 //     it('returns created object without password', async () => {
 //       userGatewayMock.registerUser = userGatewayMockSuccess.registerUser;
-//       const userMock: RegisterUserReqDTO = {
+//       const userMock: RegisterUserRestRequestDTO = {
 //         username: 'username',
 //         password: 'password',
 //         email: 'email',
@@ -125,7 +125,7 @@
 //           age: expect.any(Number),
 //           gender: expect.any(String),
 //           role: expect.any(String),
-//         } as RegisterUserResDTO),
+//         } as RegisterUserRestResponseDTO),
 //       );
 //     });
 //   });
@@ -158,7 +158,7 @@
 //           age: expect.any(Number),
 //           gender: expect.any(String),
 //           role: expect.any(String),
-//         } as GetUserResDTO),
+//         } as GetUserRestResponseDTO),
 //       );
 //     });
 //   });
@@ -189,7 +189,7 @@
 //     it('throws NotFoundException if user is not found', async () => {
 //       userGatewayMock.modifyUser = userGatewayMockFail.modifyUser;
 //       const uuid = 'uuid';
-//       const userMock: PatchUserReqDTO | UpdateUserReqDTO = {
+//       const userMock: PatchUserRestRequestDTO | UpdateUserRestRequestDTO = {
 //         username: 'username',
 //         password: 'password',
 //         email: 'email',
@@ -206,7 +206,7 @@
 //       userGatewayMock.modifyUser =
 //         userGatewayMockSuccess.modifyUser;
 //       const uuid = 'uuid';
-//       const userMock: PatchUserReqDTO | UpdateUserReqDTO = {
+//       const userMock: PatchUserRestRequestDTO | UpdateUserRestRequestDTO = {
 //         username: 'username',
 //         password: 'password',
 //         email: 'email',
@@ -216,7 +216,7 @@
 
 //       await userService.modifyUser(uuid, userMock);
 
-//       const userGatewayMockCallParams: PatchUserReqDTO | UpdateUserReqDTO =
+//       const userGatewayMockCallParams: PatchUserRestRequestDTO | UpdateUserRestRequestDTO =
 //         userGatewayMock.modifyUser.mock.calls[0][0];
 
 //       expect(userGatewayMock.modifyUser).toBeCalled();
@@ -228,7 +228,7 @@
 //       userGatewayMock.modifyUser =
 //         userGatewayMockSuccess.modifyUser;
 //       const uuid = 'uuid';
-//       const userMock: PatchUserReqDTO | UpdateUserReqDTO = {
+//       const userMock: PatchUserRestRequestDTO | UpdateUserRestRequestDTO = {
 //         username: 'username',
 //         password: 'password',
 //         email: 'email',
@@ -245,7 +245,7 @@
 
 //   describe('searchUser', () => {
 //     it('throws BadRequestException if no search filters were provided', async () => {
-//       const searchFiltersMock: SearchUserReqDTO = {};
+//       const searchFiltersMock: SearchUserRestRequestDTO = {};
 
 //       await expect(
 //         userService.searchUser(searchFiltersMock),
@@ -255,7 +255,7 @@
 
 //     it('throws NotFoundException if no user was found', async () => {
 //       userGatewayMock.searchUser = userGatewayMockFail.searchUser;
-//       const searchFiltersMock: SearchUserReqDTO = {
+//       const searchFiltersMock: SearchUserRestRequestDTO = {
 //         email: 'email',
 //         username: 'username',
 //       };
@@ -268,7 +268,7 @@
 
 //     it('returns found object without password', async () => {
 //       userGatewayMock.searchUser = userGatewayMockSuccess.searchUser;
-//       const searchFiltersMock: SearchUserReqDTO = {
+//       const searchFiltersMock: SearchUserRestRequestDTO = {
 //         email: 'email',
 //         username: 'username',
 //       };
@@ -288,7 +288,7 @@
 //           // age: expect.any(Number),
 //           // gender: expect.any(String),
 //           role: expect.any(String),
-//         } as SearchUserResDTO),
+//         } as SearchUserRestResponseDTO),
 //       );
 //     });
 //   });
@@ -322,7 +322,7 @@
 //     });
 
 //     it('returns result of comparision between provided value and stored hash', async () => {
-//       const userMock: RegisterUserReqDTO = {
+//       const userMock: RegisterUserRestRequestDTO = {
 //         username: 'username',
 //         password: 'password',
 //         email: 'email',

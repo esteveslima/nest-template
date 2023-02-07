@@ -20,19 +20,19 @@ import { UserGraphqlType } from './dtos/types/user/user-graphql.type';
 import { MediaGraphqlType } from './dtos/types/media/media-graphql.type';
 import { MediaDatabaseModel } from '../../gateways/databases/models/media.model';
 import { User } from '../../../domain/entities/user';
-import { DeleteUserArgsDTO } from './dtos/args/user/delete-user.args';
+import { DeleteUserGraphqlArgsDTO } from './dtos/args/user/delete-user-graphql-args.dto';
 import { Exception } from 'src/domain/entities/exception';
 import { ExceptionsIndex } from 'src/adapters/exceptions/exceptions-index';
 import { GraphqlGetAuthData } from 'src/infrastructure/internals/decorators/auth/graphql/graphql-get-auth-data.decorator';
 import { MediaGraphqlService } from 'src/application/services/media/media-graphql.service';
-import { GetUserArgsDTO } from './dtos/args/user/get-user.args';
-import { SearchUserArgsDTO } from './dtos/args/user/search-user.args';
-import { RegisterUserArgsDTO } from './dtos/args/user/register-user.args';
+import { GetUserGraphqlArgsDTO } from './dtos/args/user/get-user-graphql-args.dto';
+import { SearchUserGraphqlArgsDTO } from './dtos/args/user/search-user-graphql-args.dto';
+import { RegisterUserGraphqlArgsDTO } from './dtos/args/user/register-user-graphql-args.dto';
 import { Auth } from 'src/infrastructure/internals/decorators/auth/auth.decorator';
-import { UpdateUserArgsDTO } from './dtos/args/user/update-user.args';
+import { UpdateUserGraphqlArgsDTO } from './dtos/args/user/update-user-graphql-args.dto';
 import { GetAuthUser } from 'src/infrastructure/internals/decorators/auth/get-auth-user.decorator';
-import { UpdateCurrentUserArgsDTO } from './dtos/args/user/update-current-user.args';
-import { SearchMediasArgsDTO } from './dtos/args/media/search-media.args';
+import { UpdateCurrentUserGraphqlArgsDTO } from './dtos/args/user/update-current-user-graphql-args.dto';
+import { SearchMediasGraphqlArgsDTO } from './dtos/args/media/search-media-graphql-args.dto';
 
 @Resolver(() => UserGraphqlType)
 @GraphqlGetAuthData() // required for auth field middleware
@@ -46,7 +46,7 @@ export class UserResolverEntrypoint {
   // Define resolvers for graphql operations
 
   @Query(() => UserGraphqlType, { name: 'user' })
-  async getUser(@Args() args: GetUserArgsDTO): Promise<UserGraphqlType> {
+  async getUser(@Args() args: GetUserGraphqlArgsDTO): Promise<UserGraphqlType> {
     try {
       return await this.userGraphqlService.getUser(args);
     } catch (exception) {
@@ -62,7 +62,7 @@ export class UserResolverEntrypoint {
 
   @Query(() => [UserGraphqlType], { name: 'users' })
   async searchUsers(
-    @Args() args: SearchUserArgsDTO,
+    @Args() args: SearchUserGraphqlArgsDTO,
   ): Promise<UserGraphqlType[]> {
     try {
       return await this.userGraphqlService.searchUsers(args);
@@ -79,7 +79,7 @@ export class UserResolverEntrypoint {
 
   @Mutation(() => UserGraphqlType, { name: 'registerUser' })
   async registerUser(
-    @Args() args: RegisterUserArgsDTO,
+    @Args() args: RegisterUserGraphqlArgsDTO,
   ): Promise<UserGraphqlType> {
     try {
       return await this.userGraphqlService.registerUser(args);
@@ -97,7 +97,7 @@ export class UserResolverEntrypoint {
 
   @Mutation(() => Boolean, { name: 'updateUser' })
   @Auth('ADMIN')
-  async updateUser(@Args() args: UpdateUserArgsDTO): Promise<boolean> {
+  async updateUser(@Args() args: UpdateUserGraphqlArgsDTO): Promise<boolean> {
     try {
       const { id, ...data } = args;
       await this.userGraphqlService.modifyUser({ data, indexes: { id } });
@@ -120,7 +120,7 @@ export class UserResolverEntrypoint {
   @Auth('ADMIN', 'USER')
   async updateCurrentUser(
     @GetAuthUser() authUser: User,
-    @Args() args: UpdateCurrentUserArgsDTO,
+    @Args() args: UpdateCurrentUserGraphqlArgsDTO,
   ): Promise<boolean> {
     try {
       await this.userGraphqlService.modifyUser({
@@ -147,7 +147,7 @@ export class UserResolverEntrypoint {
 
   @Mutation(() => Boolean, { name: 'deleteUser' })
   @Auth('ADMIN')
-  async deleteUser(@Args() args: DeleteUserArgsDTO): Promise<boolean> {
+  async deleteUser(@Args() args: DeleteUserGraphqlArgsDTO): Promise<boolean> {
     try {
       await this.userGraphqlService.deleteUser(args);
 
@@ -168,7 +168,7 @@ export class UserResolverEntrypoint {
   })
   async resolveMedias(
     @Parent() user: UserGraphqlType,
-    @Args() args: SearchMediasArgsDTO,
+    @Args() args: SearchMediasGraphqlArgsDTO,
   ): Promise<MediaGraphqlType[]> {
     if (args.username) {
       throw new BadRequestException(

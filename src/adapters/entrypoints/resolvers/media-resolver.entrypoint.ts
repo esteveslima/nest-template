@@ -18,17 +18,17 @@ import { MediaGraphqlType } from './dtos/types/media/media-graphql.type';
 import { MediaGraphqlService } from '../../../application/services/media/media-graphql.service';
 import { UserGraphqlType } from './dtos/types/user/user-graphql.type';
 import { User } from 'src/domain/entities/user';
-import { DeleteMediaArgsDTO } from './dtos/args/media/delete-media.args';
+import { DeleteMediaGraphqlArgsDTO } from './dtos/args/media/delete-media-graphql-args.dto';
 import { Exception } from 'src/domain/entities/exception';
 import { ExceptionsIndex } from 'src/adapters/exceptions/exceptions-index';
 import { GraphqlGetAuthData } from 'src/infrastructure/internals/decorators/auth/graphql/graphql-get-auth-data.decorator';
 import { UserGraphqlService } from 'src/application/services/user/user-graphql.service';
-import { GetMediaArgsDTO } from './dtos/args/media/get-media.args';
-import { SearchMediasArgsDTO } from './dtos/args/media/search-media.args';
+import { GetMediaGraphqlArgsDTO } from './dtos/args/media/get-media-graphql-args.dto';
+import { SearchMediasGraphqlArgsDTO } from './dtos/args/media/search-media-graphql-args.dto';
 import { Auth } from 'src/infrastructure/internals/decorators/auth/auth.decorator';
-import { RegisterMediaArgsDTO } from './dtos/args/media/register-media.args';
+import { RegisterMediaGraphqlArgsDTO } from './dtos/args/media/register-media-graphql-args.dto';
 import { GetAuthUser } from 'src/infrastructure/internals/decorators/auth/get-auth-user.decorator';
-import { UpdateMediaArgsDTO } from './dtos/args/media/update-media.args';
+import { UpdateMediaGraphqlArgsDTO } from './dtos/args/media/update-media-graphql-args.dto';
 
 @Resolver(() => MediaGraphqlType)
 @GraphqlGetAuthData() // required for auth field middleware
@@ -43,7 +43,9 @@ export class MediaResolverEntrypoint {
 
   //TODO: check for n+1 problem on queries and use dataloaders
   @Query(() => MediaGraphqlType, { name: 'media' })
-  async getMedia(@Args() args: GetMediaArgsDTO): Promise<MediaGraphqlType> {
+  async getMedia(
+    @Args() args: GetMediaGraphqlArgsDTO,
+  ): Promise<MediaGraphqlType> {
     try {
       return await this.mediaGraphqlService.getMedia(args);
     } catch (exception) {
@@ -60,7 +62,7 @@ export class MediaResolverEntrypoint {
 
   @Query(() => [MediaGraphqlType], { name: 'medias' })
   async searchMedias(
-    @Args() args: SearchMediasArgsDTO,
+    @Args() args: SearchMediasGraphqlArgsDTO,
   ): Promise<MediaGraphqlType[]> {
     try {
       return await this.mediaGraphqlService.searchMedias(args);
@@ -76,7 +78,7 @@ export class MediaResolverEntrypoint {
   @Mutation(() => MediaGraphqlType, { name: 'registerMedia' })
   @Auth('ADMIN', 'USER')
   async registerMedia(
-    @Args() args: RegisterMediaArgsDTO,
+    @Args() args: RegisterMediaGraphqlArgsDTO,
     @GetAuthUser() authUser: User,
   ): Promise<MediaGraphqlType> {
     try {
@@ -96,7 +98,7 @@ export class MediaResolverEntrypoint {
   @Mutation(() => Boolean, { name: 'updateMedia' })
   @Auth('ADMIN', 'USER')
   async updateMedia(
-    @Args() args: UpdateMediaArgsDTO,
+    @Args() args: UpdateMediaGraphqlArgsDTO,
     @GetAuthUser() authUser: User,
   ): Promise<boolean> {
     try {
@@ -122,7 +124,7 @@ export class MediaResolverEntrypoint {
   @Mutation(() => Boolean, { name: 'deleteMedia' })
   @Auth('ADMIN', 'USER')
   async deleteMedia(
-    @Args() args: DeleteMediaArgsDTO,
+    @Args() args: DeleteMediaGraphqlArgsDTO,
     @GetAuthUser() authUser: User,
   ): Promise<boolean> {
     try {

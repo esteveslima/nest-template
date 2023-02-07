@@ -11,7 +11,7 @@ import {
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { TokenJwtGateway } from 'src/adapters/gateways/clients/token-jwt.gateway';
+import { TokenJwtClientGateway } from 'src/adapters/gateways/clients/token-jwt-client.gateway';
 import { ITokenGateway } from 'src/application/interfaces/ports/token/token-gateway.interface';
 import { AuthTokenPayload } from 'src/application/interfaces/types/auth/auth-token-payload.interface';
 import { IRequestResolvedAuth } from '../../utils/types/resolved-request.interface';
@@ -19,7 +19,7 @@ import { IRequestResolvedAuth } from '../../utils/types/resolved-request.interfa
 @Injectable()
 export class GraphqlAuthDataInterceptor implements NestInterceptor {
   constructor(
-    @Inject(TokenJwtGateway)
+    @Inject(TokenJwtClientGateway)
     private tokenGateway: ITokenGateway<AuthTokenPayload>,
   ) {}
 

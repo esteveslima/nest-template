@@ -23,24 +23,24 @@ import { Exception } from 'src/domain/entities/exception';
 import { ExceptionsIndex } from 'src/adapters/exceptions/exceptions-index';
 import { UserRestService } from 'src/application/services/user/user-rest.service';
 import { SwaggerDoc } from 'src/infrastructure/internals/decorators/swagger-doc.decorator';
-import { RegisterUserReqDTO } from './dtos/req/user/register-user-req.dto';
-import { RegisterUserResDTO } from './dtos/res/user/register-user-res.dto';
+import { RegisterUserRestRequestDTO } from './dtos/request/user/register-user-rest-request.dto';
+import { RegisterUserRestResponseDTO } from './dtos/response/user/register-user-rest-response.dto';
 import { UserAlreadyExistsException } from 'src/domain/exceptions/user/user-already-exists.exception';
-import { SearchUsersReqDTO } from './dtos/req/user/search-users-req.dto';
-import { SearchUsersResDTO } from './dtos/res/user/search-users-res.dto';
+import { SearchUsersRestRequestDTO } from './dtos/request/user/search-users-rest-request.dto';
+import { SearchUsersRestResponseDTO } from './dtos/response/user/search-users-rest-response.dto';
 import { Auth } from 'src/infrastructure/internals/decorators/auth/auth.decorator';
 import { GetAuthUser } from 'src/infrastructure/internals/decorators/auth/get-auth-user.decorator';
-import { GetUserResDTO } from './dtos/res/user/get-user-res.dto';
+import { GetUserRestResponseDTO } from './dtos/response/user/get-user-rest-response.dto';
 import {
-  UpdateUserReqBodyDTO,
-  UpdateUserReqParamsDTO,
-} from './dtos/req/user/update-user-req.dto';
+  UpdateUserRestRequestBodyDTO,
+  UpdateUserRestRequestParamsDTO,
+} from './dtos/request/user/update-user-rest-request.dto';
 import {
-  PatchUserReqBodyDTO,
-  PatchUserReqParamsDTO,
-} from './dtos/req/user/patch-user-req.dto';
-import { GetUserReqDTO } from './dtos/req/user/get-user-req.dto';
-import { DeleteUserReqDTO } from './dtos/req/user/delete-user-req.dto';
+  PatchUserRestRequestBodyDTO,
+  PatchUserRestRequestParamsDTO,
+} from './dtos/request/user/patch-user-rest-request.dto';
+import { GetUserRestRequestDTO } from './dtos/request/user/get-user-rest-request.dto';
+import { DeleteUserRestRequestDTO } from './dtos/request/user/delete-user-rest-request.dto';
 
 @Controller('/rest/user')
 export class UserControllerEntrypoint {
@@ -49,12 +49,13 @@ export class UserControllerEntrypoint {
 
   // Define and map routes to services
 
-  //TODO: create presenters for different response formats(?)
+  // TODO: create presenters for different response formats(?)
+  // TODO: move error mapping to those presenters(?)
   @Post()
   @SwaggerDoc({ tag: '/user', description: '' })
   async registerUser(
-    @Body() body: RegisterUserReqDTO,
-  ): Promise<RegisterUserResDTO> {
+    @Body() body: RegisterUserRestRequestDTO,
+  ): Promise<RegisterUserRestResponseDTO> {
     try {
       return await this.userService.registerUser(body);
     } catch (exception) {
@@ -74,8 +75,8 @@ export class UserControllerEntrypoint {
   @Get()
   @SwaggerDoc({ tag: '/user', description: '' })
   async searchUsers(
-    @Query() params: SearchUsersReqDTO,
-  ): Promise<SearchUsersResDTO[]> {
+    @Query() params: SearchUsersRestRequestDTO,
+  ): Promise<SearchUsersRestResponseDTO[]> {
     try {
       return await this.userService.searchUsers(params);
     } catch (exception) {
@@ -92,7 +93,9 @@ export class UserControllerEntrypoint {
   @Get('/current')
   @Auth('USER', 'ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
-  async getCurrentUser(@GetAuthUser() authUser: User): Promise<GetUserResDTO> {
+  async getCurrentUser(
+    @GetAuthUser() authUser: User,
+  ): Promise<GetUserRestResponseDTO> {
     try {
       return await this.userService.getUser({ id: authUser.id });
     } catch (exception) {
@@ -115,7 +118,7 @@ export class UserControllerEntrypoint {
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async updateCurrentUser(
     @GetAuthUser() authUser: User,
-    @Body() body: UpdateUserReqBodyDTO,
+    @Body() body: UpdateUserRestRequestBodyDTO,
   ): Promise<void> {
     try {
       return await this.userService.modifyUser({
@@ -144,7 +147,7 @@ export class UserControllerEntrypoint {
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async patchCurrentUser(
     @GetAuthUser() authUser: User,
-    @Body() body: PatchUserReqBodyDTO,
+    @Body() body: PatchUserRestRequestBodyDTO,
   ): Promise<void> {
     try {
       return await this.userService.modifyUser({
@@ -170,7 +173,9 @@ export class UserControllerEntrypoint {
   @Get('/:id')
   @Auth('ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
-  async getUser(@Param() params: GetUserReqDTO): Promise<GetUserResDTO> {
+  async getUser(
+    @Param() params: GetUserRestRequestDTO,
+  ): Promise<GetUserRestResponseDTO> {
     try {
       return await this.userService.getUser(params);
     } catch (exception) {
@@ -188,7 +193,7 @@ export class UserControllerEntrypoint {
   @HttpCode(204)
   @Auth('ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
-  async deleteUser(@Param() params: DeleteUserReqDTO): Promise<void> {
+  async deleteUser(@Param() params: DeleteUserRestRequestDTO): Promise<void> {
     try {
       return await this.userService.deleteUser(params);
     } catch (exception) {
@@ -207,8 +212,8 @@ export class UserControllerEntrypoint {
   @Auth('ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async updateUser(
-    @Param() params: UpdateUserReqParamsDTO,
-    @Body() body: UpdateUserReqBodyDTO,
+    @Param() params: UpdateUserRestRequestParamsDTO,
+    @Body() body: UpdateUserRestRequestBodyDTO,
   ): Promise<void> {
     try {
       return await this.userService.modifyUser({ indexes: params, data: body });
@@ -230,8 +235,8 @@ export class UserControllerEntrypoint {
   @Auth('ADMIN')
   @SwaggerDoc({ tag: '/user', description: '', authEnabled: true })
   async patchUser(
-    @Param() params: PatchUserReqParamsDTO,
-    @Body() body: PatchUserReqBodyDTO,
+    @Param() params: PatchUserRestRequestParamsDTO,
+    @Body() body: PatchUserRestRequestBodyDTO,
   ): Promise<void> {
     try {
       return await this.userService.modifyUser({ indexes: params, data: body });

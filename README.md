@@ -1,6 +1,7 @@
 # media-collection
 
-Practice project with the theme of a media collection, which may have users interacting with posted medias.
+Template built for study and future references.
+Practice project theming a media collection(which may have users interacting with posted medias).
 
 The project is built using [Nestjs](https://nestjs.com/) and despite the framework's modular architecture recommendation this one is following a predictable structure regarding concepts of DDD/Clean/Hexagonal Architecture.
 
@@ -177,6 +178,7 @@ After setting up the [development environment](#development-environment) you may
 ```
 $ npm install
 ```
+PS.: may be required to run `$ npm i --legacy-peer-deps`
 
 - Run the project in watch mode:
 ```

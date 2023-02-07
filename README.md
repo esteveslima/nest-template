@@ -2,7 +2,7 @@
 
 Practice project with the theme of a media collection, which may have users interacting with posted medias.
 
-The project is built using [Nestjs](https://nestjs.com/) and following a predictable structure regarding concepts of DDD/Clean/Hexagonal Architecture.
+The project is built using [Nestjs](https://nestjs.com/) and despite the framework's modular architecture recommendation this one is following a predictable structure regarding concepts of DDD/Clean/Hexagonal Architecture.
 
 ---
 

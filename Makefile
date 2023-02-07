@@ -2,7 +2,7 @@
 
 COMPOSE_FILE_PATH = ./assets/environment/docker-compose.yml
 COMPOSE_SERVICE_NAME = nest-container
-COMPOSE_PROJECT_NAME = media-collection
+COMPOSE_PROJECT_NAME = nest-template
 
 
 # clear temp files

@@ -1,4 +1,4 @@
-# media-collection
+# nest-template
 
 Template built for study and future references.
 Practice project theming a media collection(which may have users interacting with posted medias).

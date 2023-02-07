@@ -3,7 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export const configSwagger = (app: INestApplication, route: string): void => {
   const swaggerDocumentConfig = new DocumentBuilder()
-    .setTitle('media-collection')
+    .setTitle('nest-template')
     .setVersion('0.0.0')
     .setDescription('Practice template project on Nest.js')
     .addBearerAuth({ type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' })

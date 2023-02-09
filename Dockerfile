@@ -1,20 +1,21 @@
 # Application docker image build
 
-FROM node:lts-alpine as nodeBuilderStage
+FROM --platform=linux/amd64 node:lts-alpine as baseStage
 
 WORKDIR /app
 
-# Install all dependencies(skipped if package.json doesn't change)
+FROM baseStage as installDependenciesStage
 COPY package.json .
-RUN npm install 
-    
-# Copy remaining files and build project
+COPY package-lock.json .
+RUN npm install-clean --legacy-peer-deps
 COPY . .
-RUN npm run build 
 
-# # Remove unnecessary files and dependencies(disabled to simplify pipeline)
-# RUN rm -rf src && \
-#     npm uninstall --save-dev
+FROM installDependenciesStage as testStage
+RUN [ "npm", "run", "test" ]
 
+FROM testStage as buildStage
+RUN npm run build && \
+    rm -rf src && \    
+    npm prune --production --legacy-peer-deps
 EXPOSE 3000
-CMD [ "npm", "start" ]
+CMD [ "node", "dist/main.js" ]
